@@ -1,0 +1,37 @@
+<div class="otp-container">
+  <div class="otp-box">
+    <!-- Logo -->
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="Household Hero Logo" class="logo" />
+    </div>
+    <div>
+      <img
+        src="assets/logo_name.png"
+        alt="Household Hero Name"
+        class="logo-name"
+      />
+    </div>
+
+    <h2>OTP VERIFICATION</h2>
+    <p>
+      Enter the OTP sent to <strong>{{ email }}</strong>
+    </p>
+
+    <!-- OTP Input Boxes -->
+    <div class="otp-inputs">
+      <input type="text" maxlength="1" />
+      <input type="text" maxlength="1" />
+      <input type="text" maxlength="1" />
+      <input type="text" maxlength="1" />
+    </div>
+
+    <!-- Countdown Timer -->
+    <p class="timer">00:120 Sec</p>
+
+    <!-- Resend OTP -->
+    <p class="resend">Don't receive code? <a href="#">Re-send</a></p>
+
+    <!-- Submit Button -->
+    <button class="submit-btn">Submit</button>
+  </div>
+</div>

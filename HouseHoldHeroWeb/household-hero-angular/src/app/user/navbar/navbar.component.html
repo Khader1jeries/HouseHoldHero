@@ -1,0 +1,21 @@
+<nav class="navbar-container" [class.shifted]="sidebarStatus === 1">
+  <div class="navbar-left">
+    <i class="bi bi-list toggle-icon" (click)="toggleSidebarStatus()"></i>
+    <span class="dashboard-text">Dashboard</span>
+  </div>
+
+  <div class="navbar-center">
+    <img src="assets/logo.png" alt="Logo" class="logo-img" />
+  </div>
+
+  <div class="navbar-right">
+    <i class="bi bi-bell notification-icon"></i>
+    <div class="user-info">
+      <span class="user-name">John</span>
+      <img src="assets/profile_pic.png" alt="Avatar" class="avatar" />
+    </div>
+  </div>
+</nav>
+@if(sidebarStatus===1){
+<app-sidebar></app-sidebar>
+}

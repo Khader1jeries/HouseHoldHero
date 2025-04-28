@@ -1,0 +1,132 @@
+/* Full-page background */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(
+    80deg,
+    #29524c,
+    #69aaa1
+  ); /* Outer background color */
+  font-family: "Arial", sans-serif;
+}
+
+/* Login Box */
+.login-box {
+  background: #a9e1db; /* Inner box background */
+  padding: 3vh;
+  border-radius: 10px;
+  text-align: center;
+  width: 50vh;
+  height: 50vh;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo (Top) */
+.navbar-brand .logo {
+  width: 8vh; /* Adjust logo size */
+  display: block;
+  margin: 0 auto 1vh auto; /* Center logo */
+}
+
+/* Middle Logo Name */
+.navbar-middle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1vh;
+}
+
+.logo-name {
+  width: 18vh; /* Adjust width */
+  object-fit: contain;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: 2vh;
+  color: #333;
+  margin-bottom: 2vh;
+}
+
+/* Input Fields */
+input {
+  width: 100%;
+  padding: 1.2vh;
+  margin: 1vh 0;
+  border: 1px solid #999;
+  border-radius: 5px;
+  font-size: 1.8vh;
+}
+
+/* Ensure the form aligns items properly */
+
+/* Ensure the form aligns elements properly */
+form {
+  display: flex;
+  flex-direction: column; /* Keeps elements stacked */
+  align-items: flex-start; /* Ensures all form elements are left-aligned */
+  width: 100%; /* Ensures form takes full width */
+}
+
+/* Fully left-align "Remember me" section */
+.remember-me {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Ensures full width usage */
+  margin-top: 1vh;
+}
+
+/* Force checkbox and label close together */
+.remember-me input {
+  width: 2vh; /* Smaller checkbox */
+  height: 2vh;
+  margin-right: 0.5vh; /* Ensures the label is next to checkbox */
+  margin-right: 3vh;
+}
+
+.remember-me label {
+  font-size: 2vh;
+  font-weight: bold; /* Makes the text bolder */
+
+  white-space: nowrap; /* Prevents wrapping */
+}
+
+/* Login Button */
+.login-btn {
+  width: 100%;
+  padding: 1.5vh;
+  background-color: #ff0055; /* Red button */
+  color: white;
+  font-size: 2vh;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1vh;
+}
+
+.login-btn:hover {
+  background-color: #d9004a; /* Darker red */
+}
+
+/* Links Section */
+.links {
+  margin-top: 2vh;
+
+  color: #c00058;
+  display: flex;
+  justify-content: center;
+  gap: 1vh;
+  font-size: 2vh;
+  font-weight: bold;
+}
+
+.links a {
+  text-decoration: none;
+  color: #c00058;
+  font-weight: bold;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}

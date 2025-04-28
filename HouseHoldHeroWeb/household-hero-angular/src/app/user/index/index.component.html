@@ -1,0 +1,142 @@
+<div class="dashboard">
+  <h1 class="title">Today</h1>
+  <p class="date">Mon 22, 2025 | 10:00 AM</p>
+
+  <div class="grid">
+    <!-- Members Card -->
+    <div class="card">
+      <div class="card-header-top">
+        <h2>Members</h2>
+        <i
+          class="bi bi-arrow-right-circle-fill card-icon"
+          (click)="goTo('members')"
+        ></i>
+      </div>
+      <div class="card-header">
+        <span>Member Info</span>
+        <span>Active Tasks</span>
+        <span>Score</span>
+      </div>
+
+      <div class="item">
+        <div class="member-info">
+          <img src="assets/profile_pic.png" alt="John" />
+          <div>
+            <p>John</p>
+            <p class="subtext">Age: 23</p>
+          </div>
+        </div>
+        <div><span>3</span></div>
+        <div><span class="score-pill">1500</span></div>
+      </div>
+
+      <div class="item">
+        <div class="member-info">
+          <img src="assets/profile_pic.png" alt="Kavin" />
+          <div>
+            <p>Kavin</p>
+            <p class="subtext">Age: 21</p>
+          </div>
+        </div>
+        <div><span>5</span></div>
+        <div><span class="score-pill">2000</span></div>
+      </div>
+    </div>
+
+    <!-- Voting Card -->
+    <div class="card">
+      <div class="card-header-top">
+        <h2>Voting</h2>
+        <i
+          class="bi bi-arrow-right-circle-fill card-icon"
+          (click)="goTo('voting')"
+        ></i>
+      </div>
+      <div class="card-header">
+        <span>Task Info</span>
+        <span>YES</span>
+        <span>NO</span>
+      </div>
+
+      <div class="item">
+        <div><span class="score-pill">Take the dog to Walk</span></div>
+        <div><span>3</span></div>
+        <div><span>5</span></div>
+      </div>
+
+      <div class="item">
+        <div><span class="score-pill">Wash the laundry</span></div>
+        <div><span>4</span></div>
+        <div><span>2</span></div>
+      </div>
+    </div>
+
+    <!-- Monthly Leaderboard Card -->
+    <div class="card">
+      <div class="card-header-top">
+        <h2>Monthly Leader Board</h2>
+        <i
+          class="bi bi-arrow-right-circle-fill card-icon"
+          (click)="goTo('leaderboard')"
+        ></i>
+      </div>
+      <div class="card-header">
+        <span>Member Info</span>
+        <span>Place</span>
+        <span>Monthly Score</span>
+      </div>
+
+      <div class="item">
+        <div class="member-info">
+          <img src="assets/profile_pic.png" alt="Kavin" />
+          <div>
+            <p>Kavin</p>
+            <p class="subtext">Age: 21</p>
+          </div>
+        </div>
+        <div><span>1</span></div>
+        <div><span class="score-pill">500</span></div>
+      </div>
+
+      <div class="item">
+        <div class="member-info">
+          <img src="assets/profile_pic.png" alt="John" />
+          <div>
+            <p>John</p>
+            <p class="subtext">Age: 23</p>
+          </div>
+        </div>
+        <div><span>2</span></div>
+        <div><span class="score-pill">350</span></div>
+      </div>
+    </div>
+
+    <!-- Active Tasks Card -->
+    <div class="card">
+      <div class="card-header-top">
+        <h2>Active Tasks</h2>
+        <i
+          class="bi bi-arrow-right-circle-fill card-icon"
+          (click)="goTo('tasks')"
+        ></i>
+      </div>
+      <div class="card-header">
+        <span>Task Info</span>
+        <span>Remaining Time</span>
+        <span>Assigned To</span>
+      </div>
+
+      <div class="item">
+        <div><span class="score-pill">clean bathroom</span></div>
+        <div><span>0h 5m 20s</span></div>
+        <div><span class="score-pill">John</span></div>
+      </div>
+
+      <div class="item">
+        <div><span class="score-pill">Wash the car</span></div>
+        <div><span>1h 5m 20s</span></div>
+        <div><span class="score-pill">Sarah</span></div>
+      </div>
+    </div>
+  </div>
+</div>

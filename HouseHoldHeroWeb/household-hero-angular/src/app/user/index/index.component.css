@@ -1,0 +1,132 @@
+.dashboard {
+  background-color: #2a9d8f;
+  color: white;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: "Allerta", sans-serif;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.date {
+  color: #e0e0e0;
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.card {
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* header row with icon */
+.card-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.card-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #ffffffaa;
+  transition: 0.2s;
+}
+
+.card-icon:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #c8c8c8;
+  margin-bottom: 0.5rem;
+}
+
+.card-header span {
+  flex: 1;
+  text-align: center;
+}
+
+.card-header span:first-child {
+  text-align: left;
+  padding-left: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.item > * {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.item > *:first-child {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 12px;
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.member-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.subtext {
+  font-size: 0.75rem;
+  color: #cccccc;
+}
+
+.score-pill {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

@@ -1,0 +1,94 @@
+/* Navbar styling */
+.navbar {
+  width: 100%;
+  height: 7vh;
+  /*background: #246c62;*/
+  position: fixed;
+  background: linear-gradient(80deg, #29524c, #69aaa1);
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+/* Left logo */
+.navbar-brand .logo {
+  width: 10vh;
+  object-fit: contain;
+  position: relative;
+  top: 0vh;
+  margin-right: 40vh;
+}
+
+/* Center logo name */
+.navbar-center .logo-name {
+  /* Adjust to your desired smaller size */
+  width: 100%; /* Ensures it scales responsively */
+  height: 7vh;
+  position: center;
+  object-fit: contain;
+  margin-left: 2vh;
+}
+
+/* Center container */
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Right-side navigation links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  /* Space between buttons */
+}
+
+/* Login link styling */
+.nav-link {
+  width: 25vh; /* Increase width */
+  height: 7vh;
+
+  flex-shrink: 0;
+  color: #000;
+  font-family: Inter, sans-serif;
+  font-size: 3vh;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration: none;
+  text-align: center;
+  display: flex; /* Enables Flexbox */
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+}
+
+/* Get SHH for Free button */
+.nav-button {
+  width: 25vh;
+  height: 7vh;
+  flex-shrink: 0;
+  background: #27635b;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 3vh;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.nav-button:hover {
+  background: hsla(173, 43%, 27%, 0.452);
+}
+.nav-link:hover {
+  background: hsla(172, 43%, 27%, 0.685);
+}
+.navbar-middle img {
+  height: 7vh;
+}

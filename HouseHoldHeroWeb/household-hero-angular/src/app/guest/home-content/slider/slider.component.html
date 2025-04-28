@@ -1,0 +1,20 @@
+<div class="slider-container">
+  <!-- Left Button -->
+  <div class="button-container">
+    <button (click)="prevParagraph()">⬅</button>
+  </div>
+
+  <!-- Centered Text Content -->
+  <div class="text-container">
+    <h3>{{ paragraphs[currentIndex].title }}</h3>
+    @for (para of paragraphs[currentIndex].content; track $index) {
+    <br />
+    <p>{{ para }}</p>
+    }
+  </div>
+
+  <!-- Right Button -->
+  <div class="button-container">
+    <button (click)="nextParagraph()">➡</button>
+  </div>
+</div>
