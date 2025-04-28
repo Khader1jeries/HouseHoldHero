@@ -1,3 +1,4 @@
+/* src/app/guest/login/login.component.css */
 /* Full-page background */
 .login-container {
   display: flex;
@@ -19,7 +20,8 @@
   border-radius: 10px;
   text-align: center;
   width: 50vh;
-  height: 50vh;
+  height: auto;
+  min-height: 50vh;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -60,8 +62,6 @@ input {
 }
 
 /* Ensure the form aligns items properly */
-
-/* Ensure the form aligns elements properly */
 form {
   display: flex;
   flex-direction: column; /* Keeps elements stacked */
@@ -88,7 +88,6 @@ form {
 .remember-me label {
   font-size: 2vh;
   font-weight: bold; /* Makes the text bolder */
-
   white-space: nowrap; /* Prevents wrapping */
 }
 
@@ -109,10 +108,14 @@ form {
   background-color: #d9004a; /* Darker red */
 }
 
+.login-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 /* Links Section */
 .links {
   margin-top: 2vh;
-
   color: #c00058;
   display: flex;
   justify-content: center;
@@ -129,4 +132,28 @@ form {
 
 .links a:hover {
   text-decoration: underline;
+}
+
+/* Error message styles */
+.error-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #d9004a;
+  padding: 1vh;
+  border-radius: 5px;
+  margin-bottom: 1vh;
+  font-size: 1.7vh;
+}
+
+/* Validation error styles */
+.validation-error {
+  color: #d9004a;
+  font-size: 1.4vh;
+  text-align: left;
+  margin-top: -0.5vh;
+  margin-bottom: 1vh;
+}
+
+/* Invalid input styling */
+input.ng-invalid.ng-touched {
+  border-color: #d9004a;
 }

@@ -1,3 +1,4 @@
+<!-- src/app/guest/otp-verification/otp-verification.component.html -->
 <div class="otp-container">
   <div class="otp-box">
     <!-- Logo -->
@@ -14,24 +15,71 @@
 
     <h2>OTP VERIFICATION</h2>
     <p>
-      Enter the OTP sent to <strong>{{ email }}</strong>
+      Enter the verification code sent to <strong>{{ email }}</strong>
     </p>
 
-    <!-- OTP Input Boxes -->
-    <div class="otp-inputs">
-      <input type="text" maxlength="1" />
-      <input type="text" maxlength="1" />
-      <input type="text" maxlength="1" />
-      <input type="text" maxlength="1" />
+    @if(errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
     </div>
+    }
 
-    <!-- Countdown Timer -->
-    <p class="timer">00:120 Sec</p>
+    <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+      <!-- OTP Input Boxes -->
+      <div class="otp-inputs">
+        <input
+          type="text"
+          class="otp-input"
+          maxlength="1"
+          formControlName="digit1"
+          inputmode="numeric"
+        />
+        <input
+          type="text"
+          class="otp-input"
+          maxlength="1"
+          formControlName="digit2"
+          inputmode="numeric"
+        />
+        <input
+          type="text"
+          class="otp-input"
+          maxlength="1"
+          formControlName="digit3"
+          inputmode="numeric"
+        />
+        <input
+          type="text"
+          class="otp-input"
+          maxlength="1"
+          formControlName="digit4"
+          inputmode="numeric"
+        />
+      </div>
 
-    <!-- Resend OTP -->
-    <p class="resend">Don't receive code? <a href="#">Re-send</a></p>
+      <!-- Countdown Timer -->
+      <p class="timer">{{ timerDisplay }} Sec</p>
 
-    <!-- Submit Button -->
-    <button class="submit-btn">Submit</button>
+      <!-- Resend OTP -->
+      <p class="resend">
+        Don't receive code?
+        <a
+          href="javascript:void(0)"
+          (click)="resendOtp()"
+          [class.disabled]="resendDisabled"
+        >
+          Re-send
+        </a>
+      </p>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="otpForm.invalid || loading"
+      >
+        {{ loading ? "Verifying..." : "Submit" }}
+      </button>
+    </form>
   </div>
 </div>

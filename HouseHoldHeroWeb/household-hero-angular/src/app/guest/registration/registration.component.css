@@ -1,3 +1,4 @@
+/* src/app/guest/registration/registration.component.css */
 /* Full-page background */
 .signup-container {
   display: flex;
@@ -16,6 +17,8 @@
   text-align: center;
   width: 50vh;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
 /* Logo */
@@ -70,6 +73,7 @@ input {
   border-radius: 5px;
   overflow: hidden;
   background: white;
+  margin: 1vh 0;
 }
 
 /* Country Code Dropdown */
@@ -92,6 +96,7 @@ input {
   padding: 0 1vh;
   font-size: 1.8vh;
   outline: none;
+  margin: 0;
 }
 
 /* Signup Button */
@@ -112,6 +117,11 @@ input {
   background-color: #d9004a;
 }
 
+.signup-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 /* Login Text */
 .login-text {
   margin-top: 2vh;
@@ -124,8 +134,34 @@ input {
   color: #c00058;
   font-weight: bold;
   transition: text-decoration 0.3s;
+  cursor: pointer;
 }
 
 .login-text a:hover {
   text-decoration: underline;
+}
+
+/* Error message styles */
+.error-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #d9004a;
+  padding: 1vh;
+  border-radius: 5px;
+  margin-bottom: 1vh;
+  font-size: 1.7vh;
+}
+
+/* Validation error styles */
+.validation-error {
+  color: #d9004a;
+  font-size: 1.4vh;
+  text-align: left;
+  margin-top: -0.5vh;
+  margin-bottom: 1vh;
+}
+
+/* Invalid input styling */
+input.ng-invalid.ng-touched,
+.phone-input.ng-invalid.ng-touched {
+  border-color: #d9004a;
 }
