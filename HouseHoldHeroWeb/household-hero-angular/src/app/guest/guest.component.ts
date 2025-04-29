@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { GuestNavbarComponent } from './guest-navbar/guest-navbar.component';
-import { RouterModule } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
-import { GuestHomeContentComponent } from './home-content/guest-home-content.component';
+
 @Component({
   selector: 'app-guest',
+  standalone: true,
   imports: [
     GuestNavbarComponent,
-    RouterModule,
+    RouterOutlet,
     FooterComponent,
-    GuestHomeContentComponent,
   ],
   templateUrl: './guest.component.html',
   styleUrl: './guest.component.css',

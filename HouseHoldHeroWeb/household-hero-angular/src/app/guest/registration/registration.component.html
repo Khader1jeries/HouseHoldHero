@@ -1,4 +1,4 @@
-<!-- src/app/guest/registration/registration.component.html -->
+<!-- Signup Container -->
 <div class="signup-container">
   <div class="signup-box">
     <!-- Logo -->
@@ -15,35 +15,25 @@
 
     <p class="subtitle">Sign up to continue</p>
 
-    <!-- Error Message Display -->
-    @if(errorMessage) {
-    <div class="error-message">
-      {{ errorMessage }}
-    </div>
-    }
-
-    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()">
       <!-- Full Name Input -->
-      <input
-        type="text"
-        formControlName="fullName"
-        placeholder="Enter your full name"
+      <input 
+        type="text" 
+        placeholder="Enter your full name" 
+        [(ngModel)]="user.fullName" 
+        name="fullName"
+        required 
       />
-      @if(registrationForm.get('fullName')?.touched &&
-      registrationForm.get('fullName')?.invalid) {
-      <div class="validation-error">
-        @if(registrationForm.get('fullName')?.errors?.['required']) {
-        <span>Full name is required</span>
-        } @else if(registrationForm.get('fullName')?.errors?.['minlength']) {
-        <span>Name must be at least 3 characters</span>
-        }
-      </div>
-      }
 
       <!-- Phone Number Input -->
       <div class="phone-input">
         <!-- Country Code Dropdown -->
-        <select class="country-code" formControlName="countryCode">
+        <select 
+          class="country-code" 
+          name="countryCode" 
+          [(ngModel)]="user.countryCode"
+          required
+        >
           <option value="+1">🇺🇸 +1 (USA)</option>
           <option value="+44">🇬🇧 +44 (UK)</option>
           <option value="+91">🇮🇳 +91 (India)</option>
@@ -55,91 +45,46 @@
         <!-- Phone Number Input -->
         <input
           type="tel"
-          formControlName="phoneNumber"
+          name="phoneNumber"
           class="phone-number"
           placeholder="Enter phone number"
+          [(ngModel)]="user.phoneNumber"
+          required
         />
       </div>
-      @if(registrationForm.get('phoneNumber')?.touched &&
-      registrationForm.get('phoneNumber')?.invalid) {
-      <div class="validation-error">
-        @if(registrationForm.get('phoneNumber')?.errors?.['required']) {
-        <span>Phone number is required</span>
-        } @else if(registrationForm.get('phoneNumber')?.errors?.['pattern']) {
-        <span>Please enter a valid phone number</span>
-        }
-      </div>
-      }
 
       <!-- Email Input -->
-      <input
-        type="email"
-        formControlName="email"
-        placeholder="Enter your email"
+      <input 
+        type="email" 
+        placeholder="Enter your email" 
+        [(ngModel)]="user.email"
+        name="email"
+        required 
       />
-      @if(registrationForm.get('email')?.touched &&
-      registrationForm.get('email')?.invalid) {
-      <div class="validation-error">
-        @if(registrationForm.get('email')?.errors?.['required']) {
-        <span>Email is required</span>
-        } @else if(registrationForm.get('email')?.errors?.['email']) {
-        <span>Please enter a valid email</span>
-        }
-      </div>
-      }
 
       <!-- Password Input -->
-      <input
-        type="password"
-        formControlName="password"
-        placeholder="Enter your password"
+      <input 
+        type="password" 
+        placeholder="Enter your password" 
+        [(ngModel)]="user.password"
+        name="password"
+        required 
       />
-      @if(registrationForm.get('password')?.touched &&
-      registrationForm.get('password')?.invalid) {
-      <div class="validation-error">
-        @if(registrationForm.get('password')?.errors?.['required']) {
-        <span>Password is required</span>
-        } @else if(registrationForm.get('password')?.errors?.['minlength']) {
-        <span>Password must be at least 6 characters</span>
-        }
-      </div>
-      }
 
       <!-- Confirm Password Input -->
-      <input
-        type="password"
-        formControlName="confirmPassword"
-        placeholder="Re-enter your password"
+      <input 
+        type="password" 
+        placeholder="Re-enter your password" 
+        [(ngModel)]="user.confirmPassword"
+        name="confirmPassword"
+        required 
       />
-      @if(registrationForm.get('confirmPassword')?.touched &&
-      registrationForm.get('confirmPassword')?.invalid) {
-      <div class="validation-error">
-        @if(registrationForm.get('confirmPassword')?.errors?.['required']) {
-        <span>Please confirm your password</span>
-        }
-        <div
-          *ngIf="registrationForm.get('confirmPassword')?.errors?.['passwordMismatch']"
-          class="validation-error"
-        >
-          <span>Passwords do not match</span>
-        </div>
-      </div>
-      }
 
       <!-- Sign-Up Button -->
-      <button
-        type="submit"
-        class="signup-btn"
-        [disabled]="loading || registrationForm.invalid"
-      >
-        {{ loading ? "Signing up..." : "Sign up" }}
-      </button>
+      <button type="submit" class="signup-btn">Sign up</button>
     </form>
 
     <!-- Login Link -->
-    <p class="login-text">
-      Already have an account?
-      <a (click)="navigateToLogin()" href="javascript:void(0)">Log-in</a>
-    </p>
+    <p class="login-text">Already have an account? <a routerLink="/guest/login">Log-in</a></p>
   </div>
 </div>

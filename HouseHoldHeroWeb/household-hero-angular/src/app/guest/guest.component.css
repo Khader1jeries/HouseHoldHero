@@ -1,0 +1,5 @@
+/* Add padding to the top to compensate for fixed navbar */
+:host {
+    display: block;
+    padding-top: 8vh; /* Match the height of the navbar */
+  }

@@ -79,8 +79,15 @@ p {
   text-decoration: none;
 }
 
-.resend a:hover {
+.resend a:hover:not(.disabled) {
   text-decoration: underline;
+}
+
+/* Disabled link styling */
+.resend a.disabled {
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* Submit Button */
@@ -97,6 +104,25 @@ p {
   transition: background-color 0.3s;
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   background-color: #d9004a;
+}
+
+.submit-btn:disabled {
+  background-color: #ff7ea1;
+  cursor: not-allowed;
+}
+
+/* Message boxes */
+.message {
+  padding: 1vh;
+  border-radius: 5px;
+  margin-bottom: 1vh;
+  font-size: 1.6vh;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
 }

@@ -1,143 +1,158 @@
-// src/app/guest/otp-verification/otp-verification.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { UserService } from '../../services/user.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-otp-verification',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './otp-verification.component.html',
   styleUrl: './otp-verification.component.css',
 })
-export class OtpVerificationComponent implements OnInit {
+export class OtpVerificationComponent implements OnInit, OnDestroy {
   email: string = '';
-  otpForm: FormGroup;
-  timeLeft: number = 120; // 2 minutes countdown
-  timerDisplay: string = '02:00';
-  resendDisabled: boolean = true;
-  loading: boolean = false;
+  otpDigits: string[] = ['', '', '', ''];
+  remainingTime: number = 60; // 1 minute in seconds
+  timerInterval: any = null;
+  canResend: boolean = false;
+  isVerifying: boolean = false;
   errorMessage: string = '';
-
+  
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private fb: FormBuilder,
-    private userService: UserService
-  ) {
-    this.otpForm = this.fb.group({
-      digit1: ['', [Validators.required, Validators.pattern(/^[0-9]$/)]],
-      digit2: ['', [Validators.required, Validators.pattern(/^[0-9]$/)]],
-      digit3: ['', [Validators.required, Validators.pattern(/^[0-9]$/)]],
-      digit4: ['', [Validators.required, Validators.pattern(/^[0-9]$/)]],
-    });
-  }
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
+  ngOnInit() {
+    // Get email from query params
+    this.route.queryParams.subscribe(params => {
       if (params['email']) {
         this.email = params['email'];
       } else {
-        // Redirect if no email provided
-        this.router.navigate(['/guest/login']);
+        // Fallback to storage if not in URL
+        const storedEmail = localStorage.getItem('userEmail');
+        if (storedEmail) {
+          this.email = storedEmail;
+        }
       }
     });
-
+    
+    // Start the countdown timer
     this.startTimer();
-    this.setupOtpInputs();
+    
+    // Send OTP code
+    this.sendOtpCode();
   }
 
-  // Auto-focus on next input after filling one
-  setupOtpInputs(): void {
-    const inputs = document.querySelectorAll<HTMLInputElement>('.otp-input');
-    inputs.forEach((input, index) => {
-      input.addEventListener('keyup', (e) => {
-        const target = e.target as HTMLInputElement;
-        const key = e.key;
-
-        // Move to next input if current is filled
-        if (key !== 'Backspace' && target.value && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-
-        // Move to previous input on backspace
-        if (key === 'Backspace' && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-    });
+  ngOnDestroy() {
+    // Clear the timer when component is destroyed
+    this.clearTimer();
   }
 
-  // Timer for OTP expiration
-  startTimer(): void {
-    const timer = setInterval(() => {
-      this.timeLeft--;
-
-      const minutes = Math.floor(this.timeLeft / 60);
-      const seconds = this.timeLeft % 60;
-
-      this.timerDisplay = `${minutes.toString().padStart(2, '0')}:${seconds
-        .toString()
-        .padStart(2, '0')}`;
-
-      if (this.timeLeft <= 0) {
-        clearInterval(timer);
-        this.resendDisabled = false;
+  startTimer() {
+    this.remainingTime = 60;
+    this.canResend = false;
+    
+    // Clear any existing timer
+    this.clearTimer();
+    
+    // Start a new timer
+    this.timerInterval = setInterval(() => {
+      this.remainingTime--;
+      
+      if (this.remainingTime <= 0) {
+        this.clearTimer();
+        this.canResend = true;
       }
     }, 1000);
   }
 
-  // Combine all digits and submit OTP
-  onSubmit(): void {
-    if (this.otpForm.invalid) {
-      return;
+  clearTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
     }
-
-    this.loading = true;
-    this.errorMessage = '';
-
-    const otp =
-      this.otpForm.get('digit1')?.value +
-      this.otpForm.get('digit2')?.value +
-      this.otpForm.get('digit3')?.value +
-      this.otpForm.get('digit4')?.value;
-
-    // In a real app, you would verify this OTP with your backend
-    // For now, we'll just simulate verification and redirect
-    setTimeout(() => {
-      this.loading = false;
-      // Success - redirect to login or dashboard
-      this.router.navigate(['/guest/login']);
-    }, 1500);
   }
 
-  // Resend OTP
-  resendOtp(): void {
-    if (this.resendDisabled) {
+  sendOtpCode() {
+    // In a real application, this would call an API to send an OTP
+    console.log(`Sending OTP to ${this.email}`);
+    // For demo purposes, let's assume the OTP is "1234"
+  }
+
+  resendOtp() {
+    if (this.canResend) {
+      this.errorMessage = '';
+      this.sendOtpCode();
+      this.startTimer();
+    }
+  }
+
+  // Handle input changes and auto-focus to next input
+  onOtpDigitChange(index: number, event: any) {
+    const digit = event.target.value;
+    
+    // Only allow single digit
+    if (digit.length > 1) {
+      this.otpDigits[index] = digit.charAt(0);
+    }
+    
+    // Auto-focus to next input if value entered
+    if (digit && index < 3) {
+      const nextInput = event.target.nextElementSibling;
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+    
+    // Check if all digits are filled
+    this.checkOtpCompletion();
+  }
+
+  checkOtpCompletion() {
+    const otp = this.otpDigits.join('');
+    
+    // If all digits are filled, automatically verify OTP
+    if (otp.length === 4 && !this.isVerifying) {
+      this.verifyOtp();
+    }
+  }
+
+  verifyOtp() {
+    const otp = this.otpDigits.join('');
+    if (otp.length !== 4) {
+      this.errorMessage = 'Please enter the complete 4-digit code';
       return;
     }
 
-    this.userService.sendVerificationEmail().subscribe({
-      next: () => {
-        // Reset timer
-        this.timeLeft = 120;
-        this.resendDisabled = true;
-        this.startTimer();
+    this.isVerifying = true;
+    this.errorMessage = '';
+    
+    // For demo purposes, we'll accept "1234" as valid
+    setTimeout(() => {
+      if (otp === "1234") {
+        console.log('OTP verified successfully');
+        
+        // Mark user as authenticated
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        // Navigate to user dashboard
+        this.router.navigate(['/user']);
+      } else {
+        this.errorMessage = 'Invalid verification code. Please try again.';
+        this.isVerifying = false;
+      }
+    }, 1000);
+  }
 
-        // Reset form
-        this.otpForm.reset();
-      },
-      error: (error) => {
-        this.errorMessage =
-          'Failed to resend verification code. Please try again.';
-      },
-    });
+  formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  submitOtp() {
+    this.verifyOtp();
   }
 }

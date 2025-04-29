@@ -8,8 +8,8 @@
       collaborate, and simplify family life like never before.
     </p>
     <div class="email-container">
-      <input placeholder="Enter your email" />
-      <button>Sign up - it’s free!</button>
+      <input placeholder="Enter your email" [(ngModel)]="email" />
+      <button (click)="navigateToRegistration()">Sign up - it's free!</button>
     </div>
   </section>
   <section class="section">
