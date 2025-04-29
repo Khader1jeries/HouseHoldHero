@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-privacy-policy',
+  standalone: true,
+  templateUrl: './privacy-policy.component.html',
+  styleUrl: './privacy-policy.component.css'
+})
+export class PrivacyPolicyComponent {
+  lastUpdated: string = 'April 29, 2025';
+}
