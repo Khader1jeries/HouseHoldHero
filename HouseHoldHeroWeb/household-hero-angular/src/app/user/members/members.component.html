@@ -1,0 +1,54 @@
+<div class="members-container">
+  <div class="members-header">
+    <h1>Family Members</h1>
+    <button class="add-member-btn" (click)="navigateToAddMember()">
+      <i class="bi bi-person-plus"></i> Add Member
+    </button>
+  </div>
+
+  <div class="members-list">
+    <div class="members-list-header">
+      <span>Member Info</span>
+      <span>Email</span>
+      <span>Phone</span>
+      <span>Age</span>
+      <span>Active Tasks</span>
+      <span>Score</span>
+      <span>Actions</span>
+    </div>
+
+    <div class="member-item" *ngFor="let member of members">
+      <div class="member-info">
+        <img [src]="member.profileImage" [alt]="member.name" />
+        <div>
+          <p class="member-name">{{ member.name }}</p>
+        </div>
+      </div>
+      <div class="member-email">{{ member.email }}</div>
+      <div class="member-phone">{{ member.phone }}</div>
+      <div class="member-age">{{ member.age }}</div>
+      <div class="member-tasks">{{ member.activeTasks }}</div>
+      <div class="member-score">
+        <span class="score-pill">{{ member.score }}</span>
+      </div>
+      <div class="member-actions">
+        <button class="edit-btn" (click)="editMember(member.id)">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="delete-btn" (click)="deleteMember(member.id)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state when no members -->
+    <div class="empty-state" *ngIf="members.length === 0">
+      <i class="bi bi-people"></i>
+      <p>No family members yet</p>
+      <p>Add your first family member to get started</p>
+      <button class="add-member-btn" (click)="navigateToAddMember()">
+        Add Family Member
+      </button>
+    </div>
+  </div>
+</div>

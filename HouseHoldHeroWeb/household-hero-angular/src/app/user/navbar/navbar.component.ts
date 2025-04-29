@@ -1,16 +1,18 @@
+// src/app/user/navbar/navbar.component.ts
 import { Component } from '@angular/core';
-import { SidebarComponent } from './sidebar/sidebar.component';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
-  imports: [SidebarComponent],
+  standalone: true,
+  imports: [RouterLink, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
-  sidebarStatus: number = 0;
+  constructor(private router: Router) {}
 
-  toggleSidebarStatus(): void {
-    this.sidebarStatus = this.sidebarStatus === 0 ? 1 : 0;
+  navigateTo(route: string): void {
+    this.router.navigate([`/user/${route}`]);
   }
 }

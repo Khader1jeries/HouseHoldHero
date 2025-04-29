@@ -1,11 +1,50 @@
-<nav class="navbar-container" [class.shifted]="sidebarStatus === 1">
+<nav class="navbar-container">
   <div class="navbar-left">
-    <i class="bi bi-list toggle-icon" (click)="toggleSidebarStatus()"></i>
     <span class="dashboard-text">Dashboard</span>
   </div>
 
-  <div class="navbar-center">
-    <img src="assets/logo.png" alt="Logo" class="logo-img" />
+  <div class="navbar-menu">
+    <div
+      class="menu-item"
+      routerLink="/user"
+      [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="active"
+    >
+      <i class="bi bi-columns-gap"></i>
+      <span>Dashboard</span>
+    </div>
+    <div class="menu-item" routerLink="/user/members" routerLinkActive="active">
+      <i class="bi bi-person"></i>
+      <span>Members</span>
+    </div>
+    <div class="menu-item" routerLink="/user/tasks" routerLinkActive="active">
+      <i class="bi bi-bullseye"></i>
+      <span>Tasks</span>
+    </div>
+    <div class="menu-item" routerLink="/user/support" routerLinkActive="active">
+      <i class="bi bi-telephone"></i>
+      <span>Support</span>
+    </div>
+    <div
+      class="menu-item"
+      routerLink="/user/analytics"
+      routerLinkActive="active"
+    >
+      <i class="bi bi-pie-chart"></i>
+      <span>Analytics</span>
+    </div>
+    <div class="menu-item" routerLink="/user/reports" routerLinkActive="active">
+      <i class="bi bi-file-earmark-text"></i>
+      <span>Reports</span>
+    </div>
+    <div
+      class="menu-item"
+      routerLink="/user/settings"
+      routerLinkActive="active"
+    >
+      <i class="bi bi-gear"></i>
+      <span>Settings</span>
+    </div>
   </div>
 
   <div class="navbar-right">
@@ -16,6 +55,3 @@
     </div>
   </div>
 </nav>
-@if(sidebarStatus===1){
-<app-sidebar></app-sidebar>
-}

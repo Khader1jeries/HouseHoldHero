@@ -1,0 +1,199 @@
+.add-task-container {
+  background-color: #2a9d8f;
+  color: white;
+  min-height: 100vh;
+  padding: 12vh 2rem 2rem 2rem; /* Top padding for navbar */
+  font-family: "Allerta", sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.add-task-box {
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  text-align: center;
+  color: #c8c8c8;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #1e5751;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  padding: 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #ff0055;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.range-value {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input[type="radio"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #ff0055;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  flex: 1;
+}
+
+.submit-btn {
+  background-color: #ff0055;
+  color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #d9004a;
+}
+
+.submit-btn:disabled {
+  background-color: #ff7ea1;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Message boxes */
+.message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ffb3b3;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.success {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #b3ffb3;
+  border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .radio-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn {
+    order: 2;
+  }
+
+  .submit-btn {
+    order: 1;
+    margin-bottom: 1rem;
+  }
+}

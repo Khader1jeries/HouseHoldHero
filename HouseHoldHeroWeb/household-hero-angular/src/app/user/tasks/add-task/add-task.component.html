@@ -1,0 +1,121 @@
+<div class="add-task-container">
+  <div class="add-task-box">
+    <h2>Create New Task</h2>
+    <p class="subtitle">Add a new task for your family members</p>
+
+    <!-- Error message -->
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Success message -->
+    <div class="message success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Task Title -->
+      <div class="form-group">
+        <label for="title">Task Title</label>
+        <input
+          type="text"
+          id="title"
+          placeholder="Enter task title"
+          [(ngModel)]="newTask.title"
+          name="title"
+          required
+        />
+      </div>
+
+      <!-- Task Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          placeholder="Enter task description"
+          [(ngModel)]="newTask.description"
+          name="description"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <!-- Due Date -->
+      <div class="form-group">
+        <label for="dueDate">Due Date</label>
+        <input
+          type="date"
+          id="dueDate"
+          [(ngModel)]="newTask.dueDate"
+          name="dueDate"
+          required
+        />
+      </div>
+
+      <!-- Assignment Type -->
+      <div class="form-group">
+        <label>Assignment Type</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="assignDirectly"
+              name="assignmentType"
+              value="direct"
+              checked
+            />
+            <label for="assignDirectly">Assign Directly</label>
+          </div>
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="createVoting"
+              name="assignmentType"
+              value="voting"
+            />
+            <label for="createVoting">Create Voting</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assigned To (shown only if "Assign Directly" is selected) -->
+      <div class="form-group">
+        <label for="assignedTo">Assign To</label>
+        <select
+          id="assignedTo"
+          [(ngModel)]="newTask.assignedTo"
+          name="assignedTo"
+        >
+          <option value="">Select Family Member</option>
+          <option value="John">John</option>
+          <option value="Kavin">Kavin</option>
+          <option value="Sarah">Sarah</option>
+        </select>
+      </div>
+
+      <!-- Points -->
+      <div class="form-group">
+        <label for="points">Points</label>
+        <input
+          type="range"
+          id="points"
+          [(ngModel)]="newTask.points"
+          name="points"
+          min="10"
+          max="100"
+          step="5"
+        />
+        <div class="range-value">{{ newTask.points }} points</div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">
+          Cancel
+        </button>
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+          {{ isSubmitting ? "Creating..." : "Create Task" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

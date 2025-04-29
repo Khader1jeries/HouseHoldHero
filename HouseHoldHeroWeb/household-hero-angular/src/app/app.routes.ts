@@ -1,19 +1,24 @@
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { GuestComponent } from './guest/guest.component';
 import { GuestHomeContentComponent } from './guest/home-content/guest-home-content.component';
 import { LoginComponent } from './guest/login/login.component';
 import { RegistrationComponent } from './guest/registration/registration.component';
 import { OtpVerificationComponent } from './guest/otp-verification/otp-verification.component';
+import { UserComponent } from './user/user.component';
 import { ForgotPasswordComponent } from './guest/forget-password/forget-password.component';
 import { ResetPasswordComponent } from './guest/reset-password/reset-password.component';
-import { UserComponent } from './user/user.component';
-import { ContactComponent } from './guest/contact/contact.component';
-import { PrivacyPolicyComponent } from './guest/privacy-policy/privacy-policy.component';
-import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service.component';
+import { IndexComponent } from './user/index/index.component';
+import { MembersComponent } from './user/members/members.component';
+import { AddMemberComponent } from './user/members/add-member/add-member.component';
+import { TasksComponent } from './user/tasks/tasks.component';
+import { AddTaskComponent } from './user/tasks/add-task/add-task.component';
+import { SupportComponent } from './user/support/support.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { 
-    path: '', 
+  {
+    path: '',
     component: GuestComponent,
     children: [
       { path: '', redirectTo: 'guest/home', pathMatch: 'full' },
@@ -23,17 +28,25 @@ export const routes: Routes = [
       { path: 'guest/otp-verification', component: OtpVerificationComponent },
       { path: 'guest/forgot-password', component: ForgotPasswordComponent },
       { path: 'guest/reset-password', component: ResetPasswordComponent },
-      { path: 'contact', component: ContactComponent },
-      { path: 'privacy-policy', component: PrivacyPolicyComponent },
-      { path: 'terms-of-service', component: TermsServiceComponent }
-    ]
+    ],
   },
-  { 
-    path: 'user', 
-    component: UserComponent 
-    // Add your auth guard here
-    // canActivate: [authGuard]
+  {
+    path: 'user',
+    component: UserComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: IndexComponent },
+      { path: 'members', component: MembersComponent },
+      { path: 'members/add', component: AddMemberComponent },
+      { path: 'tasks', component: TasksComponent },
+      { path: 'tasks/add', component: AddTaskComponent },
+      { path: 'support', component: SupportComponent },
+      // Add these routes as we develop the components
+      { path: 'analytics', redirectTo: '', pathMatch: 'full' }, // Placeholder
+      { path: 'reports', redirectTo: '', pathMatch: 'full' }, // Placeholder
+      { path: 'settings', redirectTo: '', pathMatch: 'full' }, // Placeholder
+    ],
   },
   // Redirect any unknown paths to home
-  { path: '**', redirectTo: 'guest/home' }
+  { path: '**', redirectTo: 'guest/home' },
 ];

@@ -1,0 +1,95 @@
+<div class="support-container">
+  <div class="support-header">
+    <h1>Support Messages</h1>
+    <button class="compose-btn" (click)="toggleComposeForm()">
+      <i class="bi bi-pencil-square"></i> New Message
+    </button>
+  </div>
+
+  <!-- Compose Message Form -->
+  <div class="compose-form" *ngIf="showComposeForm">
+    <h2>New Message</h2>
+
+    <!-- Success/Error Messages -->
+    <div class="alert success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="form-group">
+      <label for="recipient">To:</label>
+      <input
+        type="text"
+        id="recipient"
+        [(ngModel)]="newMessage.recipient"
+        readonly
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="subject">Subject:</label>
+      <input
+        type="text"
+        id="subject"
+        [(ngModel)]="newMessage.subject"
+        placeholder="Enter message subject"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="content">Message:</label>
+      <textarea
+        id="content"
+        [(ngModel)]="newMessage.content"
+        placeholder="Type your message here..."
+        rows="5"
+        required
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="cancel-btn" (click)="toggleComposeForm()">Cancel</button>
+      <button class="send-btn" (click)="sendMessage()">Send Message</button>
+    </div>
+  </div>
+
+  <!-- Messages List -->
+  <div class="messages-container">
+    <div
+      class="message-item"
+      *ngFor="let message of messages"
+      [class.unread]="!message.read"
+    >
+      <div class="message-header" (click)="markAsRead(message.id)">
+        <div class="message-sender">
+          <i class="bi bi-person-circle"></i>
+          <span>{{ message.sender }}</span>
+        </div>
+        <div class="message-subject">{{ message.subject }}</div>
+        <div class="message-time">
+          {{ message.timestamp | date : "medium" }}
+        </div>
+        <div class="message-actions">
+          <button
+            class="delete-btn"
+            (click)="deleteMessage(message.id); $event.stopPropagation()"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="message-content">
+        <p>{{ message.content }}</p>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="messages.length === 0">
+      <i class="bi bi-chat-square-text"></i>
+      <p>No messages yet</p>
+      <p>Start a conversation with the family admin</p>
+      <button class="compose-btn" (click)="toggleComposeForm()">
+        Send a Message
+      </button>
+    </div>
+  </div>
+</div>
