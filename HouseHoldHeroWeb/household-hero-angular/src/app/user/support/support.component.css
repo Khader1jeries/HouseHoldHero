@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2vh;
+  margin-bottom: 3vh;
 }
 
 .support-header h1 {
@@ -59,6 +59,33 @@
   display: block;
   margin-bottom: 0.5rem;
   font-size: 1rem;
+}
+
+/* Recipients selector */
+.recipients-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.recipient-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recipient-option input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #ff0055;
+}
+
+.recipient-option label {
+  margin-bottom: 0;
+  cursor: pointer;
 }
 
 input,
@@ -168,7 +195,7 @@ textarea {
 
 .message-header {
   display: grid;
-  grid-template-columns: 2fr 4fr 3fr 1fr;
+  grid-template-columns: 2fr 4fr 3fr 2fr;
   align-items: center;
   gap: 1rem;
   cursor: pointer;
@@ -192,15 +219,28 @@ textarea {
 .message-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.reply-btn,
+.delete-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reply-btn:hover {
+  color: #2a9d8f;
 }
 
 .delete-btn {
-  background-color: transparent;
   color: #ff0055;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.3s;
 }
 
 .delete-btn:hover {
@@ -242,6 +282,12 @@ textarea {
 }
 
 /* Media queries for responsiveness */
+@media (max-width: 1024px) {
+  .message-header {
+    grid-template-columns: 1fr 2fr 1fr 2fr;
+  }
+}
+
 @media (max-width: 768px) {
   .message-header {
     grid-template-columns: 1fr;
@@ -255,13 +301,26 @@ textarea {
   }
 
   .message-actions {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    position: relative;
+    margin-top: 0.5rem;
+    justify-content: flex-start;
   }
 
   .message-item {
     position: relative;
     padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .send-btn {
+    width: 100%;
+  }
+
+  .recipients-selector {
+    grid-template-columns: 1fr;
   }
 }

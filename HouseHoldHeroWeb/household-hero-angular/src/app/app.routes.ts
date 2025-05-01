@@ -14,6 +14,12 @@ import { AddMemberComponent } from './user/members/add-member/add-member.compone
 import { TasksComponent } from './user/tasks/tasks.component';
 import { AddTaskComponent } from './user/tasks/add-task/add-task.component';
 import { SupportComponent } from './user/support/support.component';
+import { AnalyticsComponent } from './user/analytics/analytics.component';
+import { ReportsComponent } from './user/reports/reports.component';
+import { SettingsComponent } from './user/settings/settings.component';
+import { PrivacyPolicyComponent } from './guest/privacy-policy/privacy-policy.component';
+import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service.component';
+import { ContactComponent } from './guest/contact/contact.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -28,6 +34,9 @@ export const routes: Routes = [
       { path: 'guest/otp-verification', component: OtpVerificationComponent },
       { path: 'guest/forgot-password', component: ForgotPasswordComponent },
       { path: 'guest/reset-password', component: ResetPasswordComponent },
+      { path: 'guest/privacy-policy', component: PrivacyPolicyComponent },
+      { path: 'guest/terms-of-service', component: TermsServiceComponent },
+      { path: 'guest/contact', component: ContactComponent },
     ],
   },
   {
@@ -41,10 +50,9 @@ export const routes: Routes = [
       { path: 'tasks', component: TasksComponent },
       { path: 'tasks/add', component: AddTaskComponent },
       { path: 'support', component: SupportComponent },
-      // Add these routes as we develop the components
-      { path: 'analytics', redirectTo: '', pathMatch: 'full' }, // Placeholder
-      { path: 'reports', redirectTo: '', pathMatch: 'full' }, // Placeholder
-      { path: 'settings', redirectTo: '', pathMatch: 'full' }, // Placeholder
+      { path: 'analytics', component: AnalyticsComponent },
+      { path: 'reports', component: ReportsComponent },
+      { path: 'settings', component: SettingsComponent },
     ],
   },
   // Redirect any unknown paths to home

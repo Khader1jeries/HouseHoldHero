@@ -1,0 +1,217 @@
+<div class="analytics-container">
+  <div class="analytics-header">
+    <h1>Family Analytics</h1>
+    <div class="period-selector">
+      <button
+        [class.active]="selectedPeriod === 'week'"
+        (click)="changePeriod('week')"
+      >
+        Week
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'month'"
+        (click)="changePeriod('month')"
+      >
+        Month
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'quarter'"
+        (click)="changePeriod('quarter')"
+      >
+        Quarter
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'year'"
+        (click)="changePeriod('year')"
+      >
+        Year
+      </button>
+    </div>
+    <button class="export-btn" (click)="navigateToReports()">
+      <i class="bi bi-file-earmark-arrow-down"></i> Export Reports
+    </button>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Performance Metrics Cards -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="bi bi-clock"></i>
+        </div>
+        <div class="metric-details">
+          <h3>Avg. Completion Time</h3>
+          <p class="metric-value">{{ averageCompletionTime }} hours</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="metric-details">
+          <h3>On-Time Completion</h3>
+          <p class="metric-value">{{ onTimeCompletionRate }}%</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="bi bi-bar-chart"></i>
+        </div>
+        <div class="metric-details">
+          <h3>Task Distribution</h3>
+          <p class="metric-value">{{ taskDistributionBalance }}% balanced</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Charts Row -->
+    <div class="chart-row">
+      <!-- Points by Member (Pie Chart) -->
+      <div class="chart-card">
+        <h3>Points by Member</h3>
+        <div class="chart-container">
+          <div class="pie-chart-placeholder">
+            <div class="chart-legend">
+              <div *ngFor="let item of pointsByMember" class="legend-item">
+                <div
+                  class="legend-color"
+                  [style.background-color]="
+                    '#' +
+                    (item.name.charCodeAt(0).toString(16) + '7d8f').substring(
+                      0,
+                      6
+                    )
+                  "
+                ></div>
+                <span>{{ item.name }}: {{ item.value }} points</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Completion by Category (Pie Chart) -->
+      <div class="chart-card">
+        <h3>Tasks by Category</h3>
+        <div class="chart-container">
+          <div class="pie-chart-placeholder">
+            <div class="chart-legend">
+              <div
+                *ngFor="let item of taskCompletionByCategory"
+                class="legend-item"
+              >
+                <div
+                  class="legend-color"
+                  [style.background-color]="
+                    '#' +
+                    (item.name.charCodeAt(0).toString(16) + 'a5c7').substring(
+                      0,
+                      6
+                    )
+                  "
+                ></div>
+                <span>{{ item.name }}: {{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks by Status (Pie Chart) -->
+      <div class="chart-card">
+        <h3>Tasks by Status</h3>
+        <div class="chart-container">
+          <div class="pie-chart-placeholder">
+            <div class="chart-legend">
+              <div *ngFor="let item of tasksByStatus" class="legend-item">
+                <div
+                  class="legend-color"
+                  [style.background-color]="
+                    '#' +
+                    (item.name.charCodeAt(0).toString(16) + 'b3e1').substring(
+                      0,
+                      6
+                    )
+                  "
+                ></div>
+                <span>{{ item.name }}: {{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Series Charts Row Fixed -->
+    <div class="chart-row">
+      <!-- Points Over Time (Line Chart) -->
+      <div class="chart-card double-width">
+        <h3>Points Earned Over Time</h3>
+        <div class="chart-container">
+          <div class="line-chart-placeholder">
+            <div class="chart-axis-y"></div>
+            <div class="chart-data">
+              <div *ngFor="let data of pointsOverTime" class="data-point">
+                <div
+                  class="data-bar"
+                  [style.height.%]="(data.value / 3000) * 100"
+                ></div>
+                <div class="data-label">{{ data.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks Created Over Time (Line Chart) -->
+      <div class="chart-card double-width">
+        <h3>Tasks Created Over Time</h3>
+        <div class="chart-container">
+          <div class="line-chart-placeholder">
+            <div class="chart-axis-y"></div>
+            <div class="chart-data">
+              <div *ngFor="let data of taskCreationOverTime" class="data-point">
+                <div
+                  class="data-bar"
+                  [style.height.%]="(data.value / 30) * 100"
+                ></div>
+                <div class="data-label">{{ data.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member Performance Row -->
+    <div class="performance-row">
+      <div class="chart-card">
+        <h3>Member Performance</h3>
+        <div class="performance-table">
+          <div class="table-header">
+            <div class="table-cell">Member</div>
+            <div class="table-cell">Tasks Completed</div>
+            <div class="table-cell">Points Earned</div>
+            <div class="table-cell">Completion Rate</div>
+          </div>
+          <div
+            class="table-row"
+            *ngFor="let member of taskCompletionByMember; let i = index"
+          >
+            <div class="table-cell">{{ member.name }}</div>
+            <div class="table-cell">{{ member.value }}</div>
+            <div class="table-cell">{{ pointsByMember[i]?.value || 0 }}</div>
+            <div class="table-cell">
+              {{ 85 + i * 5 }}%
+              <div class="progress-bar">
+                <div class="progress-value" [style.width.%]="85 + i * 5"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

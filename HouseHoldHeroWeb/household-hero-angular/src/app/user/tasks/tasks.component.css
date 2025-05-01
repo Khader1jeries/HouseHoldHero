@@ -93,15 +93,15 @@
 
 /* Adjust header for different task types */
 .tasks-list-header:has(+ .task-item.finished) {
-  grid-template-columns: 3fr 2fr 2fr 1fr 2fr;
+  grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
 }
 
 .tasks-list-header:has(+ .task-item.future) {
-  grid-template-columns: 3fr 2fr 2fr 1fr 2fr;
+  grid-template-columns: 3fr 2fr 2fr 2fr 2fr 1fr 2fr;
 }
 
 .tasks-list-header:has(+ .task-item.voting) {
-  grid-template-columns: 4fr 2fr 1fr 3fr;
+  grid-template-columns: 3fr 2fr 1fr 2fr 2fr;
 }
 
 .task-item {
@@ -122,15 +122,15 @@
 
 /* Adjust grid for different task types */
 .task-item.finished {
-  grid-template-columns: 3fr 2fr 2fr 1fr 2fr;
+  grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
 }
 
 .task-item.future {
-  grid-template-columns: 3fr 2fr 2fr 1fr 2fr;
+  grid-template-columns: 3fr 2fr 2fr 2fr 2fr 1fr 2fr;
 }
 
 .task-item.voting {
-  grid-template-columns: 4fr 2fr 1fr 3fr;
+  grid-template-columns: 3fr 2fr 1fr 2fr 2fr;
 }
 
 .task-info {
@@ -172,6 +172,21 @@
   display: inline-block;
 }
 
+.status-pill {
+  padding: 0.4vh 1vh;
+  border-radius: 999px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status-pill.on-time {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.status-pill.late {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
 .task-actions,
 .task-voting {
   display: flex;
@@ -181,6 +196,8 @@
 
 .complete-btn,
 .delete-btn,
+.edit-btn,
+.view-votes-btn,
 .vote-yes-btn,
 .vote-no-btn {
   border: none;
@@ -190,6 +207,8 @@
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.3s;
+  padding: 0.8vh 1.2vh;
+  gap: 0.5vh;
 }
 
 .complete-btn {
@@ -210,6 +229,26 @@
 
 .delete-btn:hover {
   background-color: #d9004a;
+}
+
+.edit-btn {
+  background-color: #4361ee;
+  color: white;
+  min-width: 5rem;
+}
+
+.edit-btn:hover {
+  background-color: #3a56d4;
+}
+
+.view-votes-btn {
+  background-color: #4361ee;
+  color: white;
+  min-width: 8rem;
+}
+
+.view-votes-btn:hover {
+  background-color: #3a56d4;
 }
 
 .vote-yes-btn {
@@ -236,6 +275,38 @@
 
 .vote-no-btn:hover {
   background-color: #d9004a;
+}
+
+/* Task Votes display */
+.task-votes {
+  display: flex;
+  gap: 1.5vh;
+  justify-content: center;
+}
+
+.vote-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  padding: 0.5vh 1vh;
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.vote-count.yes {
+  background-color: rgba(0, 255, 0, 0.2);
+  color: #90ee90;
+}
+
+.vote-count.no {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+}
+
+/* Time countdown for future tasks */
+.task-countdown {
+  font-weight: bold;
+  color: #6effe9;
 }
 
 /* Empty state styling */
@@ -267,6 +338,25 @@
 }
 
 /* Media queries for responsiveness */
+@media (max-width: 1200px) {
+  .tasks-list-header,
+  .task-item {
+    grid-template-columns: 4fr 2fr 2fr 2fr 1fr 2fr;
+  }
+
+  .task-item.future {
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr 1fr 2fr;
+  }
+
+  .task-item.finished {
+    grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
+  }
+
+  .task-item.voting {
+    grid-template-columns: 3fr 2fr 1fr 2fr 2fr;
+  }
+}
+
 @media (max-width: 1024px) {
   .tasks-list-header,
   .task-item {
@@ -281,7 +371,15 @@
     grid-template-columns: 4fr 2fr 2fr 2fr;
   }
 
+  .task-item.voting {
+    grid-template-columns: 4fr 2fr 2fr 2fr;
+  }
+
   .task-remaining {
+    display: none;
+  }
+
+  .task-points {
     display: none;
   }
 
@@ -312,7 +410,12 @@
   .task-due,
   .task-assigned,
   .task-points,
-  .task-remaining {
+  .task-remaining,
+  .task-start-date,
+  .task-countdown,
+  .task-completion-date,
+  .task-status,
+  .task-votes {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -333,6 +436,26 @@
 
   .task-remaining::before {
     content: "Remaining Time:";
+  }
+
+  .task-start-date::before {
+    content: "Start Date:";
+  }
+
+  .task-countdown::before {
+    content: "Time Until Start:";
+  }
+
+  .task-completion-date::before {
+    content: "Completed On:";
+  }
+
+  .task-status::before {
+    content: "Status:";
+  }
+
+  .task-votes::before {
+    content: "Votes:";
   }
 
   .task-actions,

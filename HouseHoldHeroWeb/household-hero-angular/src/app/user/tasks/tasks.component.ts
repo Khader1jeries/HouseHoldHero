@@ -9,9 +9,15 @@ interface Task {
   description: string;
   assignedTo: string;
   dueDate: Date;
+  startDate?: Date; // Added for future tasks
   status: 'pending' | 'completed' | 'upcoming' | 'voting';
   points: number;
   remainingTime?: string;
+  timeUntilStart?: string; // Added for future tasks
+  completedOnTime?: boolean; // Added for finished tasks
+  completionDate?: Date; // Added for finished tasks
+  votesYes?: number; // Added for voting
+  votesNo?: number; // Added for voting
 }
 
 @Component({
@@ -64,15 +70,19 @@ export class TasksComponent implements OnInit {
         dueDate: new Date(2025, 4, 28), // May 28, 2025
         status: 'completed',
         points: 20,
+        completedOnTime: true,
+        completionDate: new Date(2025, 4, 27), // May 27, 2025
       },
       {
         id: '4',
         title: 'Do Laundry',
         description: 'Wash, dry, and fold all household laundry',
         assignedTo: 'John',
+        startDate: new Date(2025, 5, 5), // June 5, 2025
         dueDate: new Date(2025, 5, 10), // June 10, 2025
         status: 'upcoming',
         points: 60,
+        timeUntilStart: '3d 5h 22m',
       },
       {
         id: '5',
@@ -82,6 +92,8 @@ export class TasksComponent implements OnInit {
         dueDate: new Date(2025, 4, 30), // May 30, 2025
         status: 'voting',
         points: 100,
+        votesYes: 3,
+        votesNo: 2,
       },
       {
         id: '6',
@@ -91,6 +103,19 @@ export class TasksComponent implements OnInit {
         dueDate: new Date(2025, 5, 5), // June 5, 2025
         status: 'voting',
         points: 80,
+        votesYes: 1,
+        votesNo: 4,
+      },
+      {
+        id: '7',
+        title: 'Mow the Lawn',
+        description: 'Mow the front and back lawn',
+        assignedTo: 'Sarah',
+        dueDate: new Date(2025, 4, 26), // May 26, 2025
+        status: 'completed',
+        points: 40,
+        completedOnTime: false,
+        completionDate: new Date(2025, 4, 27), // May 27, 2025 (one day late)
       },
     ];
 
@@ -122,6 +147,10 @@ export class TasksComponent implements OnInit {
     const taskIndex = this.tasks.findIndex((task) => task.id === id);
     if (taskIndex !== -1) {
       this.tasks[taskIndex].status = 'completed';
+      this.tasks[taskIndex].completionDate = new Date();
+      // Determine if task was completed on time
+      this.tasks[taskIndex].completedOnTime =
+        this.tasks[taskIndex].completionDate <= this.tasks[taskIndex].dueDate;
       this.filterTasks();
     }
   }
@@ -132,17 +161,19 @@ export class TasksComponent implements OnInit {
     this.filterTasks();
   }
 
-  voteForTask(id: string, vote: 'yes' | 'no'): void {
-    // In a real app, this would call a service to register the vote
-    console.log(`Voted ${vote} for task ${id}`);
-    // Just for demo, remove the task from voting after voting
-    if (vote === 'yes') {
-      const taskIndex = this.tasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        this.tasks[taskIndex].status = 'pending';
-        this.tasks[taskIndex].assignedTo = 'You';
-        this.filterTasks();
-      }
-    }
+  viewVotes(taskId: string): void {
+    // In a real app, this would navigate to a voting details page
+    // or open a modal with voting details
+    console.log(`Viewing votes for task ${taskId}`);
+    alert(
+      `This would open detailed votes view for task ${taskId} (Will be implemented in future)`
+    );
+  }
+
+  editTask(taskId: string): void {
+    // In a real app, this would navigate to the edit task page
+    console.log(`Editing task ${taskId}`);
+    // For now, navigate to add task (which could be modified to handle edits)
+    this.router.navigate(['/user/tasks/add'], { queryParams: { id: taskId } });
   }
 }

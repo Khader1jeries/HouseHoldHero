@@ -80,10 +80,145 @@
   gap: 2vh;
 }
 
+/* Notification Icon and Badge */
+.notification-container {
+  position: relative;
+}
+
 .notification-icon {
   font-size: 2.5vh;
   position: relative;
   cursor: pointer;
+  width: 4vh;
+  height: 4vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.notification-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -0.5vh;
+  right: -0.5vh;
+  background-color: #ff0055;
+  color: white;
+  font-size: 1.2vh;
+  font-weight: bold;
+  width: 2vh;
+  height: 2vh;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification Dropdown */
+.notification-dropdown {
+  position: absolute;
+  top: 5vh;
+  right: -10vh;
+  width: 35vh;
+  background-color: #143a36;
+  border-radius: 1vh;
+  box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-1vh);
+  visibility: hidden;
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+}
+
+.notification-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5vh;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-header h3 {
+  margin: 0;
+  font-size: 1.8vh;
+}
+
+.dropdown-header button {
+  background: none;
+  border: none;
+  color: #ff0055;
+  font-size: 1.4vh;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dropdown-header button:hover {
+  text-decoration: underline;
+}
+
+.dropdown-content {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.empty-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3vh;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-notifications i {
+  font-size: 3vh;
+  margin-bottom: 1vh;
+}
+
+.notification-item {
+  padding: 1.5vh;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.notification-item.unread {
+  background-color: rgba(255, 0, 85, 0.1);
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-content p {
+  margin: 0 0 0.5vh 0;
+  font-size: 1.4vh;
+}
+
+.notification-time {
+  font-size: 1.2vh;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* User Info Section */
+.user-profile-container {
+  position: relative;
 }
 
 .user-info {
@@ -112,6 +247,85 @@
   object-fit: cover;
 }
 
+/* User Menu Dropdown */
+.user-menu-dropdown {
+  position: absolute;
+  top: 5vh;
+  right: 0;
+  width: 30vh;
+  background-color: #143a36;
+  border-radius: 1vh;
+  box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-1vh);
+  visibility: hidden;
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+}
+
+.user-menu-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.user-details {
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  padding: 2vh;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-large {
+  width: 8vh;
+  height: 8vh;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-details-text h3 {
+  margin: 0 0 0.5vh 0;
+  font-size: 1.8vh;
+}
+
+.user-details-text p {
+  margin: 0;
+  font-size: 1.4vh;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.user-email {
+  font-size: 1.2vh !important;
+  margin-top: 0.5vh !important;
+}
+
+.menu-items {
+  padding: 1vh 0;
+}
+
+.menu-items a {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  padding: 1.2vh 2vh;
+  color: white;
+  text-decoration: none;
+  font-size: 1.6vh;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.menu-items a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-items a i {
+  font-size: 1.8vh;
+  width: 2vh;
+}
+
 /* Media queries for responsiveness */
 @media (max-width: 1024px) {
   .menu-item span {
@@ -125,6 +339,10 @@
   .menu-item i {
     font-size: 2.4vh;
   }
+
+  .notification-dropdown {
+    right: -15vh;
+  }
 }
 
 @media (max-width: 768px) {
@@ -134,5 +352,15 @@
 
   .dashboard-text {
     display: none;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .notification-dropdown,
+  .user-menu-dropdown {
+    width: 90vw;
+    right: -75vw;
   }
 }

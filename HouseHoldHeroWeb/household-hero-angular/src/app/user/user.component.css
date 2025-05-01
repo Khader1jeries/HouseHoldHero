@@ -1,0 +1,10 @@
+/* Add padding to the top to compensate for fixed navbar */
+:host {
+  display: block;
+  padding-top: 8vh; /* Match the height of the navbar */
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  margin-top: 7vh; /* Add margin to prevent content from being hidden under navbar */
+}

@@ -1,7 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  PLATFORM_ID,
+  Inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-otp-verification',
@@ -18,31 +24,38 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   canResend: boolean = false;
   isVerifying: boolean = false;
   errorMessage: string = '';
-  
+  isBrowser: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit() {
     // Get email from query params
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['email']) {
         this.email = params['email'];
-      } else {
-        // Fallback to storage if not in URL
+      } else if (this.isBrowser) {
+        // Only access localStorage in the browser
         const storedEmail = localStorage.getItem('userEmail');
         if (storedEmail) {
           this.email = storedEmail;
         }
       }
     });
-    
-    // Start the countdown timer
-    this.startTimer();
-    
-    // Send OTP code
-    this.sendOtpCode();
+
+    // Only start timer and send OTP in browser environment
+    if (this.isBrowser) {
+      // Start the countdown timer
+      this.startTimer();
+
+      // Send OTP code
+      this.sendOtpCode();
+    }
   }
 
   ngOnDestroy() {
@@ -53,14 +66,14 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   startTimer() {
     this.remainingTime = 60;
     this.canResend = false;
-    
+
     // Clear any existing timer
     this.clearTimer();
-    
+
     // Start a new timer
     this.timerInterval = setInterval(() => {
       this.remainingTime--;
-      
+
       if (this.remainingTime <= 0) {
         this.clearTimer();
         this.canResend = true;
@@ -92,12 +105,12 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   // Handle input changes and auto-focus to next input
   onOtpDigitChange(index: number, event: any) {
     const digit = event.target.value;
-    
+
     // Only allow single digit
     if (digit.length > 1) {
       this.otpDigits[index] = digit.charAt(0);
     }
-    
+
     // Auto-focus to next input if value entered
     if (digit && index < 3) {
       const nextInput = event.target.nextElementSibling;
@@ -105,14 +118,14 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         nextInput.focus();
       }
     }
-    
+
     // Check if all digits are filled
     this.checkOtpCompletion();
   }
 
   checkOtpCompletion() {
     const otp = this.otpDigits.join('');
-    
+
     // If all digits are filled, automatically verify OTP
     if (otp.length === 4 && !this.isVerifying) {
       this.verifyOtp();
@@ -128,15 +141,17 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
 
     this.isVerifying = true;
     this.errorMessage = '';
-    
+
     // For demo purposes, we'll accept "1234" as valid
     setTimeout(() => {
-      if (otp === "1234") {
+      if (otp === '1234') {
         console.log('OTP verified successfully');
-        
-        // Mark user as authenticated
-        localStorage.setItem('isAuthenticated', 'true');
-        
+
+        // Mark user as authenticated (only in browser)
+        if (this.isBrowser) {
+          localStorage.setItem('isAuthenticated', 'true');
+        }
+
         // Navigate to user dashboard
         this.router.navigate(['/user']);
       } else {
@@ -149,7 +164,9 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   submitOtp() {

@@ -48,10 +48,79 @@
   </div>
 
   <div class="navbar-right">
-    <i class="bi bi-bell notification-icon"></i>
-    <div class="user-info">
-      <span class="user-name">John</span>
-      <img src="assets/profile_pic.png" alt="Avatar" class="avatar" />
+    <!-- Notification Bell with Dropdown -->
+    <div class="notification-container">
+      <div class="notification-icon" (click)="toggleNotifications($event)">
+        <i class="bi bi-bell"></i>
+        <span class="notification-badge" *ngIf="unreadNotifications > 0">{{
+          unreadNotifications
+        }}</span>
+      </div>
+
+      <!-- Notification Dropdown -->
+      <div class="notification-dropdown" [class.show]="showNotifications">
+        <div class="dropdown-header">
+          <h3>Notifications</h3>
+          <button *ngIf="notifications.length > 0" (click)="markAllAsRead()">
+            Mark all as read
+          </button>
+        </div>
+
+        <div class="dropdown-content">
+          <div *ngIf="notifications.length === 0" class="empty-notifications">
+            <i class="bi bi-bell-slash"></i>
+            <p>No new notifications</p>
+          </div>
+
+          <div
+            *ngFor="let notification of notifications"
+            class="notification-item"
+            [class.unread]="!notification.read"
+          >
+            <div class="notification-content">
+              <p>You received a new message from {{ notification.sender }}</p>
+              <span class="notification-time">{{
+                notification.timestamp | date : "short"
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile Dropdown -->
+    <div class="user-profile-container">
+      <div class="user-info" (click)="toggleUserMenu($event)">
+        <span class="user-name">John</span>
+        <img src="assets/profile_pic.png" alt="Avatar" class="avatar" />
+      </div>
+
+      <!-- User Menu Dropdown -->
+      <div class="user-menu-dropdown" [class.show]="showUserMenu">
+        <div class="user-details">
+          <img src="assets/profile_pic.png" alt="Avatar" class="avatar-large" />
+          <div class="user-details-text">
+            <h3>John Doe</h3>
+            <p>Family Admin</p>
+            <p class="user-email">john&#64;example.com</p>
+          </div>
+        </div>
+
+        <div class="menu-items">
+          <a routerLink="/user/settings" (click)="showUserMenu = false">
+            <i class="bi bi-person-circle"></i>
+            <span>My Profile</span>
+          </a>
+          <a routerLink="/user/settings" (click)="showUserMenu = false">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+          </a>
+          <a (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

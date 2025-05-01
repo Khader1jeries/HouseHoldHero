@@ -1,0 +1,218 @@
+<div class="reports-container">
+  <div class="reports-header">
+    <h1>Report Generator</h1>
+    <p class="subtitle">
+      Create and download detailed reports about your family's tasks and
+      performance
+    </p>
+  </div>
+
+  <div class="report-generator-card">
+    <div class="report-options">
+      <!-- Report Type Selection -->
+      <div class="option-section">
+        <h3>Report Type</h3>
+        <div class="report-types">
+          <div
+            *ngFor="let type of reportTypes"
+            class="report-type-card"
+            [class.selected]="selectedReportType === type.id"
+            (click)="selectedReportType = type.id; onReportTypeChange()"
+          >
+            <div class="report-type-icon">
+              <i class="bi" [ngClass]="type.icon"></i>
+            </div>
+            <div class="report-type-details">
+              <h4>{{ type.name }}</h4>
+              <p>{{ type.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Options (shown only if custom report is selected) -->
+      <div class="option-section" *ngIf="selectedReportType === 'custom'">
+        <h3>Custom Report Options</h3>
+        <div class="custom-options-grid">
+          <div class="custom-option">
+            <input
+              type="checkbox"
+              id="includeFamilyMembers"
+              [(ngModel)]="customOptions.includeFamilyMembers"
+            />
+            <label for="includeFamilyMembers">Family Members</label>
+          </div>
+
+          <div class="custom-option">
+            <input
+              type="checkbox"
+              id="includeActiveTasks"
+              [(ngModel)]="customOptions.includeActiveTasks"
+            />
+            <label for="includeActiveTasks">Active Tasks</label>
+          </div>
+
+          <div class="custom-option">
+            <input
+              type="checkbox"
+              id="includeCompletedTasks"
+              [(ngModel)]="customOptions.includeCompletedTasks"
+            />
+            <label for="includeCompletedTasks">Completed Tasks</label>
+          </div>
+
+          <div class="custom-option">
+            <input
+              type="checkbox"
+              id="includePointHistory"
+              [(ngModel)]="customOptions.includePointHistory"
+            />
+            <label for="includePointHistory">Point History</label>
+          </div>
+
+          <div class="custom-option">
+            <input
+              type="checkbox"
+              id="includePerformanceMetrics"
+              [(ngModel)]="customOptions.includePerformanceMetrics"
+            />
+            <label for="includePerformanceMetrics">Performance Metrics</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Range Selection -->
+      <div class="option-section date-range-section">
+        <h3>Date Range</h3>
+        <div class="date-range-inputs">
+          <div class="date-field">
+            <label for="startDate">Start Date</label>
+            <input
+              type="date"
+              id="startDate"
+              [value]="formatDateForInput(dateRange.start)"
+              (change)="onStartDateChange($event)"
+            />
+          </div>
+
+          <div class="date-field">
+            <label for="endDate">End Date</label>
+            <input
+              type="date"
+              id="endDate"
+              [value]="formatDateForInput(dateRange.end)"
+              (change)="onEndDateChange($event)"
+            />
+          </div>
+        </div>
+
+        <div class="date-presets">
+          <button (click)="setDateRange('week')">This Week</button>
+          <button (click)="setDateRange('month')">This Month</button>
+          <button (click)="setDateRange('quarter')">This Quarter</button>
+          <button (click)="setDateRange('year')">This Year</button>
+        </div>
+      </div>
+
+      <!-- Report Content Options -->
+      <div class="option-section">
+        <h3>Report Content</h3>
+        <div class="content-options">
+          <div class="content-option">
+            <input
+              type="checkbox"
+              id="includeCharts"
+              [(ngModel)]="includeCharts"
+            />
+            <label for="includeCharts">Include Charts</label>
+          </div>
+
+          <div class="content-option">
+            <input
+              type="checkbox"
+              id="includeTables"
+              [(ngModel)]="includeTables"
+            />
+            <label for="includeTables">Include Tables</label>
+          </div>
+
+          <div class="content-option">
+            <input
+              type="checkbox"
+              id="includeMetrics"
+              [(ngModel)]="includeMetrics"
+            />
+            <label for="includeMetrics">Include Metrics</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Format Selection -->
+      <div class="option-section">
+        <h3>Export Format</h3>
+        <div class="format-options">
+          <div
+            *ngFor="let format of exportFormats"
+            class="format-option"
+            [class.selected]="selectedFormat === format.id"
+            (click)="selectedFormat = format.id"
+          >
+            <i class="bi" [ngClass]="format.icon"></i>
+            <span>{{ format.name }}</span>
+            <small>{{ format.extension }}</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="option-section">
+        <button
+          class="generate-btn"
+          (click)="generateReport()"
+          [disabled]="isGenerating"
+        >
+          <i class="bi bi-file-earmark-arrow-down"></i>
+          {{ isGenerating ? "Generating..." : "Generate Report" }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Report Preview or Status -->
+    <div class="report-preview">
+      <div
+        *ngIf="!generatedReportUrl && !errorMessage && !isGenerating"
+        class="report-placeholder"
+      >
+        <i class="bi bi-file-earmark-text placeholder-icon"></i>
+        <p>
+          Configure your report options and click Generate to create a new
+          report
+        </p>
+      </div>
+
+      <div *ngIf="isGenerating" class="report-generating">
+        <div class="loading-spinner"></div>
+        <p>Generating your report...</p>
+        <p>This may take a few moments</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="report-error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>{{ errorMessage }}</p>
+        <button class="try-again-btn" (click)="generateReport()">
+          Try Again
+        </button>
+      </div>
+
+      <div *ngIf="generatedReportUrl" class="report-success">
+        <i class="bi bi-check-circle"></i>
+        <p>Your report has been generated successfully!</p>
+        <p class="filename">{{ generatedReportUrl }}</p>
+        <button class="download-btn" (click)="downloadReport()">
+          <i class="bi bi-download"></i>
+          Download Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
