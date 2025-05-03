@@ -17,7 +17,11 @@
       <span>Actions</span>
     </div>
 
-    <div class="member-item" *ngFor="let member of members">
+    <div
+      class="member-item"
+      *ngFor="let member of members"
+      (click)="navigateToMemberDetails(member.id)"
+    >
       <div class="member-info">
         <img [src]="member.profileImage" [alt]="member.name" />
         <div>
@@ -32,10 +36,10 @@
         <span class="score-pill">{{ member.score }}</span>
       </div>
       <div class="member-actions">
-        <button class="edit-btn" (click)="editMember(member.id)">
+        <button class="edit-btn" (click)="editMember(member.id, $event)">
           <i class="bi bi-pencil"></i>
         </button>
-        <button class="delete-btn" (click)="deleteMember(member.id)">
+        <button class="delete-btn" (click)="deleteMember(member.id, $event)">
           <i class="bi bi-trash"></i>
         </button>
       </div>
@@ -50,5 +54,99 @@
         Add Family Member
       </button>
     </div>
+  </div>
+
+  <!-- Leaderboard Section -->
+  <div
+    class="leaderboard-section"
+    *ngIf="showLeaderboard && members.length > 0"
+  >
+    <div class="section-header">
+      <h2>Monthly Leaderboard</h2>
+      <button class="view-all-btn" (click)="navigateToLeaderboard()">
+        View Full Leaderboard <i class="bi bi-arrow-right"></i>
+      </button>
+      <button class="toggle-btn" (click)="toggleLeaderboard()">
+        <i class="bi bi-chevron-up"></i>
+      </button>
+    </div>
+
+    <div class="leaderboard-content">
+      <!-- Podium for top 3 -->
+      <div class="podium">
+        <div
+          class="podium-item second-place"
+          *ngIf="topMembers.length > 1"
+          (click)="navigateToMemberDetails(topMembers[1].id)"
+        >
+          <div class="rank">2</div>
+          <img
+            [src]="topMembers[1].profileImage"
+            [alt]="topMembers[1].name"
+            class="profile-picture"
+          />
+          <div class="member-name">{{ topMembers[1].name }}</div>
+          <div class="score">{{ topMembers[1].score }} pts</div>
+        </div>
+
+        <div
+          class="podium-item first-place"
+          *ngIf="topMembers.length > 0"
+          (click)="navigateToMemberDetails(topMembers[0].id)"
+        >
+          <div class="rank">1</div>
+          <img
+            [src]="topMembers[0].profileImage"
+            [alt]="topMembers[0].name"
+            class="profile-picture"
+          />
+          <div class="member-name">{{ topMembers[0].name }}</div>
+          <div class="score">{{ topMembers[0].score }} pts</div>
+          <div class="crown">👑</div>
+        </div>
+
+        <div
+          class="podium-item third-place"
+          *ngIf="topMembers.length > 2"
+          (click)="navigateToMemberDetails(topMembers[2].id)"
+        >
+          <div class="rank">3</div>
+          <img
+            [src]="topMembers[2].profileImage"
+            [alt]="topMembers[2].name"
+            class="profile-picture"
+          />
+          <div class="member-name">{{ topMembers[2].name }}</div>
+          <div class="score">{{ topMembers[2].score }} pts</div>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="leaderboard-stats">
+        <div class="stat-card">
+          <div class="stat-title">Total Score</div>
+          <div class="stat-value">{{ getTotalScore() }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Avg. Score</div>
+          <div class="stat-value">{{ getAverageScore() }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Active Members</div>
+          <div class="stat-value">{{ getActiveMembers() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed leaderboard button -->
+  <div
+    class="collapsed-leaderboard"
+    *ngIf="!showLeaderboard && members.length > 0"
+  >
+    <button class="toggle-btn" (click)="toggleLeaderboard()">
+      <i class="bi bi-trophy"></i> Show Leaderboard
+      <i class="bi bi-chevron-down"></i>
+    </button>
   </div>
 </div>
