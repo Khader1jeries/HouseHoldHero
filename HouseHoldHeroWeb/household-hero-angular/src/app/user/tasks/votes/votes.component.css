@@ -1,0 +1,392 @@
+.votes-container {
+  padding: 2rem;
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.back-button i {
+  font-size: 1.5rem;
+}
+
+.votes-header {
+  margin-bottom: 2rem;
+}
+
+.votes-header h2 {
+  font-size: 2.5rem;
+  margin: 0 0 1rem 0;
+  font-weight: bold;
+}
+
+.task-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.task-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.task-description {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Votes Results Section */
+.votes-results {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.results-header h3 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.result-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: bold;
+}
+
+.result-status.pending {
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+}
+
+.result-status.approved {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #90ee90;
+}
+
+.result-status.rejected {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff6b6b;
+}
+
+/* Results Chart */
+.results-chart {
+  margin-bottom: 2rem;
+}
+
+.chart-bar {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.yes-bar,
+.no-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  position: relative;
+  min-width: 40px;
+}
+
+.yes-bar {
+  background-color: #2a9d8f;
+}
+
+.no-bar {
+  background-color: #ff0055;
+}
+
+.vote-count {
+  z-index: 1;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.yes-label {
+  color: #2a9d8f;
+  font-weight: bold;
+}
+
+.no-label {
+  color: #ff0055;
+  font-weight: bold;
+}
+
+/* Voting Actions */
+.voting-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.vote-yes-btn,
+.vote-no-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.vote-yes-btn {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+.vote-yes-btn:hover {
+  background-color: #208579;
+}
+
+.vote-no-btn {
+  background-color: #ff0055;
+  color: white;
+}
+
+.vote-no-btn:hover {
+  background-color: #d9004a;
+}
+
+/* Admin Actions */
+.admin-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.assign-btn,
+.reopen-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.assign-btn {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+.assign-btn:hover {
+  background-color: #208579;
+}
+
+.reopen-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.reopen-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Votes List */
+.votes-list {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.votes-list h3 {
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.votes-table {
+  width: 100%;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 3fr;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.vote-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 3fr;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.vote-row:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.cell-member {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cell-member img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cell-vote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cell-vote.yes {
+  color: #2a9d8f;
+}
+
+.cell-vote.no {
+  color: #ff0055;
+}
+
+.cell-time {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cell-comment {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* No Task Message */
+.no-task-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.message-icon {
+  font-size: 4rem;
+  color: #ff0055;
+  margin-bottom: 1rem;
+}
+
+.no-task-message h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.no-task-message p {
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.no-task-message .back-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #ff0055;
+  border-radius: 0.5rem;
+}
+
+.no-task-message .back-button:hover {
+  background-color: #d9004a;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .voting-actions,
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .table-header,
+  .vote-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .vote-row {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .cell-member,
+  .cell-vote,
+  .cell-time,
+  .cell-comment {
+    padding: 0.5rem 0;
+  }
+
+  .cell-comment {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+  }
+}

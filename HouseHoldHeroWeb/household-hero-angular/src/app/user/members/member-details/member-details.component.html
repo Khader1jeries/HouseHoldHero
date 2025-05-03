@@ -1,0 +1,203 @@
+<div class="member-details-container" *ngIf="member">
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left-circle"></i>
+    <span>Back to Members</span>
+  </div>
+
+  <div class="member-details-header">
+    <div class="member-profile">
+      <img
+        [src]="member.profileImage"
+        [alt]="member.name"
+        class="profile-pic"
+      />
+      <div class="member-basic-info">
+        <h2>{{ member.name }}</h2>
+        <div class="member-role">{{ member.role }}</div>
+        <div class="member-score">
+          <i class="bi bi-award"></i>
+          <span>{{ member.score }} points</span>
+        </div>
+      </div>
+    </div>
+    <button class="edit-button" (click)="navigateToEdit()">
+      <i class="bi bi-pencil"></i>
+      Edit Member
+    </button>
+  </div>
+
+  <div class="member-stats-grid">
+    <!-- Contact Info Card -->
+    <div class="stats-card contact-info">
+      <h3>Contact Information</h3>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-envelope"></i>
+            <span>Email</span>
+          </div>
+          <div class="info-value">{{ member.email }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-telephone"></i>
+            <span>Phone</span>
+          </div>
+          <div class="info-value">{{ member.phone }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-calendar-date"></i>
+            <span>Age</span>
+          </div>
+          <div class="info-value">{{ member.age }} years</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-calendar-check"></i>
+            <span>Joined</span>
+          </div>
+          <div class="info-value">
+            {{ member.joinDate | date : "mediumDate" }}
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-clock-history"></i>
+            <span>Last Active</span>
+          </div>
+          <div class="info-value">
+            {{ member.lastActive | date : "medium" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Statistics Card -->
+    <div class="stats-card task-stats">
+      <h3>Task Statistics</h3>
+      <div class="task-donut-chart">
+        <div class="donut-chart">
+          <div
+            class="active-tasks"
+            [style.transform]="
+              'rotate(' +
+              (activeTasksCount /
+                (activeTasksCount + completedTasksCount + overdueTasksCount)) *
+                360 +
+              'deg)'
+            "
+          ></div>
+          <div
+            class="completed-tasks"
+            [style.transform]="
+              'rotate(' +
+              ((activeTasksCount + completedTasksCount) /
+                (activeTasksCount + completedTasksCount + overdueTasksCount)) *
+                360 +
+              'deg)'
+            "
+          ></div>
+          <div class="donut-center">
+            <div class="donut-text">
+              {{ activeTasksCount + completedTasksCount + overdueTasksCount }}
+            </div>
+            <div class="donut-subtext">Tasks</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color active"></div>
+            <div class="legend-text">
+              <div class="legend-label">Active</div>
+              <div class="legend-value">{{ activeTasksCount }}</div>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color completed"></div>
+            <div class="legend-text">
+              <div class="legend-label">Completed</div>
+              <div class="legend-value">{{ completedTasksCount }}</div>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color overdue"></div>
+            <div class="legend-text">
+              <div class="legend-label">Overdue</div>
+              <div class="legend-value">{{ overdueTasksCount }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="completion-rate">
+        <div class="rate-label">Completion Rate</div>
+        <div class="rate-value">{{ member.completionRate }}%</div>
+        <div class="rate-bar">
+          <div
+            class="rate-filled"
+            [style.width.%]="member.completionRate"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Card -->
+    <div class="stats-card performance">
+      <h3>Performance History</h3>
+      <div class="performance-chart">
+        <div class="chart-bar" *ngFor="let i of [0, 1, 2, 3, 4, 5]">
+          <div class="bar-fill" [style.height.%]="60 + i * 5"></div>
+          <div class="bar-label">Week {{ i + 1 }}</div>
+        </div>
+      </div>
+      <div class="trend-info">
+        <div class="trend-text">
+          <i class="bi bi-graph-up"></i>
+          <span>Improving trend over last 6 weeks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Tasks Card -->
+    <div class="stats-card current-tasks">
+      <h3>Current Tasks</h3>
+      <div class="task-list">
+        <div
+          *ngFor="let task of member.tasks"
+          class="task-item"
+          [ngClass]="task.status"
+        >
+          <div class="task-status-icon">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-hourglass-split': task.status === 'pending',
+                'bi-check-circle-fill': task.status === 'completed',
+                'bi-exclamation-triangle-fill': task.status === 'overdue'
+              }"
+            ></i>
+          </div>
+          <div class="task-details">
+            <div class="task-title">{{ task.title }}</div>
+            <div class="task-date">
+              <i class="bi bi-calendar"></i>
+              <span>{{ task.dueDate | date : "mediumDate" }}</span>
+            </div>
+          </div>
+          <div class="task-points">
+            <span class="points-pill">{{ task.points }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="no-member-message" *ngIf="!member">
+  <div class="message-icon">
+    <i class="bi bi-exclamation-circle"></i>
+  </div>
+  <h2>Member not found</h2>
+  <p>The member you're looking for doesn't exist or has been removed.</p>
+  <button class="back-button" (click)="goBack()">Back to Members List</button>
+</div>

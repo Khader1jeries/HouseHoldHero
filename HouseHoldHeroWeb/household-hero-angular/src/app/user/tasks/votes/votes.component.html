@@ -1,0 +1,136 @@
+<div class="votes-container" *ngIf="task">
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left-circle"></i>
+    <span>Back to Tasks</span>
+  </div>
+
+  <div class="votes-header">
+    <div class="task-info">
+      <h2>{{ task.title }}</h2>
+      <div class="task-meta">
+        <div class="task-meta-item">
+          <i class="bi bi-tag-fill"></i>
+          <span>{{ task.category }}</span>
+        </div>
+        <div class="task-meta-item">
+          <i class="bi bi-calendar-date"></i>
+          <span>{{ task.dueDate | date : "mediumDate" }}</span>
+        </div>
+        <div class="task-meta-item">
+          <i class="bi bi-trophy-fill"></i>
+          <span>{{ task.points }} points</span>
+        </div>
+      </div>
+      <p class="task-description">{{ task.description }}</p>
+    </div>
+  </div>
+
+  <div class="votes-results">
+    <div class="results-header">
+      <h3>Voting Results</h3>
+      <div class="result-status" [ngClass]="votingResult">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-hourglass-split': votingResult === 'pending',
+            'bi-check-circle-fill': votingResult === 'approved',
+            'bi-x-circle-fill': votingResult === 'rejected'
+          }"
+        ></i>
+        <span>{{ votingResult | titlecase }}</span>
+      </div>
+    </div>
+
+    <div class="results-chart">
+      <div class="chart-bar">
+        <div
+          class="yes-bar"
+          [style.width.%]="
+            (task.votesYes / (task.votesYes + task.votesNo)) * 100
+          "
+        >
+          <div class="vote-count">{{ task.votesYes }}</div>
+        </div>
+        <div
+          class="no-bar"
+          [style.width.%]="
+            (task.votesNo / (task.votesYes + task.votesNo)) * 100
+          "
+        >
+          <div class="vote-count">{{ task.votesNo }}</div>
+        </div>
+      </div>
+      <div class="chart-labels">
+        <div class="yes-label">Yes</div>
+        <div class="no-label">No</div>
+      </div>
+    </div>
+
+    <div class="voting-actions" *ngIf="!currentUserVoted">
+      <button class="vote-yes-btn" (click)="vote('yes')">
+        <i class="bi bi-hand-thumbs-up-fill"></i>
+        <span>Vote Yes</span>
+      </button>
+      <button class="vote-no-btn" (click)="vote('no')">
+        <i class="bi bi-hand-thumbs-down-fill"></i>
+        <span>Vote No</span>
+      </button>
+    </div>
+
+    <div class="admin-actions" *ngIf="task.votesYes + task.votesNo > 0">
+      <button
+        class="assign-btn"
+        (click)="assignTask()"
+        *ngIf="votingResult === 'approved'"
+      >
+        <i class="bi bi-check-circle-fill"></i>
+        <span>Assign Task Based on Votes</span>
+      </button>
+      <button class="reopen-btn" (click)="reopenVoting()">
+        <i class="bi bi-arrow-repeat"></i>
+        <span>Reopen Voting</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="votes-list">
+    <h3>Individual Votes</h3>
+    <div class="votes-table">
+      <div class="table-header">
+        <div class="header-member">Member</div>
+        <div class="header-vote">Vote</div>
+        <div class="header-time">Time</div>
+        <div class="header-comment">Comment</div>
+      </div>
+
+      <div *ngFor="let vote of task.votes" class="vote-row">
+        <div class="cell-member">
+          <img [src]="vote.memberImage" [alt]="vote.memberName" />
+          <span>{{ vote.memberName }}</span>
+        </div>
+        <div class="cell-vote" [ngClass]="vote.vote">
+          <i
+            class="bi"
+            [ngClass]="
+              vote.vote === 'yes'
+                ? 'bi-hand-thumbs-up-fill'
+                : 'bi-hand-thumbs-down-fill'
+            "
+          ></i>
+          <span>{{ vote.vote | titlecase }}</span>
+        </div>
+        <div class="cell-time">{{ vote.timestamp | date : "short" }}</div>
+        <div class="cell-comment">{{ vote.comment || "No comment" }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="no-task-message" *ngIf="!task">
+  <div class="message-icon">
+    <i class="bi bi-exclamation-circle"></i>
+  </div>
+  <h2>Task not found</h2>
+  <p>The task you're looking for doesn't exist or has been deleted.</p>
+  <button class="back-button" (click)="goBack()">Back to Tasks List</button>
+</div>

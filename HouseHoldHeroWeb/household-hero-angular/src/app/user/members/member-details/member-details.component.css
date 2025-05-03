@@ -1,0 +1,456 @@
+.member-details-container {
+  padding: 2rem;
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.back-button i {
+  font-size: 1.5rem;
+}
+
+.member-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.member-profile {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #2a9d8f;
+}
+
+.member-basic-info h2 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.member-role {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.member-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  color: #ffd700;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #ff0055;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+  background-color: #d9004a;
+}
+
+/* Stats Grid */
+.member-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.stats-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.stats-card h3 {
+  font-size: 1.3rem;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Contact Info Card */
+.info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.info-value {
+  font-weight: bold;
+}
+
+/* Task Stats Card */
+.task-donut-chart {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+}
+
+.donut-chart {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #ff0055; /* Overdue tasks */
+  overflow: hidden;
+}
+
+.active-tasks {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #2a9d8f; /* Active tasks */
+  transform-origin: 50% 50%;
+}
+
+.completed-tasks {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #ffd700; /* Completed tasks */
+  transform-origin: 50% 50%;
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  background-color: #143a36;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-text {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.donut-subtext {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+.legend-color.active {
+  background-color: #2a9d8f;
+}
+
+.legend-color.completed {
+  background-color: #ffd700;
+}
+
+.legend-color.overdue {
+  background-color: #ff0055;
+}
+
+.legend-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.legend-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.legend-value {
+  font-weight: bold;
+}
+
+.completion-rate {
+  margin-top: 1rem;
+}
+
+.rate-label {
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rate-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.rate-bar {
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.rate-filled {
+  height: 100%;
+  background-color: #2a9d8f;
+  border-radius: 5px;
+}
+
+/* Performance Card */
+.performance-chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 150px;
+  margin-bottom: 1rem;
+}
+
+.chart-bar {
+  width: 30px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bar-fill {
+  width: 100%;
+  background-color: #2a9d8f;
+  border-radius: 5px 5px 0 0;
+  min-height: 10px;
+}
+
+.bar-label {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.trend-info {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.trend-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(42, 157, 143, 0.2);
+  border-radius: 1rem;
+  color: #2a9d8f;
+}
+
+/* Current Tasks Card */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+}
+
+.task-item.pending {
+  border-left: 4px solid #2a9d8f;
+}
+
+.task-item.completed {
+  border-left: 4px solid #ffd700;
+  opacity: 0.7;
+}
+
+.task-item.overdue {
+  border-left: 4px solid #ff0055;
+}
+
+.task-status-icon {
+  font-size: 1.5rem;
+}
+
+.task-item.pending .task-status-icon {
+  color: #2a9d8f;
+}
+
+.task-item.completed .task-status-icon {
+  color: #ffd700;
+}
+
+.task-item.overdue .task-status-icon {
+  color: #ff0055;
+}
+
+.task-details {
+  flex: 1;
+}
+
+.task-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.task-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.points-pill {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  font-weight: bold;
+}
+
+/* No Member Message */
+.no-member-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.message-icon {
+  font-size: 4rem;
+  color: #ff0055;
+  margin-bottom: 1rem;
+}
+
+.no-member-message h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.no-member-message p {
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.no-member-message .back-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #ff0055;
+  border-radius: 0.5rem;
+}
+
+.no-member-message .back-button:hover {
+  background-color: #d9004a;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .member-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .member-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .edit-button {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .member-profile {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .task-donut-chart {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .chart-legend {
+    width: 100%;
+  }
+}

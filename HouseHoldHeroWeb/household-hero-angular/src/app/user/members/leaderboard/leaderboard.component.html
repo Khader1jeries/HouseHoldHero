@@ -1,0 +1,101 @@
+<div class="leaderboard-container">
+  <div class="leaderboard-header">
+    <h2>Family Leaderboard</h2>
+    <div class="period-selector">
+      <button
+        [class.active]="selectedPeriod === 'week'"
+        (click)="changePeriod('week')"
+      >
+        Week
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'month'"
+        (click)="changePeriod('month')"
+      >
+        Month
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'year'"
+        (click)="changePeriod('year')"
+      >
+        Year
+      </button>
+    </div>
+  </div>
+
+  <div class="leaderboard-content">
+    <div class="leaderboard-top-three">
+      <!-- 2nd Place -->
+      <div class="podium-place second-place" *ngIf="leaderboardData.length > 1">
+        <div class="position-number">2</div>
+        <div class="profile-pic-container">
+          <img [src]="leaderboardData[1].profileImage" alt="Second Place" />
+        </div>
+        <div class="podium-block second">
+          <div class="member-name">{{ leaderboardData[1].name }}</div>
+          <div class="member-score">{{ leaderboardData[1].score }}</div>
+        </div>
+      </div>
+
+      <!-- 1st Place -->
+      <div class="podium-place first-place" *ngIf="leaderboardData.length > 0">
+        <div class="position-number">1</div>
+        <div class="profile-pic-container">
+          <img [src]="leaderboardData[0].profileImage" alt="First Place" />
+          <div class="crown-icon">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+        </div>
+        <div class="podium-block first">
+          <div class="member-name">{{ leaderboardData[0].name }}</div>
+          <div class="member-score">{{ leaderboardData[0].score }}</div>
+        </div>
+      </div>
+
+      <!-- 3rd Place -->
+      <div class="podium-place third-place" *ngIf="leaderboardData.length > 2">
+        <div class="position-number">3</div>
+        <div class="profile-pic-container">
+          <img [src]="leaderboardData[2].profileImage" alt="Third Place" />
+        </div>
+        <div class="podium-block third">
+          <div class="member-name">{{ leaderboardData[2].name }}</div>
+          <div class="member-score">{{ leaderboardData[2].score }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rest of Leaderboard -->
+    <div class="leaderboard-table">
+      <div class="table-header">
+        <div class="header-rank">Rank</div>
+        <div class="header-member">Member</div>
+        <div class="header-tasks">Tasks</div>
+        <div class="header-rate">Completion Rate</div>
+        <div class="header-score">Score</div>
+      </div>
+
+      <div
+        class="table-row"
+        *ngFor="let member of leaderboardData; let i = index"
+      >
+        <div class="cell-rank">{{ member.position }}</div>
+        <div class="cell-member">
+          <img [src]="member.profileImage" [alt]="member.name" />
+          <span>{{ member.name }}</span>
+        </div>
+        <div class="cell-tasks">{{ member.tasks }}</div>
+        <div class="cell-rate">
+          {{ member.completionRate }}%
+          <div class="completion-bar">
+            <div
+              class="completion-value"
+              [style.width.%]="member.completionRate"
+            ></div>
+          </div>
+        </div>
+        <div class="cell-score">{{ member.score }}</div>
+      </div>
+    </div>
+  </div>
+</div>
