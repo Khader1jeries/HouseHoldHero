@@ -69,12 +69,19 @@
     <!-- Top Charts Row -->
     <div class="chart-row">
       <!-- Points by Member (Pie Chart) -->
-      <div class="chart-card">
+      <div
+        class="chart-card interactive-chart"
+        (click)="showChartDetails('points-by-member')"
+      >
         <h3>Points by Member</h3>
         <div class="chart-container">
           <div class="pie-chart-placeholder">
             <div class="chart-legend">
-              <div *ngFor="let item of pointsByMember" class="legend-item">
+              <div
+                *ngFor="let item of pointsByMember"
+                class="legend-item"
+                (click)="showItemDetails(item, 'points-by-member', $event)"
+              >
                 <div
                   class="legend-color"
                   [style.background-color]="
@@ -93,7 +100,10 @@
       </div>
 
       <!-- Task Completion by Category (Pie Chart) -->
-      <div class="chart-card">
+      <div
+        class="chart-card interactive-chart"
+        (click)="showChartDetails('tasks-by-category')"
+      >
         <h3>Tasks by Category</h3>
         <div class="chart-container">
           <div class="pie-chart-placeholder">
@@ -101,6 +111,7 @@
               <div
                 *ngFor="let item of taskCompletionByCategory"
                 class="legend-item"
+                (click)="showItemDetails(item, 'tasks-by-category', $event)"
               >
                 <div
                   class="legend-color"
@@ -120,12 +131,19 @@
       </div>
 
       <!-- Tasks by Status (Pie Chart) -->
-      <div class="chart-card">
+      <div
+        class="chart-card interactive-chart"
+        (click)="showChartDetails('tasks-by-status')"
+      >
         <h3>Tasks by Status</h3>
         <div class="chart-container">
           <div class="pie-chart-placeholder">
             <div class="chart-legend">
-              <div *ngFor="let item of tasksByStatus" class="legend-item">
+              <div
+                *ngFor="let item of tasksByStatus"
+                class="legend-item"
+                (click)="showItemDetails(item, 'tasks-by-status', $event)"
+              >
                 <div
                   class="legend-color"
                   [style.background-color]="
@@ -147,7 +165,10 @@
     <!-- Time Series Charts Row Fixed -->
     <div class="chart-row">
       <!-- Points Over Time (Line Chart) -->
-      <div class="chart-card double-width">
+      <div
+        class="chart-card double-width interactive-chart"
+        (click)="showChartDetails('points-over-time')"
+      >
         <h3>Points Earned Over Time</h3>
         <div class="chart-container">
           <div class="line-chart-placeholder">
@@ -155,8 +176,9 @@
             <div class="chart-data">
               <div *ngFor="let data of pointsOverTime" class="data-point">
                 <div
-                  class="data-bar"
+                  class="data-bar interactive-bar"
                   [style.height.%]="(data.value / 3000) * 100"
+                  (click)="showItemDetails(data, 'points-over-time', $event)"
                 ></div>
                 <div class="data-label">{{ data.name }}</div>
               </div>
@@ -166,7 +188,10 @@
       </div>
 
       <!-- Tasks Created Over Time (Line Chart) -->
-      <div class="chart-card double-width">
+      <div
+        class="chart-card double-width interactive-chart"
+        (click)="showChartDetails('tasks-created')"
+      >
         <h3>Tasks Created Over Time</h3>
         <div class="chart-container">
           <div class="line-chart-placeholder">
@@ -174,8 +199,9 @@
             <div class="chart-data">
               <div *ngFor="let data of taskCreationOverTime" class="data-point">
                 <div
-                  class="data-bar"
+                  class="data-bar interactive-bar"
                   [style.height.%]="(data.value / 30) * 100"
+                  (click)="showItemDetails(data, 'tasks-created', $event)"
                 ></div>
                 <div class="data-label">{{ data.name }}</div>
               </div>
@@ -202,7 +228,7 @@
           >
             <div class="table-cell">{{ member.name }}</div>
             <div class="table-cell">{{ member.value }}</div>
-            <div class="table-cell">{{ pointsByMember[i].value || 0 }}</div>
+            <div class="table-cell">{{ pointsByMember[i]?.value || 0 }}</div>
             <div class="table-cell">
               {{ 85 + i * 5 }}%
               <div class="progress-bar">
@@ -210,6 +236,105 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Details Modal -->
+  <div class="chart-details-modal" *ngIf="showModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ modalTitle }}</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedChartType === 'item-details'">
+          <h4>{{ selectedItem.name }}</h4>
+          <p *ngIf="selectedChart === 'points-by-member'">
+            Total Points: <strong>{{ selectedItem.value }}</strong
+            ><br />
+            Percentage of Total:
+            <strong
+              >{{
+                getPercentageOfTotal(selectedItem.value, getTotalPoints())
+              }}%</strong
+            ><br />
+            Last Updated: <strong>{{ formatDate(getCurrentDate()) }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'tasks-by-category'">
+            Total Tasks: <strong>{{ selectedItem.value }}</strong
+            ><br />
+            Percentage of Total:
+            <strong
+              >{{
+                getPercentageOfTotal(selectedItem.value, getTotalTasks())
+              }}%</strong
+            ><br />
+            Average Points per Task:
+            <strong>{{ getAveragePointsPerTask(selectedItem.name) }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'tasks-by-status'">
+            Total Tasks: <strong>{{ selectedItem.value }}</strong
+            ><br />
+            Percentage of Total:
+            <strong
+              >{{
+                getPercentageOfTotal(selectedItem.value, getTotalTasks())
+              }}%</strong
+            ><br />
+            Status Last Updated:
+            <strong>{{ formatDate(getCurrentDate()) }}</strong>
+          </p>
+          <p
+            *ngIf="
+              selectedChart === 'points-over-time' ||
+              selectedChart === 'tasks-created'
+            "
+          >
+            Month: <strong>{{ selectedItem.name }}</strong
+            ><br />
+            Value: <strong>{{ selectedItem.value }}</strong
+            ><br />
+            Date: <strong>{{ formatDate(selectedItem.date) }}</strong>
+          </p>
+        </div>
+        <div *ngIf="selectedChartType === 'chart-overview'">
+          <p *ngIf="selectedChart === 'points-by-member'">
+            Total Points Distributed: <strong>{{ getTotalPoints() }}</strong
+            ><br />
+            Member with Most Points: <strong>{{ getTopPerformer() }}</strong
+            ><br />
+            Members Participating: <strong>{{ pointsByMember.length }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'tasks-by-category'">
+            Total Tasks: <strong>{{ getTotalTasks() }}</strong
+            ><br />
+            Most Common Category: <strong>{{ getMostCommonCategory() }}</strong
+            ><br />
+            Categories: <strong>{{ taskCompletionByCategory.length }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'tasks-by-status'">
+            Total Tasks: <strong>{{ getTotalTasks() }}</strong
+            ><br />
+            Completion Rate: <strong>{{ getCompletionRate() }}%</strong><br />
+            Overdue Tasks: <strong>{{ getOverdueTasks() }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'points-over-time'">
+            Total Period Points: <strong>{{ getTotalPointsOverTime() }}</strong
+            ><br />
+            Average Monthly Points:
+            <strong>{{ getAverageMonthlyPoints() }}</strong
+            ><br />
+            Trend: <strong>{{ getPointsTrend() }}</strong>
+          </p>
+          <p *ngIf="selectedChart === 'tasks-created'">
+            Total Tasks Created: <strong>{{ getTotalTasksCreated() }}</strong
+            ><br />
+            Monthly Average: <strong>{{ getAverageMonthlyTasks() }}</strong
+            ><br />
+            Trend: <strong>{{ getTasksTrend() }}</strong>
+          </p>
         </div>
       </div>
     </div>

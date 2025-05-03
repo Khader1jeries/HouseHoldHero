@@ -1,7 +1,7 @@
 // src/app/user/tasks/tasks.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 interface Task {
   id: string;
@@ -36,7 +36,7 @@ export class TasksComponent implements OnInit {
 
   activeTab: 'active' | 'finished' | 'future' | 'voting' = 'active';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     // In a real app, tasks would be fetched from a service
@@ -121,6 +121,23 @@ export class TasksComponent implements OnInit {
 
     // Filter tasks by status
     this.filterTasks();
+
+    // Check for tab parameter from the route
+    this.route.queryParams.subscribe((params) => {
+      if (
+        params['tab'] &&
+        (params['tab'] === 'active' ||
+          params['tab'] === 'finished' ||
+          params['tab'] === 'future' ||
+          params['tab'] === 'voting')
+      ) {
+        this.activeTab = params['tab'] as
+          | 'active'
+          | 'finished'
+          | 'future'
+          | 'voting';
+      }
+    });
   }
 
   filterTasks(): void {
@@ -136,13 +153,26 @@ export class TasksComponent implements OnInit {
 
   changeTab(tab: 'active' | 'finished' | 'future' | 'voting'): void {
     this.activeTab = tab;
+    // Update the URL to reflect the current tab without reloading
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab },
+      queryParamsHandling: 'merge',
+    });
   }
 
   navigateToAddTask(): void {
     this.router.navigate(['/user/tasks/add']);
   }
 
-  markTaskAsComplete(id: string): void {
+  navigateToTaskDetails(id: string): void {
+    this.router.navigate(['/user/tasks/details', id]);
+  }
+
+  markTaskAsComplete(id: string, event: Event): void {
+    // Stop event propagation to prevent navigation
+    event.stopPropagation();
+
     // In a real app, this would call a service
     const taskIndex = this.tasks.findIndex((task) => task.id === id);
     if (taskIndex !== -1) {
@@ -155,25 +185,28 @@ export class TasksComponent implements OnInit {
     }
   }
 
-  deleteTask(id: string): void {
+  deleteTask(id: string, event: Event): void {
+    // Stop event propagation to prevent navigation
+    event.stopPropagation();
+
     // In a real app, this would call a service
     this.tasks = this.tasks.filter((task) => task.id !== id);
     this.filterTasks();
   }
 
-  viewVotes(taskId: string): void {
-    // In a real app, this would navigate to a voting details page
-    // or open a modal with voting details
-    console.log(`Viewing votes for task ${taskId}`);
-    alert(
-      `This would open detailed votes view for task ${taskId} (Will be implemented in future)`
-    );
+  viewVotes(taskId: string, event: Event): void {
+    // Stop event propagation to prevent navigation
+    event.stopPropagation();
+
+    // Navigate to votes page
+    this.router.navigate(['/user/tasks/votes', taskId]);
   }
 
-  editTask(taskId: string): void {
+  editTask(taskId: string, event: Event): void {
+    // Stop event propagation to prevent navigation
+    event.stopPropagation();
+
     // In a real app, this would navigate to the edit task page
-    console.log(`Editing task ${taskId}`);
-    // For now, navigate to add task (which could be modified to handle edits)
-    this.router.navigate(['/user/tasks/add'], { queryParams: { id: taskId } });
+    this.router.navigate(['/user/tasks/edit', taskId]);
   }
 }

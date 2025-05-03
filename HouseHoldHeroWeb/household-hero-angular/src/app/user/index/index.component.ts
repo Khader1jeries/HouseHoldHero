@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-index',
@@ -7,8 +8,29 @@ import { Component } from '@angular/core';
   standalone: true,
 })
 export class IndexComponent {
+  constructor(private router: Router) {}
+
   goTo(route: string) {
     window.location.href = '/' + route;
     // Or use Angular Router: this.router.navigate([route]);
+  }
+
+  // New methods for specific navigation
+  goToMembers() {
+    this.router.navigate(['/user/members']);
+  }
+
+  goToTasksVoting() {
+    this.router.navigate(['/user/tasks'], { queryParams: { tab: 'voting' } });
+  }
+
+  goToLeaderboard() {
+    this.router.navigate(['/user/members'], {
+      queryParams: { view: 'leaderboard' },
+    });
+  }
+
+  goToActiveTasks() {
+    this.router.navigate(['/user/tasks'], { queryParams: { tab: 'active' } });
   }
 }

@@ -22,6 +22,14 @@ import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service
 import { ContactComponent } from './guest/contact/contact.component';
 import { AuthGuard } from './guards/auth.guard';
 
+// Import new components
+import { LeaderboardComponent } from './user/members/leaderboard/leaderboard.component';
+import { MemberDetailsComponent } from './user/members/member-details/member-details.component';
+import { MemberEditComponent } from './user/members/member-edit/member-edit.component';
+import { TaskDetailsComponent } from './user/tasks/task-details/task-details.component';
+import { VotesComponent } from './user/tasks/votes/votes.component';
+import { EditTaskComponent } from './user/tasks/edit-task/edit-task.component';
+
 export const routes: Routes = [
   {
     path: '',
@@ -47,8 +55,16 @@ export const routes: Routes = [
       { path: '', component: IndexComponent },
       { path: 'members', component: MembersComponent },
       { path: 'members/add', component: AddMemberComponent },
+      // New member routes
+      { path: 'members/leaderboard', component: LeaderboardComponent },
+      { path: 'members/details/:id', component: MemberDetailsComponent },
+      { path: 'members/edit/:id', component: MemberEditComponent },
       { path: 'tasks', component: TasksComponent },
       { path: 'tasks/add', component: AddTaskComponent },
+      // New task routes
+      { path: 'tasks/details/:id', component: TaskDetailsComponent },
+      { path: 'tasks/votes/:id', component: VotesComponent },
+      { path: 'tasks/edit/:id', component: EditTaskComponent },
       { path: 'support', component: SupportComponent },
       { path: 'analytics', component: AnalyticsComponent },
       { path: 'reports', component: ReportsComponent },

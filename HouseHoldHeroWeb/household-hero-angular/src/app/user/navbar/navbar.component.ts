@@ -1,7 +1,13 @@
 // src/app/user/navbar/navbar.component.ts
-import { Component, HostListener } from '@angular/core';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  Router,
+  RouterLink,
+  RouterModule,
+  NavigationEnd,
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
 
 interface Notification {
   id: string;
@@ -18,7 +24,10 @@ interface Notification {
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
+  // Current page title
+  currentPageTitle: string = 'Dashboard';
+
   // Notifications
   notifications: Notification[] = [];
   showNotifications: boolean = false;
@@ -28,6 +37,13 @@ export class NavbarComponent {
   showUserMenu: boolean = false;
 
   constructor(private router: Router) {
+    // Listen to route changes to update the page title
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.updatePageTitle(event.url);
+      });
+
     // Initialize with some mock notifications
     this.notifications = [
       {
@@ -55,6 +71,30 @@ export class NavbarComponent {
 
     // Calculate unread notifications
     this.updateUnreadCount();
+  }
+
+  ngOnInit(): void {
+    // Set initial page title based on current URL
+    this.updatePageTitle(this.router.url);
+  }
+
+  // Update page title based on route
+  updatePageTitle(url: string): void {
+    if (url.includes('/user/members')) {
+      this.currentPageTitle = 'Members';
+    } else if (url.includes('/user/tasks')) {
+      this.currentPageTitle = 'Tasks';
+    } else if (url.includes('/user/support')) {
+      this.currentPageTitle = 'Support';
+    } else if (url.includes('/user/analytics')) {
+      this.currentPageTitle = 'Analytics';
+    } else if (url.includes('/user/reports')) {
+      this.currentPageTitle = 'Reports';
+    } else if (url.includes('/user/settings')) {
+      this.currentPageTitle = 'Settings';
+    } else {
+      this.currentPageTitle = 'Dashboard';
+    }
   }
 
   navigateTo(route: string): void {
