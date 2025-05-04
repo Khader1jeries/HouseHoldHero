@@ -1,51 +1,97 @@
-/* Main container with flexbox */
-.slider-container {
+.tab-slider-container {
+  width: 90%;
+  margin: 0 auto;
+  padding: 5px;
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Tab Navigation */
+.tab-navbar {
   display: flex;
-  align-items: center; /* Align everything vertically */
-  justify-content: center; /* Even spacing */
-  gap: 20px; /* Space between columns */
-  width: 80%; /* Adjust width */
-  margin: auto;
+  justify-content: space-between;
+  background-color: #1c645b;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  margin-bottom: 20px;
 }
-
-/* Style for buttons (left and right) */
-.button-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 10%; /* Makes sure buttons stay on sides */
+p{
+  color:#fff;
 }
-
-button {
-  width: 50px;
-  height: 50px;
-  font-size: 20px;
-  border: none;
-  background: #1c645b;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: #28907f;
-}
-
-/* Centered text container */
-.text-container {
-  flex: 1; /* Makes the text area take up the center space */
+.tab {
+  flex: 1;
+  padding: 15px 10px;
   text-align: center;
+  background-color: #1c645b;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-h3 {
-  font-size: 7vh;
-  margin-bottom: 10px;
-  color: #333;
+.tab:last-child {
+  border-right: none;
+}
+
+.tab:hover {
+  background-color: #165149;
+}
+
+.tab.active {
+  background-color: #28907f;
+  box-shadow: inset 0 -4px 0 white;
+}
+
+/* Content Section */
+.content-section {
+  min-height: 300px;
+  padding: 20px;
+   background: linear-gradient(80deg, #29524c, #69aaa1);
+  border-radius: 0 0 10px 10px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.text-container {
+  text-align: center;
 }
 
 p {
-  font-size: 3vh;
+  font-size: 18px;
+  line-height: 1.6;
   margin-bottom: 10px;
-  text-align: center;
+}
+
+
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .tab-slider-container {
+    width: 95%;
+    padding: 10px;
+  }
+  
+  .tab-navbar {
+    flex-direction: column;
+    border-radius: 10px;
+  }
+  
+  .tab {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 5px;
+  }
+  
+  .tab:last-child {
+    border-bottom: none;
+  }
+  
+  .content-section {
+    padding: 15px;
+  }
+  
+  p {
+    font-size: 16px;
+  }
 }

@@ -48,4 +48,7 @@ export class RegistrationComponent implements OnInit {
       queryParams: { email: this.user.email } 
     });
   }
-}
+  
+  navigateToLogin() {
+    this.router.navigate(['/guest/login']);
+  }}

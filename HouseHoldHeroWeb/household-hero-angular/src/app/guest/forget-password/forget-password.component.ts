@@ -47,4 +47,7 @@ export class ForgotPasswordComponent {
       this.isSubmitting = false;
     }, 1500); // Simulate API delay
   }
-}
+  
+  navigateToLogin() {
+    this.router.navigate(['/guest/login']);
+  }}

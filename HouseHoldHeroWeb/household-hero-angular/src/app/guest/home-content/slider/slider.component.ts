@@ -72,4 +72,9 @@ export class SliderComponent {
     this.currentIndex =
       (this.currentIndex - 1 + this.paragraphs.length) % this.paragraphs.length;
   }
+
+  // Method to navigate directly to a specific slide
+  goToSlide(index: number) {
+    this.currentIndex = index;
+  }
 }
