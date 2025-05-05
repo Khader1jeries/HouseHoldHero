@@ -1,21 +1,32 @@
+// src/app/guards/auth.guard.ts
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard {
+export class AuthGuard implements CanActivate {
   constructor(private router: Router) {}
 
-  canActivate(): boolean {
-    // Check if the user is authenticated
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-      // User is authenticated, allow access
-      return true;
-    }
+  canActivate(): Observable<boolean> {
+    // TEMPORARY: Always return true to bypass authentication
+    return of(true);
 
-    // User is not authenticated, redirect to login
-    this.router.navigate(['/guest/login']);
-    return false;
+    // Original code (commented out)
+    /*
+    if (typeof window !== 'undefined') {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      
+      if (!isLoggedIn) {
+        this.router.navigate(['/guest/login']);
+        return of(false);
+      }
+      
+      return of(true);
+    }
+    
+    return of(true);
+    */
   }
 }
