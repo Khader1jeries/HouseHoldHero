@@ -6,12 +6,8 @@ import {
   withEventReplay,
 } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { environment } from '../enviroments/enviroment';
-import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+// Fixed path
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,13 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideAnimations(),
-    // HTTP Client for our services
+    // HTTP Client for our services - this is all you need for middleware approach
     provideHttpClient(withFetch()),
-    // Firebase modules directly in the providers array
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    // This is needed for AngularFireAuth compatibility
-    { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
   ],
 };
