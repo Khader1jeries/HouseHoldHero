@@ -139,4 +139,103 @@
       </div>
     </div>
   </div>
+
+  <!-- Full-Width Performance Analytics Card at Bottom -->
+  <div class="analytics-card">
+    <div class="analytics-header">
+      <h2>Performance Analytics</h2>
+      <i
+        class="bi bi-arrow-right-circle-fill card-icon"
+        (click)="goToAnalytics()"
+      ></i>
+    </div>
+
+    <div class="analytics-content">
+      <!-- Points by Member Chart -->
+      <div class="chart-section">
+        <h3>Points by Member</h3>
+        <div class="chart-container">
+          <div class="bar-chart">
+            <div class="chart-bar" style="height: 75%">
+              <div class="bar-label">John</div>
+              <div class="bar-value">1500</div>
+            </div>
+            <div class="chart-bar" style="height: 100%">
+              <div class="bar-label">Kavin</div>
+              <div class="bar-value">2000</div>
+            </div>
+            <div class="chart-bar" style="height: 60%">
+              <div class="bar-label">Sarah</div>
+              <div class="bar-value">1200</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Points Over Time Chart -->
+      <div class="chart-section">
+        <h3>Points Earned Over Time</h3>
+        <div class="chart-container">
+          <div class="line-chart">
+            <div class="chart-point" style="--x: 10%; --y: 60%">
+              <span class="point-value">1200</span>
+            </div>
+            <div class="chart-point" style="--x: 30%; --y: 40%">
+              <span class="point-value">1400</span>
+            </div>
+            <div class="chart-point" style="--x: 50%; --y: 30%">
+              <span class="point-value">1650</span>
+            </div>
+            <div class="chart-point" style="--x: 70%; --y: 20%">
+              <span class="point-value">1800</span>
+            </div>
+            <div class="chart-point" style="--x: 90%; --y: 10%">
+              <span class="point-value">2000</span>
+            </div>
+            <div class="chart-line"></div>
+          </div>
+          <div class="chart-labels">
+            <span>Jan</span>
+            <span>Feb</span>
+            <span>Mar</span>
+            <span>Apr</span>
+            <span>May</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="metrics-section">
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div class="metric-details">
+            <h4>Completion Rate</h4>
+            <div class="metric-value">87%</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="bi bi-clock"></i>
+          </div>
+          <div class="metric-details">
+            <h4>Avg. Time to Complete</h4>
+            <div class="metric-value">1.5 days</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="bi bi-trophy"></i>
+          </div>
+          <div class="metric-details">
+            <h4>Total Family Points</h4>
+            <div class="metric-value">4,700</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

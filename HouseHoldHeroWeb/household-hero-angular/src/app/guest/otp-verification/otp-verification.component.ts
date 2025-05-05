@@ -4,19 +4,25 @@ import {
   OnDestroy,
   PLATFORM_ID,
   Inject,
+  ViewChildren,
+  QueryList,
+  ElementRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-otp-verification',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './otp-verification.component.html',
   styleUrl: './otp-verification.component.css',
 })
 export class OtpVerificationComponent implements OnInit, OnDestroy {
+  @ViewChildren('digit1, digit2, digit3, digit4')
+  digitInputs!: QueryList<ElementRef>;
+
   email: string = '';
   otpDigits: string[] = ['', '', '', ''];
   remainingTime: number = 60; // 1 minute in seconds
@@ -44,6 +50,9 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         const storedEmail = localStorage.getItem('userEmail');
         if (storedEmail) {
           this.email = storedEmail;
+        } else {
+          // If no email found, redirect back to login
+          this.router.navigate(['/guest/login']);
         }
       }
     });
@@ -113,9 +122,9 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
 
     // Auto-focus to next input if value entered
     if (digit && index < 3) {
-      const nextInput = event.target.nextElementSibling;
-      if (nextInput) {
-        nextInput.focus();
+      const inputs = this.digitInputs.toArray();
+      if (inputs[index + 1]) {
+        inputs[index + 1].nativeElement.focus();
       }
     }
 
@@ -149,11 +158,22 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
 
         // Mark user as authenticated (only in browser)
         if (this.isBrowser) {
+          // Set authentication token that AuthGuard will recognize
           localStorage.setItem('isAuthenticated', 'true');
-        }
 
-        // Navigate to user dashboard
-        this.router.navigate(['/user']);
+          // Also store user data if needed by the user component
+          const userEmail = this.email;
+          localStorage.setItem(
+            'currentUser',
+            JSON.stringify({ email: userEmail })
+          );
+
+          // Add a small delay before navigation to ensure localStorage is updated
+          setTimeout(() => {
+            // Navigate to user dashboard
+            this.router.navigate(['/user']);
+          }, 100);
+        }
       } else {
         this.errorMessage = 'Invalid verification code. Please try again.';
         this.isVerifying = false;
@@ -162,11 +182,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   }
 
   formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs
-      .toString()
-      .padStart(2, '0')}`;
+    return `${seconds}`;
   }
 
   submitOtp() {

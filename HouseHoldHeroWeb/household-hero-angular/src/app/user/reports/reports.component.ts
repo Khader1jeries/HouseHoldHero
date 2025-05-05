@@ -63,7 +63,7 @@ export class ReportsComponent implements OnInit {
     },
   ];
 
-  // Available export formats
+  // Available export formats - removed CSV and JSON
   exportFormats: ReportFormat[] = [
     {
       id: 'pdf',
@@ -76,18 +76,6 @@ export class ReportsComponent implements OnInit {
       name: 'Excel Spreadsheet',
       extension: '.xlsx',
       icon: 'bi-file-earmark-excel',
-    },
-    {
-      id: 'csv',
-      name: 'CSV File',
-      extension: '.csv',
-      icon: 'bi-file-earmark-spreadsheet',
-    },
-    {
-      id: 'json',
-      name: 'JSON Data',
-      extension: '.json',
-      icon: 'bi-file-earmark-code',
     },
   ];
 

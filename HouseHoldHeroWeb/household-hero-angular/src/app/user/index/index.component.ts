@@ -15,7 +15,7 @@ export class IndexComponent {
     // Or use Angular Router: this.router.navigate([route]);
   }
 
-  // New methods for specific navigation
+  // Navigation methods
   goToMembers() {
     this.router.navigate(['/user/members']);
   }
@@ -32,5 +32,10 @@ export class IndexComponent {
 
   goToActiveTasks() {
     this.router.navigate(['/user/tasks'], { queryParams: { tab: 'active' } });
+  }
+
+  // New method for Analytics navigation
+  goToAnalytics() {
+    this.router.navigate(['/user/analytics']);
   }
 }

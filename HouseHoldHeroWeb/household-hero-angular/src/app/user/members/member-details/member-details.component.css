@@ -1,6 +1,6 @@
 .member-details-container {
   padding: 2rem;
-  background-color: #143a36;
+  background-color: #1a504a; /* Darker, more visible background */
   border-radius: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -91,7 +91,7 @@
 }
 
 .stats-card {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly more visible */
   border-radius: 1rem;
   padding: 1.5rem;
   height: 100%;
@@ -101,7 +101,7 @@
   font-size: 1.3rem;
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Contact Info Card */
@@ -168,7 +168,7 @@
   transform: translate(-50%, -50%);
   width: 90px;
   height: 90px;
-  background-color: #143a36;
+  background-color: #1a504a; /* Match darker container background */
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -259,7 +259,7 @@
   border-radius: 5px;
 }
 
-/* Performance Card */
+/* Performance Card - Updated with interactivity */
 .performance-chart {
   display: flex;
   justify-content: space-between;
@@ -269,12 +269,19 @@
 }
 
 .chart-bar {
-  width: 30px;
+  width: 40px;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.chart-bar:hover {
+  transform: translateY(-5px);
 }
 
 .bar-fill {
@@ -282,12 +289,60 @@
   background-color: #2a9d8f;
   border-radius: 5px 5px 0 0;
   min-height: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.chart-bar:hover .bar-fill {
+  background-color: #ff0055;
 }
 
 .bar-label {
   margin-top: 0.5rem;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* Performance Week Details Tooltip */
+.week-details {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #143a36;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  width: 150px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chart-bar:hover .week-details {
+  opacity: 1;
+}
+
+.week-details h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.week-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.week-stat-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.week-stat-value {
+  font-weight: bold;
 }
 
 .trend-info {
@@ -388,7 +443,7 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background-color: #143a36;
+  background-color: #1a504a; /* Match darker container background */
   border-radius: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   text-align: center;

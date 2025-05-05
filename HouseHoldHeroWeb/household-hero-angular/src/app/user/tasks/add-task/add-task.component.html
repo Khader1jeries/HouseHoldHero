@@ -61,6 +61,7 @@
               id="assignDirectly"
               name="assignmentType"
               value="direct"
+              [(ngModel)]="assignmentType"
               checked
             />
             <label for="assignDirectly">Assign Directly</label>
@@ -71,6 +72,7 @@
               id="createVoting"
               name="assignmentType"
               value="voting"
+              [(ngModel)]="assignmentType"
             />
             <label for="createVoting">Create Voting</label>
           </div>
@@ -78,7 +80,7 @@
       </div>
 
       <!-- Assigned To (shown only if "Assign Directly" is selected) -->
-      <div class="form-group">
+      <div class="form-group" *ngIf="assignmentType === 'direct'">
         <label for="assignedTo">Assign To</label>
         <select
           id="assignedTo"
@@ -105,6 +107,85 @@
           step="5"
         />
         <div class="range-value">{{ newTask.points }} points</div>
+      </div>
+
+      <!-- Priority -->
+      <div class="form-group">
+        <label for="priority">Priority Level</label>
+        <select
+          id="priority"
+          [(ngModel)]="newTask.priority"
+          name="priority"
+          class="form-control"
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select
+          id="category"
+          [(ngModel)]="newTask.category"
+          name="category"
+          class="form-control"
+        >
+          <option value="Cleaning">Cleaning</option>
+          <option value="Cooking">Cooking</option>
+          <option value="Outdoors">Outdoors</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+
+      <!-- Sub-Tasks Section -->
+      <div class="form-section">
+        <h3>Sub-Tasks</h3>
+        <div *ngIf="subTasks.length > 0" class="subtasks-list">
+          <div
+            *ngFor="let subTask of subTasks; let i = index"
+            class="subtask-item"
+          >
+            <div class="subtask-info">
+              <span>{{ subTask.title }}</span>
+            </div>
+            <button
+              type="button"
+              class="remove-subtask-btn"
+              (click)="removeSubTask(i)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="subTasks.length === 0" class="empty-subtasks">
+          <p>No sub-tasks added yet. Add some below to break down this task.</p>
+        </div>
+
+        <div class="add-subtask">
+          <div class="subtask-input-group">
+            <input
+              type="text"
+              placeholder="Add a sub-task..."
+              [(ngModel)]="newSubTaskTitle"
+              name="newSubTaskTitle"
+              class="form-control"
+              (keyup.enter)="addSubTask()"
+            />
+            <button
+              type="button"
+              class="add-subtask-btn"
+              (click)="addSubTask()"
+            >
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Form Actions -->

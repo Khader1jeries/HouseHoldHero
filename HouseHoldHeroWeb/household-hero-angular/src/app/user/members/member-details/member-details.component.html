@@ -141,13 +141,134 @@
       </div>
     </div>
 
-    <!-- Performance Card -->
+    <!-- Performance Card with Interactive Week Data -->
     <div class="stats-card performance">
       <h3>Performance History</h3>
       <div class="performance-chart">
-        <div class="chart-bar" *ngFor="let i of [0, 1, 2, 3, 4, 5]">
-          <div class="bar-fill" [style.height.%]="60 + i * 5"></div>
-          <div class="bar-label">Week {{ i + 1 }}</div>
+        <!-- Week 1 -->
+        <div class="chart-bar" (click)="showWeekDetails(0)">
+          <div class="week-details">
+            <h4>Week 1</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">5</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">4</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">210</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="60"></div>
+          <div class="bar-label">Week 1</div>
+        </div>
+
+        <!-- Week 2 -->
+        <div class="chart-bar" (click)="showWeekDetails(1)">
+          <div class="week-details">
+            <h4>Week 2</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">6</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">5</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">230</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="65"></div>
+          <div class="bar-label">Week 2</div>
+        </div>
+
+        <!-- Week 3 -->
+        <div class="chart-bar" (click)="showWeekDetails(2)">
+          <div class="week-details">
+            <h4>Week 3</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">7</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">6</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">270</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="70"></div>
+          <div class="bar-label">Week 3</div>
+        </div>
+
+        <!-- Week 4 -->
+        <div class="chart-bar" (click)="showWeekDetails(3)">
+          <div class="week-details">
+            <h4>Week 4</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">8</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">7</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">310</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="75"></div>
+          <div class="bar-label">Week 4</div>
+        </div>
+
+        <!-- Week 5 -->
+        <div class="chart-bar" (click)="showWeekDetails(4)">
+          <div class="week-details">
+            <h4>Week 5</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">9</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">8</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">340</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="80"></div>
+          <div class="bar-label">Week 5</div>
+        </div>
+
+        <!-- Week 6 -->
+        <div class="chart-bar" (click)="showWeekDetails(5)">
+          <div class="week-details">
+            <h4>Week 6</h4>
+            <div class="week-stat">
+              <span class="week-stat-label">Tasks:</span>
+              <span class="week-stat-value">10</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Completed:</span>
+              <span class="week-stat-value">9</span>
+            </div>
+            <div class="week-stat">
+              <span class="week-stat-label">Points:</span>
+              <span class="week-stat-value">380</span>
+            </div>
+          </div>
+          <div class="bar-fill" [style.height.%]="85"></div>
+          <div class="bar-label">Week 6</div>
         </div>
       </div>
       <div class="trend-info">

@@ -1,24 +1,21 @@
-// src/app/guards/auth.guard.ts
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { map, take } from 'rxjs';
-import { UserService } from '../services/user.service';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
-export const AuthGuard: CanActivateFn = (route, state) => {
-  const userService = inject(UserService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthGuard {
+  constructor(private router: Router) {}
 
-  return userService.getCurrentUser().pipe(
-    take(1),
-    map((user) => {
-      const isLoggedIn = !!user;
-
-      if (!isLoggedIn) {
-        router.navigate(['/guest/login']);
-        return false;
-      }
-
+  canActivate(): boolean {
+    // Check if the user is authenticated
+    if (localStorage.getItem('isAuthenticated') === 'true') {
+      // User is authenticated, allow access
       return true;
-    })
-  );
-};
+    }
+
+    // User is not authenticated, redirect to login
+    this.router.navigate(['/guest/login']);
+    return false;
+  }
+}

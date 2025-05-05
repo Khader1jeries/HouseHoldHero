@@ -1,6 +1,7 @@
 // src/app/user/tasks/task-details/task-details.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 interface Comment {
@@ -39,7 +40,7 @@ interface SubTask {
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.css',
 })
@@ -47,6 +48,9 @@ export class TaskDetailsComponent implements OnInit {
   taskId: string = '';
   task?: Task;
   subTaskCompletionPercentage: number = 0;
+
+  // New comment functionality
+  newComment: string = '';
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -158,6 +162,11 @@ export class TaskDetailsComponent implements OnInit {
       this.subTaskCompletionPercentage =
         (completedSubTasks / this.task.subTasks.length) * 100;
     }
+
+    // Initialize comments array if it doesn't exist
+    if (this.task && !this.task.comments) {
+      this.task.comments = [];
+    }
   }
 
   getPriorityClass(priority: string): string {
@@ -186,6 +195,28 @@ export class TaskDetailsComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  // Add comment functionality
+  addComment(): void {
+    if (!this.task || !this.newComment.trim()) return;
+
+    // Create a new comment
+    const newComment: Comment = {
+      id: (this.task.comments?.length || 0) + 1 + '',
+      author: 'You', // Assuming the current user
+      authorImage: 'assets/profile_pic.png',
+      content: this.newComment.trim(),
+      timestamp: new Date(),
+    };
+
+    // Add the comment to the task
+    this.task.comments = [...(this.task.comments || []), newComment];
+
+    // Clear the input
+    this.newComment = '';
+
+    console.log('Comment added:', newComment);
   }
 
   markTaskAsComplete(): void {

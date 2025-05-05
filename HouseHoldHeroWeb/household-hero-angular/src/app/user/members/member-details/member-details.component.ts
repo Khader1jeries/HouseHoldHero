@@ -27,6 +27,13 @@ interface Task {
   points: number;
 }
 
+interface WeekStats {
+  week: number;
+  tasks: number;
+  completed: number;
+  points: number;
+}
+
 @Component({
   selector: 'app-member-details',
   standalone: true,
@@ -40,6 +47,9 @@ export class MemberDetailsComponent implements OnInit {
   activeTasksCount: number = 0;
   completedTasksCount: number = 0;
   overdueTasksCount: number = 0;
+
+  // Weekly performance data
+  weekPerformance: WeekStats[] = [];
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -169,6 +179,32 @@ export class MemberDetailsComponent implements OnInit {
       this.overdueTasksCount = this.member.tasks.filter(
         (t) => t.status === 'overdue'
       ).length;
+
+      // Initialize weekly stats (mock data)
+      this.initializeWeeklyStats();
+    }
+  }
+
+  // Initialize mock weekly performance data
+  initializeWeeklyStats(): void {
+    this.weekPerformance = [
+      { week: 1, tasks: 5, completed: 4, points: 210 },
+      { week: 2, tasks: 6, completed: 5, points: 230 },
+      { week: 3, tasks: 7, completed: 6, points: 270 },
+      { week: 4, tasks: 8, completed: 7, points: 310 },
+      { week: 5, tasks: 9, completed: 8, points: 340 },
+      { week: 6, tasks: 10, completed: 9, points: 380 },
+    ];
+  }
+
+  // Show detailed stats for a specific week
+  showWeekDetails(weekIndex: number): void {
+    if (weekIndex >= 0 && weekIndex < this.weekPerformance.length) {
+      const weekData = this.weekPerformance[weekIndex];
+      console.log(`Week ${weekData.week} Details:`, weekData);
+
+      // In a real app, you might show a modal or detailed view with this data
+      // For now, we're using tooltips in the HTML
     }
   }
 

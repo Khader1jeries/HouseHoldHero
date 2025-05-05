@@ -21,6 +21,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .card {
@@ -129,4 +130,261 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+/* Performance Analytics Card Styles */
+.analytics-card {
+  background-color: #143a36;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-top: 2rem;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-header h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.analytics-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+}
+
+.chart-section {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.chart-section h3 {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.chart-container {
+  height: 220px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bar Chart Styles */
+.bar-chart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 100%;
+  width: 100%;
+}
+
+.chart-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 50px;
+  background-color: #ff0055;
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.chart-bar:hover {
+  transform: scaleY(1.05);
+  background-color: #ff3380;
+}
+
+.bar-label {
+  position: absolute;
+  bottom: -30px;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.bar-value {
+  position: absolute;
+  top: -25px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* Line Chart Styles */
+.line-chart {
+  position: relative;
+  height: 85%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-point {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--y);
+  width: 10px;
+  height: 10px;
+  background-color: #ff0055;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.point-value {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  color: white;
+  white-space: nowrap;
+}
+
+.chart-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 10%,
+    #ff0055 10%,
+    #ff0055 30%,
+    #ff0055 30%,
+    #ff0055 50%,
+    #ff0055 50%,
+    #ff0055 70%,
+    #ff0055 70%,
+    #ff0055 90%,
+    transparent 90%
+  );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: 0 70%;
+  height: 2px;
+  z-index: -1;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5%;
+  margin-top: 30px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Metrics Section Styles */
+.metrics-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metric-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.metric-details {
+  flex: 1;
+}
+
+.metric-details h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 0.3rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .analytics-content {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metrics-section {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-content {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-section {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .chart-section {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  .item > * {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .item > *:first-child {
+    padding-left: 0;
+  }
+
+  .card-header {
+    display: none;
+  }
 }

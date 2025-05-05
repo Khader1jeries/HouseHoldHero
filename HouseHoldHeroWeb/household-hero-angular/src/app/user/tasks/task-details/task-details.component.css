@@ -1,6 +1,6 @@
 .task-details-container {
   padding: 2rem;
-  background-color: #143a36;
+  background-color: #1a504a; /* Darker, more visible background */
   border-radius: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -138,7 +138,7 @@
 }
 
 .details-card {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly more visible */
   border-radius: 1rem;
   padding: 1.5rem;
   height: 100%;
@@ -148,7 +148,7 @@
   font-size: 1.3rem;
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Task Info Card */
@@ -264,7 +264,7 @@
   color: #2a9d8f;
 }
 
-/* Comments Card */
+/* Comments Card - Updated with active functionality */
 .comments-container {
   display: flex;
   flex-direction: column;
@@ -335,24 +335,55 @@
   margin-bottom: 1rem;
 }
 
-.add-comment-placeholder {
-  margin-top: 1rem;
+/* Active Comment Functionality */
+.add-comment-form {
+  margin-top: 1.5rem;
 }
 
-.comment-input-placeholder {
+.comment-textarea {
   width: 100%;
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 1rem;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #2a9d8f;
+}
+
+.comment-submit {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.comment-input-placeholder:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.submit-btn:hover {
+  background-color: #208579;
+}
+
+.submit-btn:disabled {
+  background-color: rgba(42, 157, 143, 0.5);
+  cursor: not-allowed;
 }
 
 /* No Task Message */
@@ -362,7 +393,7 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background-color: #143a36;
+  background-color: #1a504a; /* Match darker container background */
   border-radius: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   text-align: center;
