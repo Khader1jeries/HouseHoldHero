@@ -23,6 +23,7 @@ export class RegistrationComponent implements OnInit {
   };
 
   errorMessage: string = '';
+  successMessage: string = '';
   isSubmitting: boolean = false;
 
   constructor(
@@ -43,6 +44,7 @@ export class RegistrationComponent implements OnInit {
   onSubmit() {
     this.isSubmitting = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
     // Basic validation
     if (this.user.password !== this.user.confirmPassword) {
@@ -62,10 +64,15 @@ export class RegistrationComponent implements OnInit {
       next: (response) => {
         this.isSubmitting = false;
         
-        if (!response.success) {
+        if (response.success) {
+          this.successMessage = 'Registration successful! Redirecting to login...';
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            this.router.navigate(['/guest/login']);
+          }, 2000);
+        } else {
           this.errorMessage = response.message || 'Registration failed';
         }
-        // If successful, the service will automatically redirect to the user dashboard
       },
       error: (error) => {
         this.isSubmitting = false;

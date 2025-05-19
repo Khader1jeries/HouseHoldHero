@@ -25,16 +25,15 @@ export class UserService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // Register a new user - simplified without authentication
+  // Register a new user - without automatic redirection
   registerUser(user: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register-simple`, user).pipe(
-      tap(response => {
+      map(response => {
         if (response.success && response.user) {
-          // Store user in localStorage
-          localStorage.setItem('currentUser', JSON.stringify(response.user));
-          // Navigate to user dashboard
-          this.router.navigate(['/user']);
+          // Just return success without storing user or redirecting
+          return { success: true, user: response.user };
         }
+        return response;
       }),
       catchError(error => {
         console.error('Registration error:', error);
@@ -46,7 +45,7 @@ export class UserService {
     );
   }
 
-  // Login user - simplified without authentication
+  // Login user with proper redirection
   loginUser(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login-simple`, { email, password }).pipe(
       tap(response => {
@@ -61,7 +60,7 @@ export class UserService {
         console.error('Login error:', error);
         return of({ 
           success: false, 
-          message: error.error?.message || 'Login failed' 
+          message: error.error?.message || 'Invalid email or password' 
         });
       })
     );

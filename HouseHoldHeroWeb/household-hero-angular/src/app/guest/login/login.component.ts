@@ -44,7 +44,7 @@ export class LoginComponent {
           this.isSubmitting = false;
           
           if (!response.success) {
-            this.errorMessage = response.message || 'Login failed';
+            this.errorMessage = response.message || 'Invalid email or password';
           }
           // If successful, the service will automatically redirect to the user dashboard
         },

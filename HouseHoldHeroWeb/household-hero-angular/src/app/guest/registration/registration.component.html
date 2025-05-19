@@ -15,7 +15,17 @@
 
     <p class="subtitle">Sign up to continue</p>
 
-    <form (ngSubmit)="onSubmit()">
+    <!-- Success message -->
+    <div class="message success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <!-- Error message -->
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" *ngIf="!successMessage">
       <!-- Full Name Input -->
       <input 
         type="text" 
@@ -81,11 +91,12 @@
       />
 
       <!-- Sign-Up Button -->
-      <button type="submit" class="signup-btn">Sign up</button>
+      <button type="submit" class="signup-btn" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Sign up' }}
+      </button>
     </form>
 
     <!-- Login Link -->
-   <!-- Login Link -->
-   <p class="login-text">Already have an account? <a routerLink="/guest/login" (click)="navigateToLogin()">Log-in</a></p>
+    <p class="login-text">Already have an account? <a routerLink="/guest/login" (click)="navigateToLogin()">Log-in</a></p>
   </div>
 </div>

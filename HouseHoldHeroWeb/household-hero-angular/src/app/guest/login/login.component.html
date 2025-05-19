@@ -11,6 +11,11 @@
     </div>
     <p class="subtitle">Log in to continue</p>
 
+    <!-- Error message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
     <form (ngSubmit)="onSubmit()">
       <input 
         type="email" 
@@ -37,7 +42,9 @@
         <label for="remember">Remember me</label>
       </div>
 
-      <button type="submit" class="login-btn">Login</button>
+      <button type="submit" class="login-btn" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
 
     <div class="links">

@@ -165,3 +165,22 @@ input.ng-invalid.ng-touched,
 .phone-input.ng-invalid.ng-touched {
   border-color: #d9004a;
 }
+/* Message boxes */
+.message {
+  padding: 1vh;
+  border-radius: 5px;
+  margin-bottom: 2vh;
+  font-size: 1.8vh;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
