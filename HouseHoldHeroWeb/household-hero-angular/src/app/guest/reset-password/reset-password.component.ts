@@ -1,25 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css'
 })
 export class ResetPasswordComponent implements OnInit {
   email: string = '';
-  verificationCode: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
   isSubmitting: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     // Retrieve the email from local storage
@@ -50,33 +53,31 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
-    if (this.verificationCode.length !== 4) {
-      this.errorMessage = 'Please enter the 4-digit verification code';
-      this.isSubmitting = false;
-      return;
-    }
-
-    // Simulate API call to verify code and update password
-    setTimeout(() => {
-      // For demo purposes, accept any 4-digit code
-      const isCodeValid = this.verificationCode.length === 4;
-      
-      if (isCodeValid) {
-        // In a real app, this would update the password in your database
-        console.log(`Resetting password for ${this.email}`);
-        this.successMessage = 'Your password has been reset successfully';
-        
-        // Clean up
-        localStorage.removeItem('resetEmail');
-        
-        // Navigate back to login after a brief delay
-        setTimeout(() => {
-          this.router.navigate(['/guest/login']);
-        }, 3000);
-      } else {
-        this.errorMessage = 'Invalid verification code';
-        this.isSubmitting = false;
-      }
-    }, 1500);
+    // Reset password
+    this.userService.resetPassword(this.email, this.newPassword)
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting = false;
+          
+          if (response.success) {
+            this.successMessage = 'Your password has been reset successfully';
+            
+            // Clean up
+            localStorage.removeItem('resetEmail');
+            
+            // Navigate back to login after a brief delay
+            setTimeout(() => {
+              this.router.navigate(['/guest/login']);
+            }, 3000);
+          } else {
+            this.errorMessage = response.message || 'Failed to reset password';
+          }
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          this.errorMessage = error.error?.message || 'An error occurred';
+          console.error('Reset password error:', error);
+        }
+      });
   }
 }

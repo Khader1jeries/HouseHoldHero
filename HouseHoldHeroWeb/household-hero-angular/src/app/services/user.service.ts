@@ -1,16 +1,17 @@
 // src/app/services/user.service.ts
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, from, switchMap, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
+import { environment } from '../../enviroments/enviroment';
 
 export interface User {
   uid?: string;
   email: string;
   fullName: string;
-  phoneNumber: string;
-  countryCode: string;
+  phoneNumber?: string;
+  countryCode?: string;
   role?: 'admin' | 'user';
   familyId?: string;
   createdAt?: Date;
@@ -20,112 +21,100 @@ export interface User {
   providedIn: 'root',
 })
 export class UserService {
-  constructor(
-    private afAuth: AngularFireAuth,
-    private firestore: AngularFirestore,
-    private router: Router
-  ) {}
+  private apiUrl = `${environment.apiUrl}/users`;
 
-  // Register a new user
-  registerUser(user: User, password: string): Observable<any> {
-    return from(
-      this.afAuth.createUserWithEmailAndPassword(user.email, password)
-    ).pipe(
-      switchMap((credentials) => {
-        if (credentials.user) {
-          // Add user to Firestore with UID from authentication
-          const userData: User = {
-            uid: credentials.user.uid,
-            email: user.email,
-            fullName: user.fullName,
-            phoneNumber: user.phoneNumber,
-            countryCode: user.countryCode,
-            role: 'user', // Default role
-            createdAt: new Date(),
-          };
+  constructor(private http: HttpClient, private router: Router) {}
 
-          return from(
-            this.firestore
-              .collection('users')
-              .doc(credentials.user.uid)
-              .set(userData)
-          );
+  // Register a new user - simplified without authentication
+  registerUser(user: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register-simple`, user).pipe(
+      tap(response => {
+        if (response.success && response.user) {
+          // Store user in localStorage
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          // Navigate to user dashboard
+          this.router.navigate(['/user']);
         }
-        return of(null);
-      })
-    );
-  }
-
-  // Login user
-  loginUser(email: string, password: string): Observable<any> {
-    return from(this.afAuth.signInWithEmailAndPassword(email, password));
-  }
-
-  // Logout user
-  logoutUser(): Observable<void> {
-    return from(
-      this.afAuth.signOut().then(() => {
-        this.router.navigate(['/guest/login']);
-      })
-    );
-  }
-
-  // Get current user
-  getCurrentUser(): Observable<firebase.default.User | null> {
-    return this.afAuth.authState;
-  }
-
-  // Send verification email after registration
-  sendVerificationEmail(): Observable<void | null> {
-    return from(
-      this.afAuth.currentUser.then((user) => {
-        if (user) {
-          return user.sendEmailVerification();
-        }
-        return null;
-      })
-    );
-  }
-
-  // Reset password
-  resetPassword(email: string): Observable<void> {
-    return from(this.afAuth.sendPasswordResetEmail(email));
-  }
-
-  // Get user data from Firestore
-  getUserData(uid: string): Observable<User | undefined> {
-    return this.firestore.collection('users').doc<User>(uid).valueChanges();
-  }
-
-  // Update user profile
-  updateUserProfile(user: Partial<User>): Observable<void | null> {
-    return from(
-      this.afAuth.currentUser.then((currentUser) => {
-        if (currentUser && user.uid) {
-          return this.firestore.collection('users').doc(user.uid).update(user);
-        }
-        return null;
-      })
-    );
-  }
-
-  // Create a new family and assign the user as admin
-  createFamily(familyName: string, uid: string): Observable<any> {
-    const familyData = {
-      name: familyName,
-      admin: uid,
-      members: [uid],
-      createdAt: new Date(),
-    };
-
-    return from(this.firestore.collection('families').add(familyData)).pipe(
-      switchMap((docRef) => {
-        // Update user with familyId and role
-        return this.firestore.collection('users').doc(uid).update({
-          familyId: docRef.id,
-          role: 'admin',
+      }),
+      catchError(error => {
+        console.error('Registration error:', error);
+        return of({ 
+          success: false, 
+          message: error.error?.message || 'Registration failed' 
         });
       })
     );
+  }
+
+  // Login user - simplified without authentication
+  loginUser(email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login-simple`, { email, password }).pipe(
+      tap(response => {
+        if (response.success && response.user) {
+          // Store user in localStorage
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          // Navigate to user dashboard
+          this.router.navigate(['/user']);
+        }
+      }),
+      catchError(error => {
+        console.error('Login error:', error);
+        return of({ 
+          success: false, 
+          message: error.error?.message || 'Login failed' 
+        });
+      })
+    );
+  }
+
+  // Logout user
+  logoutUser(): void {
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/guest/login']);
+  }
+
+  // Get current user from localStorage
+  getCurrentUser(): User | null {
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Check if user is logged in
+  isLoggedIn(): boolean {
+    return !!this.getCurrentUser();
+  }
+
+  // Create a new family
+  createFamily(familyName: string, uid: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create-family`, { 
+      name: familyName, 
+      admin: uid 
+    });
+  }
+
+  // Update user profile
+  updateUserProfile(user: Partial<User>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${user.uid}`, user);
+  }
+
+  // Check if email exists
+  checkEmail(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/check-email`, { email });
+  }
+
+  // Reset password directly
+  resetPassword(email: string, newPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password-simple`, { 
+      email, 
+      newPassword 
+    });
   }
 }

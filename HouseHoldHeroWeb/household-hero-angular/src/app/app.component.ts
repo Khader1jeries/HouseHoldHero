@@ -1,18 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+// src/app/app.component.ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
-import { RouterModule } from '@angular/router';
-import { DataService } from './services/data.service';
 @Component({
   selector: 'app-root',
-  imports: [RouterModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`
 })
-export class AppComponent implements OnInit {
-  constructor(private dataService: DataService) {}
-
-  ngOnInit() {
-    // Load data when app initializes
-    this.dataService.loadInitialData();
-  }
+export class AppComponent {
+  title = 'Household Hero';
 }

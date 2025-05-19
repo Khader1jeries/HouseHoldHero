@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -17,18 +18,41 @@ export class LoginComponent {
     rememberMe: false
   };
 
-  constructor(private router: Router) {}
+  errorMessage: string = '';
+  isSubmitting: boolean = false;
+
+  constructor(
+    private router: Router,
+    private userService: UserService
+  ) {}
 
   onSubmit() {
-    // Here you would normally validate credentials against backend
-    // For demo purposes, we're just storing the email and redirecting
+    this.isSubmitting = true;
+    this.errorMessage = '';
 
-    // Store email in local storage or session for later use
-    localStorage.setItem('userEmail', this.loginData.email);
+    // Validate input
+    if (!this.loginData.email || !this.loginData.password) {
+      this.errorMessage = 'Please enter both email and password';
+      this.isSubmitting = false;
+      return;
+    }
 
-    // Navigate to OTP verification
-    this.router.navigate(['/guest/otp-verification'], { 
-      queryParams: { email: this.loginData.email } 
-    });
+    // Attempt login
+    this.userService.loginUser(this.loginData.email, this.loginData.password)
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting = false;
+          
+          if (!response.success) {
+            this.errorMessage = response.message || 'Login failed';
+          }
+          // If successful, the service will automatically redirect to the user dashboard
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          this.errorMessage = error.error?.message || 'An error occurred during login';
+          console.error('Login error:', error);
+        }
+      });
   }
 }

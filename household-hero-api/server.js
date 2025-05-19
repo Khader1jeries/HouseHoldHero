@@ -1,4 +1,4 @@
-// server.js - Main entry point for our API
+// server.js - Updated with simplified user routes
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -21,9 +21,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // IMPORTANT: Only require routes AFTER Firebase is initialized
 const routes = require("./routes");
+const userRoutes = require("./users");
 
 // Set up our API routes
 app.use("/api", routes);
+app.use("/api/users", userRoutes); // Use simplified user routes
 
 // Basic route for testing
 app.get("/", (req, res) => {
