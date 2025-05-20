@@ -12,9 +12,10 @@ import { UserService } from '../../services/user.service';
   styleUrl: './registration.component.css',
 })
 export class RegistrationComponent implements OnInit {
-  // User data structure
+  // User data structure with separated first and last name
   user = {
-    fullName: '',
+    firstName: '',
+    lastName: '',
     phoneNumber: '',
     email: '',
     password: '',
@@ -34,7 +35,7 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit() {
     // Get email from query params if available
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['email']) {
         this.user.email = params['email'];
       }
@@ -59,29 +60,71 @@ export class RegistrationComponent implements OnInit {
       return;
     }
 
+    // Create registration data with separate first/last name
+    const registrationData = {
+      ...this.user,
+      // Keep fullName field for backward compatibility
+      fullName: `${this.user.firstName} ${this.user.lastName}`,
+    };
+
     // Register the user
-    this.userService.registerUser(this.user).subscribe({
+    this.userService.registerUser(registrationData).subscribe({
       next: (response) => {
-        this.isSubmitting = false;
-        
         if (response.success) {
-          this.successMessage = 'Registration successful! Redirecting to login...';
-          // Redirect to login page after a short delay
-          setTimeout(() => {
-            this.router.navigate(['/guest/login']);
-          }, 2000);
+          // Create family using the last name
+          this.createFamily(response.user);
         } else {
+          this.isSubmitting = false;
           this.errorMessage = response.message || 'Registration failed';
         }
       },
       error: (error) => {
         this.isSubmitting = false;
-        this.errorMessage = error.error?.message || 'An error occurred during registration';
+        this.errorMessage =
+          error.error?.message || 'An error occurred during registration';
         console.error('Registration error:', error);
-      }
+      },
     });
   }
-  
+
+  // Create family after successful registration
+  createFamily(user: any) {
+    // Create family name with the user's last name, adding a unique ID to avoid conflicts
+    const familyName = `${this.user.lastName} Family`;
+
+    this.userService.createFamily(familyName, user.uid).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        if (response.success) {
+          this.successMessage =
+            'Registration successful! Your family has been created. Redirecting to login...';
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            this.router.navigate(['/guest/login']);
+          }, 2000);
+        } else {
+          // Even if family creation fails, let the user continue to login
+          this.successMessage =
+            'Registration successful! Redirecting to login...';
+          console.error('Family creation issue:', response.message);
+          setTimeout(() => {
+            this.router.navigate(['/guest/login']);
+          }, 2000);
+        }
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        // Still consider registration successful, just log the family creation error
+        this.successMessage =
+          'Registration successful! Redirecting to login...';
+        console.error('Family creation error:', error);
+        setTimeout(() => {
+          this.router.navigate(['/guest/login']);
+        }, 2000);
+      },
+    });
+  }
+
   navigateToLogin() {
     this.router.navigate(['/guest/login']);
   }

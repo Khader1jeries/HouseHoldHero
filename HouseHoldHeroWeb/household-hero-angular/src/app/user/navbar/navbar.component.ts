@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { UserService } from '../../services/user.service';
 
 interface Notification {
   id: string;
@@ -36,7 +37,10 @@ export class NavbarComponent implements OnInit {
   // User Menu
   showUserMenu: boolean = false;
 
-  constructor(private router: Router) {
+  // User data
+  userData: any = null;
+
+  constructor(private router: Router, private userService: UserService) {
     // Listen to route changes to update the page title
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -76,6 +80,9 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     // Set initial page title based on current URL
     this.updatePageTitle(this.router.url);
+
+    // Get user data from UserService
+    this.userData = this.userService.getCurrentUser();
   }
 
   // Update page title based on route
@@ -145,9 +152,8 @@ export class NavbarComponent implements OnInit {
 
   // Logout
   logout(): void {
-    // In a real app, this would call a service to handle logout
-    console.log('Logging out');
-    this.router.navigate(['/guest/login']);
+    // Use the UserService logout method
+    this.userService.logoutUser();
   }
 
   // Add a notification (could be called from a service in a real app)

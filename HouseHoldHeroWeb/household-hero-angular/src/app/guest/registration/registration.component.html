@@ -26,21 +26,30 @@
     </div>
 
     <form (ngSubmit)="onSubmit()" *ngIf="!successMessage">
-      <!-- Full Name Input -->
-      <input 
-        type="text" 
-        placeholder="Enter your full name" 
-        [(ngModel)]="user.fullName" 
-        name="fullName"
-        required 
+      <!-- First Name Input -->
+      <input
+        type="text"
+        placeholder="Enter your first name"
+        [(ngModel)]="user.firstName"
+        name="firstName"
+        required
+      />
+
+      <!-- Last Name Input -->
+      <input
+        type="text"
+        placeholder="Enter your last name"
+        [(ngModel)]="user.lastName"
+        name="lastName"
+        required
       />
 
       <!-- Phone Number Input -->
       <div class="phone-input">
         <!-- Country Code Dropdown -->
-        <select 
-          class="country-code" 
-          name="countryCode" 
+        <select
+          class="country-code"
+          name="countryCode"
           [(ngModel)]="user.countryCode"
           required
         >
@@ -64,39 +73,42 @@
       </div>
 
       <!-- Email Input -->
-      <input 
-        type="email" 
-        placeholder="Enter your email" 
+      <input
+        type="email"
+        placeholder="Enter your email"
         [(ngModel)]="user.email"
         name="email"
-        required 
+        required
       />
 
       <!-- Password Input -->
-      <input 
-        type="password" 
-        placeholder="Enter your password" 
+      <input
+        type="password"
+        placeholder="Enter your password"
         [(ngModel)]="user.password"
         name="password"
-        required 
+        required
       />
 
       <!-- Confirm Password Input -->
-      <input 
-        type="password" 
-        placeholder="Re-enter your password" 
+      <input
+        type="password"
+        placeholder="Re-enter your password"
         [(ngModel)]="user.confirmPassword"
         name="confirmPassword"
-        required 
+        required
       />
 
       <!-- Sign-Up Button -->
       <button type="submit" class="signup-btn" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Submitting...' : 'Sign up' }}
+        {{ isSubmitting ? "Submitting..." : "Sign up" }}
       </button>
     </form>
 
     <!-- Login Link -->
-    <p class="login-text">Already have an account? <a routerLink="/guest/login" (click)="navigateToLogin()">Log-in</a></p>
+    <p class="login-text">
+      Already have an account?
+      <a routerLink="/guest/login" (click)="navigateToLogin()">Log-in</a>
+    </p>
   </div>
 </div>

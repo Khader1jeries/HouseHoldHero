@@ -91,7 +91,7 @@
     <!-- User Profile Dropdown -->
     <div class="user-profile-container">
       <div class="user-info" (click)="toggleUserMenu($event)">
-        <span class="user-name">John</span>
+        <span class="user-name">{{ userData?.fullName || "User" }}</span>
         <img src="assets/profile_pic.png" alt="Avatar" class="avatar" />
       </div>
 
@@ -100,9 +100,11 @@
         <div class="user-details">
           <img src="assets/profile_pic.png" alt="Avatar" class="avatar-large" />
           <div class="user-details-text">
-            <h3>John Doe</h3>
-            <p>Family Admin</p>
-            <p class="user-email">john&#64;example.com</p>
+            <h3>{{ userData?.fullName || "User" }}</h3>
+            <p>{{ userData?.role || "Family Member" }}</p>
+            <p class="user-email">
+              {{ userData?.email || "user@example.com" }}
+            </p>
           </div>
         </div>
 
