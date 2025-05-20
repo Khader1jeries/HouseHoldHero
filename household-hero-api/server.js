@@ -1,4 +1,4 @@
-// server.js - Updated with error handling for family creation
+// server.js - Updated to include members routes
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -28,6 +28,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// Import routes AFTER Firebase is initialized
+const routes = require("./routes");
+const userRoutes = require("./users");
+const memberRoutes = require("./members"); // Import the members module
+
+// Set up our API routes
+app.use("/api", routes);
+app.use("/api/users", userRoutes);
+app.use("/api/members", memberRoutes); // Use the members routes
+
+// Basic route for testing
+app.get("/", (req, res) => {
+  res.send("Household Hero API is running");
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
@@ -35,19 +50,6 @@ app.use((err, req, res, next) => {
     success: false,
     message: `Server error: ${err.message || "Unknown error"}`,
   });
-});
-
-// IMPORTANT: Only require routes AFTER Firebase is initialized
-const routes = require("./routes");
-const userRoutes = require("./users");
-
-// Set up our API routes
-app.use("/api", routes);
-app.use("/api/users", userRoutes); // Use simplified user routes
-
-// Basic route for testing
-app.get("/", (req, res) => {
-  res.send("Household Hero API is running");
 });
 
 // Start the server

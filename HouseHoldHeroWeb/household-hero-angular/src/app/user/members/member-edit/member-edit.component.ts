@@ -3,16 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  age: number;
-  role: string;
-  profileImage: string;
-}
+import { MemberService, Member } from '../../../services/member.service';
 
 @Component({
   selector: 'app-member-edit',
@@ -25,20 +16,26 @@ export class MemberEditComponent implements OnInit {
   memberId: string = '';
   member: Member = {
     id: '',
-    name: '',
+    fullName: '',
     email: '',
     phone: '',
     age: 0,
     role: 'Family Member',
     profileImage: 'assets/profile_pic.png',
+    score: 0,
   };
 
   availableRoles: string[] = ['Family Member', 'Admin', 'Guest'];
   isSubmitting: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
+  isLoading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private memberService: MemberService
+  ) {}
 
   ngOnInit(): void {
     // Get the member ID from the route parameters
@@ -51,41 +48,25 @@ export class MemberEditComponent implements OnInit {
   }
 
   loadMemberData(): void {
-    // In a real app, this would call a service to get the data
-    // For now, we'll use mock data
-    const mockMembers: { [key: string]: Member } = {
-      '1': {
-        id: '1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+972 55-555-5555',
-        age: 23,
-        role: 'Family Member',
-        profileImage: 'assets/profile_pic.png',
+    this.isLoading = true;
+    // Get member data from the service
+    this.memberService.getMemberById(this.memberId).subscribe({
+      next: (data) => {
+        this.member = data;
+        this.isLoading = false;
       },
-      '2': {
-        id: '2',
-        name: 'Kavin Smith',
-        email: 'kavin@example.com',
-        phone: '+972 55-444-4444',
-        age: 21,
-        role: 'Family Member',
-        profileImage: 'assets/profile_pic.png',
-      },
-      '3': {
-        id: '3',
-        name: 'Sarah Johnson',
-        email: 'sarah@example.com',
-        phone: '+972 55-333-3333',
-        age: 27,
-        role: 'Family Member',
-        profileImage: 'assets/profile_pic.png',
-      },
-    };
+      error: (err) => {
+        console.error('Error loading member data:', err);
+        this.errorMessage =
+          'Failed to load member data. Please try again later.';
+        this.isLoading = false;
 
-    if (mockMembers[this.memberId]) {
-      this.member = { ...mockMembers[this.memberId] };
-    }
+        // After a delay, navigate back to the members list
+        setTimeout(() => {
+          this.router.navigate(['/user/members']);
+        }, 3000);
+      },
+    });
   }
 
   uploadProfilePicture(event: any): void {
@@ -114,26 +95,44 @@ export class MemberEditComponent implements OnInit {
     this.successMessage = '';
 
     // Basic validation
-    if (!this.member.name || !this.member.email) {
+    if (!this.member.fullName || !this.member.email) {
       this.errorMessage = 'Name and Email are required';
       this.isSubmitting = false;
       return;
     }
 
-    // In a real app, this would call a service to save the data
-    setTimeout(() => {
-      console.log('Saving member:', this.member);
-      this.successMessage = 'Member updated successfully';
-      this.isSubmitting = false;
+    // Prepare data for update
+    const updateData: Partial<Member> = {
+      fullName: this.member.fullName,
+      email: this.member.email,
+      phone: this.member.phone,
+      age: this.member.age,
+      role: this.member.role,
+      profileImage: this.member.profileImage,
+    };
 
-      // Navigate back to the member details page after a delay
-      setTimeout(() => {
-        this.router.navigate(['/user/members', this.memberId]);
-      }, 2000);
-    }, 1500);
+    // Call the service to update the member
+    this.memberService.updateMember(this.memberId, updateData).subscribe({
+      next: (response) => {
+        console.log('Member updated:', response);
+        this.successMessage = 'Member updated successfully';
+        this.isSubmitting = false;
+
+        // Navigate back to the member details page after a delay
+        setTimeout(() => {
+          this.router.navigate(['/user/members/details', this.memberId]);
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error updating member:', err);
+        this.errorMessage =
+          err.error?.error || 'Failed to update member. Please try again.';
+        this.isSubmitting = false;
+      },
+    });
   }
 
   cancel(): void {
-    this.router.navigate(['/user/members', this.memberId]);
+    this.router.navigate(['/user/members/details', this.memberId]);
   }
 }

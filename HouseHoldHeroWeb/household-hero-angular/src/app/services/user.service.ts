@@ -1,10 +1,11 @@
 // src/app/services/user.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface User {
   uid?: string;
@@ -24,8 +25,15 @@ export interface User {
 })
 export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
+  private isBrowser: boolean;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   // Register a new user - without automatic redirection
   registerUser(user: any): Observable<any> {
@@ -79,8 +87,13 @@ export class UserService {
       .pipe(
         tap((response) => {
           if (response.success && response.user) {
-            // Store user in localStorage
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
+            // Store user in localStorage if in browser
+            if (this.isBrowser) {
+              localStorage.setItem(
+                'currentUser',
+                JSON.stringify(response.user)
+              );
+            }
             // Navigate to user dashboard
             this.router.navigate(['/user']);
           }
@@ -97,12 +110,18 @@ export class UserService {
 
   // Logout user
   logoutUser(): void {
-    localStorage.removeItem('currentUser');
+    if (this.isBrowser) {
+      localStorage.removeItem('currentUser');
+    }
     this.router.navigate(['/guest/login']);
   }
 
   // Get current user from localStorage
   getCurrentUser(): User | null {
+    if (!this.isBrowser) {
+      return null; // Return null when running in server environment
+    }
+
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
       try {

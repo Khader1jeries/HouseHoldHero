@@ -1,9 +1,9 @@
 // src/app/user/members/members.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { Member } from '../../services/member.service';
-import { DataService } from '../../services/data.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MemberService, Member } from '../../services/member.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-members',
@@ -18,23 +18,55 @@ export class MembersComponent implements OnInit {
   showLeaderboard: boolean = true;
   isLoading: boolean = true;
   error: string | null = null;
+  familyId: string | null = null;
 
-  constructor(private router: Router, private dataService: DataService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private memberService: MemberService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    // Get members from the centralized DataService
-    this.dataService.getMembers().subscribe({
+    // Check for query parameters
+    this.route.queryParams.subscribe((params) => {
+      if (params['view'] === 'leaderboard') {
+        this.navigateToLeaderboard();
+        return;
+      }
+    });
+
+    // Get the user's family ID
+    const user = this.userService.getCurrentUser();
+    if (user && user.familyId) {
+      this.familyId = user.familyId;
+      this.loadMembers();
+    } else {
+      this.error = 'No family information found. Please log in again.';
+      this.isLoading = false;
+    }
+  }
+
+  loadMembers(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    // Use the member service to load family members
+    this.memberService.getMembers(this.familyId || undefined).subscribe({
       next: (data) => {
         this.members = data;
         this.isLoading = false;
-        // Sort members by score for the leaderboard if needed
+
+        // Sort members by score for the leaderboard
         if (data.length > 0) {
-          this.topMembers = [...data].sort((a, b) => b.score - a.score);
+          this.topMembers = [...data].sort(
+            (a, b) => (b.score || 0) - (a.score || 0)
+          );
         }
       },
       error: (err) => {
-        console.error('Error getting members from DataService:', err);
-        this.error = 'Failed to load members. Please try again later.';
+        console.error('Error loading members:', err);
+        this.error = 'Failed to load members. Please try again.';
         this.isLoading = false;
       },
     });
@@ -44,14 +76,14 @@ export class MembersComponent implements OnInit {
     this.router.navigate(['/user/members/add']);
   }
 
-  // FIXED: Handle potentially undefined member.id
+  // Navigate to member details page
   navigateToMemberDetails(id: string | undefined): void {
     if (id) {
       this.router.navigate(['/user/members/details', id]);
     }
   }
 
-  // FIXED: Handle potentially undefined member.id
+  // Delete a member
   deleteMember(id: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
@@ -59,25 +91,28 @@ export class MembersComponent implements OnInit {
     if (!id) return;
 
     if (confirm('Are you sure you want to delete this member?')) {
-      // We would ideally update the DataService and let it handle the API call
-      // For now, we'll just update the local arrays
-      this.members = this.members.filter((member) => member.id !== id);
-      this.topMembers = this.topMembers.filter((member) => member.id !== id);
-
-      // In a complete implementation, you'd call a method on DataService like:
-      // this.dataService.deleteMember(id).subscribe({
-      //   next: () => {
-      //     // Success handling if needed
-      //   },
-      //   error: (err) => {
-      //     console.error('Error deleting member:', err);
-      //     alert('Failed to delete member. Please try again.');
-      //   }
-      // });
+      this.memberService
+        .deleteMember(id, this.familyId || undefined)
+        .subscribe({
+          next: () => {
+            // Remove the member from our arrays
+            this.members = this.members.filter((member) => member.id !== id);
+            this.topMembers = this.topMembers.filter(
+              (member) => member.id !== id
+            );
+          },
+          error: (err) => {
+            console.error('Error deleting member:', err);
+            alert(
+              'Failed to delete member. ' +
+                (err.error?.error || 'Please try again.')
+            );
+          },
+        });
     }
   }
 
-  // FIXED: Handle potentially undefined member.id
+  // Navigate to edit member page
   editMember(id: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
@@ -85,7 +120,7 @@ export class MembersComponent implements OnInit {
     if (!id) return;
 
     // Navigate to edit member page
-    this.router.navigate([`/user/members/edit/${id}`]);
+    this.router.navigate(['/user/members/edit', id]);
   }
 
   toggleLeaderboard(): void {
@@ -98,7 +133,7 @@ export class MembersComponent implements OnInit {
 
   // Helper methods for the template
   getTotalScore(): number {
-    return this.members.reduce((sum, member) => sum + member.score, 0);
+    return this.members.reduce((sum, member) => sum + (member.score || 0), 0);
   }
 
   getAverageScore(): number {

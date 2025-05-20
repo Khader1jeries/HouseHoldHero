@@ -14,15 +14,28 @@
     </div>
 
     <form (ngSubmit)="onSubmit()">
-      <!-- Full Name Input -->
+      <!-- First Name Input -->
       <div class="form-group">
-        <label for="fullName">Full Name</label>
+        <label for="firstName">First Name</label>
         <input
           type="text"
-          id="fullName"
-          placeholder="Enter full name"
-          [(ngModel)]="newMember.fullName"
-          name="fullName"
+          id="firstName"
+          placeholder="Enter first name"
+          [(ngModel)]="newMember.firstName"
+          name="firstName"
+          required
+        />
+      </div>
+
+      <!-- Last Name Input -->
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input
+          type="text"
+          id="lastName"
+          placeholder="Enter last name"
+          [(ngModel)]="newMember.lastName"
+          name="lastName"
           required
         />
       </div>

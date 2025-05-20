@@ -1,6 +1,8 @@
 // src/app/user/members/leaderboard/leaderboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MemberService } from '../../../services/member.service';
+import { UserService } from '../../../services/user.service';
 
 interface LeaderboardMember {
   id: string;
@@ -22,17 +24,58 @@ interface LeaderboardMember {
 export class LeaderboardComponent implements OnInit {
   selectedPeriod: 'week' | 'month' | 'year' = 'month';
   leaderboardData: LeaderboardMember[] = [];
+  isLoading: boolean = true;
+  error: string | null = null;
+  familyId: string | null = null;
 
-  constructor() {}
+  constructor(
+    private memberService: MemberService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    // Load leaderboard data
-    this.loadLeaderboardData();
+    // Get the user's family ID
+    const user = this.userService.getCurrentUser();
+    if (user && user.familyId) {
+      this.familyId = user.familyId;
+      this.loadLeaderboardData();
+    } else {
+      this.error = 'No family information found. Please log in again.';
+      this.isLoading = false;
+    }
   }
 
   loadLeaderboardData(): void {
-    // In a real app, this would call a service to get the data
-    // For now, we'll use mock data
+    if (!this.familyId) {
+      this.error = 'No family ID available';
+      this.isLoading = false;
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = null;
+
+    // Get leaderboard data from the service
+    this.memberService
+      .getLeaderboard(this.familyId, this.selectedPeriod)
+      .subscribe({
+        next: (data) => {
+          this.leaderboardData = data;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading leaderboard data:', err);
+          this.error = 'Failed to load leaderboard data. Please try again.';
+          this.isLoading = false;
+
+          // Fallback to mock data if API fails
+          this.useMockLeaderboardData();
+        },
+      });
+  }
+
+  // Fallback method to use mock data if API fails
+  useMockLeaderboardData(): void {
     this.leaderboardData = [
       {
         id: '2',
@@ -66,7 +109,7 @@ export class LeaderboardComponent implements OnInit {
 
   changePeriod(period: 'week' | 'month' | 'year'): void {
     this.selectedPeriod = period;
-    // In a real app, this would reload the data based on the selected period
-    // For demo purposes, we'll just change the title
+    // Reload data with the new period
+    this.loadLeaderboardData();
   }
 }

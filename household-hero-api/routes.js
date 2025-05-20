@@ -54,7 +54,11 @@ router.post("/members", async (req, res) => {
     const newMember = req.body;
 
     // Validate required fields
-    if (!newMember.name || !newMember.email) {
+    // Validate required fields
+    if (
+      (!newMember.name && !(newMember.firstName || newMember.fullName)) ||
+      !newMember.email
+    ) {
       return res.status(400).json({ error: "Name and email are required" });
     }
 
