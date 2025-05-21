@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskService, Task, SubTask } from '../../../services/task.service';
-import { MemberService } from '../../../services/member.service';
+import { MemberService, Member } from '../../../services/member.service';
 import { UserService } from '../../../services/user.service';
 
 @Component({
@@ -29,7 +29,7 @@ export class AddTaskComponent implements OnInit {
   };
 
   // Family members for the dropdown
-  familyMembers: { id: string; name: string }[] = [];
+  familyMembers: Member[] = [];
 
   // Assignment type - direct or voting
   assignmentType = 'direct';
@@ -65,52 +65,35 @@ export class AddTaskComponent implements OnInit {
         this.loadFamilyMembers(currentUser.familyId);
       } else {
         console.warn('No family ID found for current user');
-        // Mock family members for development/testing
-        this.mockFamilyMembers();
+        this.errorMessage = 'No family ID found. Please set up a family first.';
       }
     } else {
       console.warn('No current user found');
-      // Mock family members for development/testing
-      this.mockFamilyMembers();
+      this.errorMessage = 'You need to be logged in to create tasks.';
     }
   }
 
-  // Load family members from the service
-  loadFamilyMembers(familyId: string | undefined): void {
-    if (!familyId) {
-      console.error('No family ID provided for loading members');
-      return;
-    }
+  // Load family members from the service using the family ID
+  loadFamilyMembers(familyId: string): void {
+    console.log(`Loading family members for family ID: ${familyId}`);
 
     this.memberService.getMembers(familyId).subscribe({
       next: (members) => {
-        this.familyMembers = members.map((member) => ({
-          id: member.id || '',
-          name:
-            member.fullName ||
-            member.name ||
-            `${member.firstName || ''} ${member.lastName || ''}`.trim() ||
-            'Unknown',
-        }));
+        console.log('Loaded family members:', members);
+        if (members && members.length > 0) {
+          this.familyMembers = members;
+        } else {
+          console.warn('No family members found');
+          this.errorMessage =
+            'No family members found. Please add family members first.';
+        }
       },
       error: (err) => {
         console.error('Error loading family members:', err);
         this.errorMessage =
-          'Failed to load family members. You can still create the task.';
-
-        // If we fail to load members, still provide mock data
-        this.mockFamilyMembers();
+          'Failed to load family members. Please try again later.';
       },
     });
-  }
-
-  // Create mock family members if we can't load from the server
-  mockFamilyMembers(): void {
-    this.familyMembers = [
-      { id: 'member1', name: 'John' },
-      { id: 'member2', name: 'Kavin' },
-      { id: 'member3', name: 'Sarah' },
-    ];
   }
 
   // Add a new subtask
@@ -172,12 +155,14 @@ export class AddTaskComponent implements OnInit {
       }
     }
 
+    // Check if family ID exists
     if (!this.newTask.familyId) {
-      // If we don't have a family ID, use a mock one for demo purposes
-      this.newTask.familyId = 'demo-family-id';
+      this.errorMessage = 'Family ID is required to create a task';
+      this.isSubmitting = false;
+      return;
     }
 
-    // For demo purposes, log the task before sending
+    // For debugging purposes
     console.log('Creating task:', this.newTask);
 
     // Submit the task to the server
@@ -197,18 +182,6 @@ export class AddTaskComponent implements OnInit {
         this.errorMessage =
           err.error?.error || 'Failed to create task. Please try again.';
         this.isSubmitting = false;
-
-        // For demo purposes - simulate success even if the API call fails
-        if (err.status === 0 || err.status === 500) {
-          console.log(
-            'Demo mode - simulating successful task creation despite API error'
-          );
-          this.successMessage = 'Task created successfully (demo mode)!';
-
-          setTimeout(() => {
-            this.router.navigate(['/user/tasks']);
-          }, 2000);
-        }
       },
     });
   }

@@ -86,11 +86,15 @@
           id="assignedTo"
           [(ngModel)]="newTask.assignedTo"
           name="assignedTo"
+          required
         >
           <option value="">Select Family Member</option>
-          <option value="John">John</option>
-          <option value="Kavin">Kavin</option>
-          <option value="Sarah">Sarah</option>
+          <option *ngFor="let member of familyMembers" [value]="member.id">
+            {{
+              member.firstName ||
+                (member.fullName ? member.fullName.split(" ")[0] : member.name)
+            }}
+          </option>
         </select>
       </div>
 
