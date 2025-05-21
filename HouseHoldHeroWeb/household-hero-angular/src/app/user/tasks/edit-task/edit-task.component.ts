@@ -3,26 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface SubTask {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignedTo: string;
-  dueDate: Date;
-  startDate?: Date;
-  status: 'pending' | 'completed' | 'upcoming' | 'voting';
-  points: number;
-  priority: 'low' | 'medium' | 'high';
-  category: string;
-  subTasks?: SubTask[];
-}
+import { TaskService, Task, SubTask } from '../../../services/task.service';
+import { MemberService } from '../../../services/member.service';
 
 @Component({
   selector: 'app-edit-task',
@@ -33,6 +15,7 @@ interface Task {
 })
 export class EditTaskComponent implements OnInit {
   taskId: string = '';
+  originalTask?: Task;
   task: Task = {
     id: '',
     title: '',
@@ -43,9 +26,14 @@ export class EditTaskComponent implements OnInit {
     points: 50,
     priority: 'medium',
     category: 'General',
+    createdBy: '',
+    createdDate: new Date(),
   };
 
-  familyMembers: string[] = ['John', 'Kavin', 'Sarah', 'Emma'];
+  // Family members for dropdown
+  familyMembers: { id: string; name: string }[] = [];
+
+  // Categories - can be expanded
   categories: string[] = [
     'Cleaning',
     'Cooking',
@@ -62,12 +50,18 @@ export class EditTaskComponent implements OnInit {
   isSubmitting: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
+  isLoading: boolean = true;
 
   // Date formatting for the input fields
   dueDateStr: string = '';
   startDateStr: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private taskService: TaskService,
+    private memberService: MemberService
+  ) {}
 
   ngOnInit(): void {
     // Get the task ID from the route parameters
@@ -80,76 +74,65 @@ export class EditTaskComponent implements OnInit {
   }
 
   loadTaskData(): void {
-    // In a real app, this would call a service to get the data
-    // For now, we'll use mock data
-    const mockTasks: { [key: string]: Task } = {
-      '1': {
-        id: '1',
-        title: 'Clean Bathroom',
-        description:
-          'Clean the entire bathroom, including shower, toilet, and sink. Make sure to use appropriate cleaning products for each surface.',
-        assignedTo: 'John',
-        dueDate: new Date(2025, 4, 30),
-        status: 'pending',
-        points: 50,
-        priority: 'medium',
-        category: 'Cleaning',
-        subTasks: [
-          { id: '1-1', title: 'Clean shower', completed: true },
-          { id: '1-2', title: 'Clean toilet', completed: false },
-          { id: '1-3', title: 'Clean sink', completed: false },
-          { id: '1-4', title: 'Mop floor', completed: true },
-        ],
-      },
-      '2': {
-        id: '2',
-        title: 'Wash the Car',
-        description:
-          'Wash the family car, including interior vacuuming. Use the car wash kit in the garage.',
-        assignedTo: 'Sarah',
-        dueDate: new Date(2025, 4, 29),
-        status: 'pending',
-        points: 75,
-        priority: 'high',
-        category: 'Outdoors',
-      },
-      '4': {
-        id: '4',
-        title: 'Do Laundry',
-        description:
-          'Wash, dry, and fold all household laundry. Remember to separate colors from whites.',
-        assignedTo: 'John',
-        startDate: new Date(2025, 5, 5),
-        dueDate: new Date(2025, 5, 10),
-        status: 'upcoming',
-        points: 60,
-        priority: 'low',
-        category: 'Cleaning',
-        subTasks: [
-          { id: '4-1', title: 'Sort clothes', completed: false },
-          { id: '4-2', title: 'Wash clothes', completed: false },
-          { id: '4-3', title: 'Dry clothes', completed: false },
-          { id: '4-4', title: 'Fold and put away', completed: false },
-        ],
-      },
-    };
+    this.isLoading = true;
 
-    if (mockTasks[this.taskId]) {
-      this.task = { ...mockTasks[this.taskId] };
+    // Load the task data
+    this.taskService.getTaskById(this.taskId).subscribe({
+      next: (data) => {
+        this.originalTask = { ...data };
+        this.task = { ...data };
 
-      // Format dates for the input fields
-      this.dueDateStr = this.formatDateForInput(this.task.dueDate);
-      if (this.task.startDate) {
-        this.startDateStr = this.formatDateForInput(this.task.startDate);
-      }
+        // Format dates for the input fields
+        this.dueDateStr = this.formatDateForInput(this.task.dueDate);
+        if (this.task.startDate) {
+          this.startDateStr = this.formatDateForInput(this.task.startDate);
+        }
+
+        // Load family members for the dropdown
+        this.loadFamilyMembers();
+      },
+      error: (err) => {
+        console.error('Error loading task:', err);
+        this.errorMessage = 'Failed to load task. Please try again.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  loadFamilyMembers(): void {
+    // Use the familyId from the task
+    if (!this.task.familyId) {
+      this.isLoading = false;
+      return;
     }
+
+    this.memberService.getMembers(this.task.familyId).subscribe({
+      next: (members) => {
+        this.familyMembers = members.map((member) => ({
+          id: member.id || '',
+          name:
+            member.fullName ||
+            member.name ||
+            `${member.firstName} ${member.lastName}` ||
+            'Unknown',
+        }));
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading family members:', err);
+        this.isLoading = false;
+      },
+    });
   }
 
   // Format date to YYYY-MM-DD for date inputs
   formatDateForInput(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    if (!date) return '';
+
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 
@@ -182,7 +165,7 @@ export class EditTaskComponent implements OnInit {
     }
 
     const newSubTask: SubTask = {
-      id: `${this.taskId}-${this.task.subTasks.length + 1}`,
+      id: `${this.taskId}-${Date.now()}`, // Generate a unique ID
       title: this.newSubTaskTitle.trim(),
       completed: false,
     };
@@ -219,20 +202,29 @@ export class EditTaskComponent implements OnInit {
       return;
     }
 
-    // In a real app, this would call a service to save the data
-    setTimeout(() => {
-      console.log('Saving task:', this.task);
-      this.successMessage = 'Task updated successfully';
-      this.isSubmitting = false;
+    // Don't need to send the entire task, just the changes
+    const updatedTask: Partial<Task> = { ...this.task };
 
-      // Navigate back to task details after a delay
-      setTimeout(() => {
-        this.router.navigate(['/user/tasks', this.taskId]);
-      }, 2000);
-    }, 1500);
+    this.taskService.updateTask(this.taskId, updatedTask).subscribe({
+      next: (response) => {
+        this.successMessage = 'Task updated successfully';
+        this.isSubmitting = false;
+
+        // Navigate back to task details after a delay
+        setTimeout(() => {
+          this.router.navigate(['/user/tasks/details', this.taskId]);
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error updating task:', err);
+        this.errorMessage =
+          err.error?.error || 'Failed to update task. Please try again.';
+        this.isSubmitting = false;
+      },
+    });
   }
 
   cancel(): void {
-    this.router.navigate(['/user/tasks', this.taskId]);
+    this.router.navigate(['/user/tasks/details', this.taskId]);
   }
 }

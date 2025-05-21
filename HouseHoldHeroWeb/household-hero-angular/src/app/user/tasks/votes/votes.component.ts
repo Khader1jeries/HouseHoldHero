@@ -1,34 +1,15 @@
 // src/app/user/tasks/votes/votes.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface Vote {
-  memberId: string;
-  memberName: string;
-  memberImage: string;
-  vote: 'yes' | 'no';
-  timestamp: Date;
-  comment?: string;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: Date;
-  points: number;
-  category: string;
-  priority: 'low' | 'medium' | 'high';
-  votes: Vote[];
-  votesYes: number;
-  votesNo: number;
-}
+import { TaskService, Task, Vote } from '../../../services/task.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-votes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './votes.component.html',
   styleUrl: './votes.component.css',
 })
@@ -37,10 +18,28 @@ export class VotesComponent implements OnInit {
   task?: Task;
   votingResult: 'pending' | 'approved' | 'rejected' = 'pending';
   currentUserVoted: boolean = false;
+  currentUser: any;
+  voteComment: string = '';
+  isSubmitting: boolean = false;
+  errorMessage: string = '';
+  successMessage: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private taskService: TaskService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
+    // Get the current user
+    this.currentUser = this.userService.getCurrentUser();
+    if (!this.currentUser) {
+      console.error('User not logged in');
+      this.router.navigate(['/guest/login']);
+      return;
+    }
+
     // Get the task ID from the route parameters
     this.route.params.subscribe((params) => {
       if (params['id']) {
@@ -51,193 +50,171 @@ export class VotesComponent implements OnInit {
   }
 
   loadTaskData(): void {
-    // In a real app, this would call a service to get the data
-    // For now, we'll use mock data
-    const mockTasks: { [key: string]: Task } = {
-      '5': {
-        id: '5',
-        title: 'Cook Family Dinner',
-        description: 'Prepare dinner for the whole family on Saturday evening.',
-        dueDate: new Date(2025, 4, 30),
-        points: 100,
-        category: 'Cooking',
-        priority: 'medium',
-        votesYes: 3,
-        votesNo: 2,
-        votes: [
-          {
-            memberId: '1',
-            memberName: 'John',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'yes',
-            timestamp: new Date(2025, 4, 25, 10, 30),
-            comment: 'I can help with this task.',
-          },
-          {
-            memberId: '2',
-            memberName: 'Kavin',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'yes',
-            timestamp: new Date(2025, 4, 25, 11, 45),
-          },
-          {
-            memberId: '3',
-            memberName: 'Sarah',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 25, 14, 20),
-            comment: 'I have other plans that evening.',
-          },
-          {
-            memberId: '4',
-            memberName: 'Admin',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'yes',
-            timestamp: new Date(2025, 4, 26, 9, 15),
-          },
-          {
-            memberId: '5',
-            memberName: 'Emma',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 26, 16, 30),
-            comment: 'I would prefer to do this next week.',
-          },
-        ],
+    this.taskService.getTaskById(this.taskId).subscribe({
+      next: (data) => {
+        this.task = data;
+
+        // Determine the voting result
+        if (this.task) {
+          this.determineVotingResult();
+          this.checkCurrentUserVoted();
+        }
       },
-      '6': {
-        id: '6',
-        title: 'Clean Windows',
-        description: 'Clean all windows in the house, inside and outside.',
-        dueDate: new Date(2025, 5, 5),
-        points: 80,
-        category: 'Cleaning',
-        priority: 'low',
-        votesYes: 1,
-        votesNo: 4,
-        votes: [
-          {
-            memberId: '1',
-            memberName: 'John',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 26, 11, 30),
-            comment: 'I have a fear of heights.',
-          },
-          {
-            memberId: '2',
-            memberName: 'Kavin',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 26, 12, 45),
-            comment: 'I did this last time.',
-          },
-          {
-            memberId: '3',
-            memberName: 'Sarah',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 26, 15, 20),
-          },
-          {
-            memberId: '4',
-            memberName: 'Admin',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'yes',
-            timestamp: new Date(2025, 4, 27, 9, 15),
-            comment: 'Someone needs to do this.',
-          },
-          {
-            memberId: '5',
-            memberName: 'Emma',
-            memberImage: 'assets/profile_pic.png',
-            vote: 'no',
-            timestamp: new Date(2025, 4, 27, 10, 30),
-          },
-        ],
+      error: (err) => {
+        console.error('Error loading task data:', err);
+        this.errorMessage = 'Failed to load task data. Please try again.';
       },
-    };
+    });
+  }
 
-    this.task = mockTasks[this.taskId];
+  determineVotingResult(): void {
+    if (!this.task) return;
 
-    if (this.task) {
-      // Determine the voting result
-      if (this.task.votesYes > this.task.votesNo) {
-        this.votingResult = 'approved';
-      } else if (this.task.votesYes < this.task.votesNo) {
-        this.votingResult = 'rejected';
-      } else {
-        this.votingResult = 'pending';
-      }
+    const votesYes = this.task.votesYes || 0;
+    const votesNo = this.task.votesNo || 0;
 
-      // Check if current user has voted (mock user ID = '1' for John)
-      this.currentUserVoted = this.task.votes.some(
-        (vote) => vote.memberId === '1'
-      );
+    if (votesYes > votesNo) {
+      this.votingResult = 'approved';
+    } else if (votesYes < votesNo) {
+      this.votingResult = 'rejected';
+    } else {
+      this.votingResult = 'pending';
     }
   }
 
+  checkCurrentUserVoted(): void {
+    if (!this.task || !this.task.votes || !this.currentUser) return;
+
+    this.currentUserVoted = this.task.votes.some(
+      (vote) => vote.memberId === this.currentUser.uid
+    );
+  }
+
   vote(voteType: 'yes' | 'no'): void {
-    if (!this.task) return;
+    if (!this.task || !this.currentUser) return;
 
-    // In a real app, this would call a service to submit the vote
-    console.log(`Voting ${voteType} for task ${this.taskId}`);
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-    // For demo purposes, let's add the vote to the list (mock)
-    if (!this.currentUserVoted) {
-      const newVote: Vote = {
-        memberId: '1', // Assuming current user is John
-        memberName: 'John',
-        memberImage: 'assets/profile_pic.png',
-        vote: voteType,
-        timestamp: new Date(),
-      };
+    const voteData: Vote = {
+      memberId: this.currentUser.uid,
+      memberName:
+        this.currentUser.fullName ||
+        `${this.currentUser.firstName} ${this.currentUser.lastName}`,
+      memberImage: 'assets/profile_pic.png', // You could fetch actual profile image if available
+      vote: voteType,
+      timestamp: new Date(),
+      comment: this.voteComment,
+    };
 
-      this.task.votes.push(newVote);
-      this.currentUserVoted = true;
+    this.taskService.addVote(this.taskId, voteData).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        this.successMessage = `Your vote has been recorded!`;
+        this.currentUserVoted = true;
 
-      // Update vote count
-      if (voteType === 'yes') {
-        this.task.votesYes++;
-      } else {
-        this.task.votesNo++;
-      }
+        // Update the task data to reflect the new vote
+        if (!this.task) return;
 
-      // Re-determine the voting result
-      if (this.task.votesYes > this.task.votesNo) {
-        this.votingResult = 'approved';
-      } else if (this.task.votesYes < this.task.votesNo) {
-        this.votingResult = 'rejected';
-      } else {
-        this.votingResult = 'pending';
-      }
-    }
+        // Add the vote to the votes array
+        if (!this.task.votes) {
+          this.task.votes = [];
+        }
+        this.task.votes.push(voteData);
+
+        // Update vote counts
+        if (voteType === 'yes') {
+          this.task.votesYes = (this.task.votesYes || 0) + 1;
+        } else {
+          this.task.votesNo = (this.task.votesNo || 0) + 1;
+        }
+
+        // Recalculate voting result
+        this.determineVotingResult();
+
+        // Clear vote comment
+        this.voteComment = '';
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          err.error?.error || 'Failed to record your vote. Please try again.';
+        console.error('Error submitting vote:', err);
+      },
+    });
   }
 
   assignTask(): void {
     if (!this.task) return;
 
-    // In a real app, this would call a service to assign the task
-    console.log(`Assigning task ${this.taskId} based on votes`);
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-    // Navigate back to tasks list after a delay
-    setTimeout(() => {
-      this.router.navigate(['/user/tasks']);
-    }, 1500);
+    // Find members who voted yes
+    const yesVoters =
+      this.task.votes?.filter((vote) => vote.vote === 'yes') || [];
+
+    if (yesVoters.length === 0) {
+      this.errorMessage = 'No members voted yes for this task.';
+      this.isSubmitting = false;
+      return;
+    }
+
+    // Select a random yes voter to assign the task to
+    const randomIndex = Math.floor(Math.random() * yesVoters.length);
+    const selectedVoter = yesVoters[randomIndex];
+
+    this.taskService
+      .assignTaskFromVoting(this.taskId, selectedVoter.memberId)
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.successMessage = `Task assigned to ${selectedVoter.memberName} successfully!`;
+
+          // Navigate back to tasks list after a delay
+          setTimeout(() => {
+            this.router.navigate(['/user/tasks']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.errorMessage =
+            err.error?.error || 'Failed to assign task. Please try again.';
+          console.error('Error assigning task:', err);
+        },
+      });
   }
 
   reopenVoting(): void {
     if (!this.task) return;
 
-    // In a real app, this would call a service to reopen voting
-    console.log(`Reopening voting for task ${this.taskId}`);
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-    // For demo purposes, let's reset the votes (mock)
-    this.task.votes = [];
-    this.task.votesYes = 0;
-    this.task.votesNo = 0;
-    this.votingResult = 'pending';
-    this.currentUserVoted = false;
+    this.taskService.reopenVoting(this.taskId).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.successMessage = 'Voting reopened successfully!';
+
+        // Reset votes in the UI
+        if (this.task) {
+          this.task.votes = [];
+          this.task.votesYes = 0;
+          this.task.votesNo = 0;
+          this.votingResult = 'pending';
+          this.currentUserVoted = false;
+        }
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          err.error?.error || 'Failed to reopen voting. Please try again.';
+        console.error('Error reopening voting:', err);
+      },
+    });
   }
 
   goBack(): void {

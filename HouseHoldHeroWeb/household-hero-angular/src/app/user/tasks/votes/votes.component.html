@@ -46,18 +46,22 @@
         <div
           class="yes-bar"
           [style.width.%]="
-            (task.votesYes / (task.votesYes + task.votesNo)) * 100
+            ((task.votesYes || 0) /
+              ((task.votesYes || 0) + (task.votesNo || 0) || 1)) *
+            100
           "
         >
-          <div class="vote-count">{{ task.votesYes }}</div>
+          <div class="vote-count">{{ task.votesYes || 0 }}</div>
         </div>
         <div
           class="no-bar"
           [style.width.%]="
-            (task.votesNo / (task.votesYes + task.votesNo)) * 100
+            ((task.votesNo || 0) /
+              ((task.votesYes || 0) + (task.votesNo || 0) || 1)) *
+            100
           "
         >
-          <div class="vote-count">{{ task.votesNo }}</div>
+          <div class="vote-count">{{ task.votesNo || 0 }}</div>
         </div>
       </div>
       <div class="chart-labels">
@@ -77,7 +81,11 @@
       </button>
     </div>
 
-    <div class="admin-actions" *ngIf="task.votesYes + task.votesNo > 0">
+    <!-- Fixed the nullish check here -->
+    <div
+      class="admin-actions"
+      *ngIf="(task.votesYes || 0) + (task.votesNo || 0) > 0"
+    >
       <button
         class="assign-btn"
         (click)="assignTask()"

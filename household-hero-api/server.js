@@ -1,4 +1,4 @@
-// server.js - Updated to include members routes
+// server.js - Updated to include all routes
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -32,11 +32,13 @@ app.use((req, res, next) => {
 const routes = require("./routes");
 const userRoutes = require("./users");
 const memberRoutes = require("./members"); // Import the members module
+const taskRoutes = require("./tasks"); // Import the tasks module
 
 // Set up our API routes
 app.use("/api", routes);
 app.use("/api/users", userRoutes);
 app.use("/api/members", memberRoutes); // Use the members routes
+app.use("/api/tasks", taskRoutes); // Use the tasks routes
 
 // Basic route for testing
 app.get("/", (req, res) => {

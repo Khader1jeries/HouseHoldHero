@@ -3,39 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface Comment {
-  id: string;
-  author: string;
-  authorImage: string;
-  content: string;
-  timestamp: Date;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignedTo: string;
-  assigneeImage: string;
-  dueDate: Date;
-  status: 'pending' | 'completed' | 'upcoming' | 'voting';
-  points: number;
-  remainingTime?: string;
-  completionDate?: Date;
-  priority: 'low' | 'medium' | 'high';
-  category: string;
-  subTasks?: SubTask[];
-  comments?: Comment[];
-  createdBy: string;
-  createdDate: Date;
-}
-
-interface SubTask {
-  id: string;
-  title: string;
-  completed: boolean;
-}
+import { TaskService, Task, Comment } from '../../../services/task.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-task-details',
@@ -48,13 +17,27 @@ export class TaskDetailsComponent implements OnInit {
   taskId: string = '';
   task?: Task;
   subTaskCompletionPercentage: number = 0;
+  currentUser: any;
 
   // New comment functionality
   newComment: string = '';
+  isSubmittingComment: boolean = false;
+  isCompletingTask: boolean = false;
+  errorMessage: string = '';
+  successMessage: string = '';
+  isLoading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private taskService: TaskService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
+    // Get the current user
+    this.currentUser = this.userService.getCurrentUser();
+
     // Get the task ID from the route parameters
     this.route.params.subscribe((params) => {
       if (params['id']) {
@@ -65,108 +48,30 @@ export class TaskDetailsComponent implements OnInit {
   }
 
   loadTaskData(): void {
-    // In a real app, this would call a service to get the data
-    // For now, we'll use mock data
-    const mockTasks: { [key: string]: Task } = {
-      '1': {
-        id: '1',
-        title: 'Clean Bathroom',
-        description:
-          'Clean the entire bathroom, including shower, toilet, and sink. Make sure to use appropriate cleaning products for each surface.',
-        assignedTo: 'John',
-        assigneeImage: 'assets/profile_pic.png',
-        dueDate: new Date(2025, 4, 30),
-        status: 'pending',
-        points: 50,
-        remainingTime: '0h 5m 20s',
-        priority: 'medium',
-        category: 'Cleaning',
-        createdBy: 'Admin',
-        createdDate: new Date(2025, 4, 25),
-        subTasks: [
-          { id: '1-1', title: 'Clean shower', completed: true },
-          { id: '1-2', title: 'Clean toilet', completed: false },
-          { id: '1-3', title: 'Clean sink', completed: false },
-          { id: '1-4', title: 'Mop floor', completed: true },
-        ],
-        comments: [
-          {
-            id: '1',
-            author: 'Admin',
-            authorImage: 'assets/profile_pic.png',
-            content: 'Please use the new cleaning products under the sink.',
-            timestamp: new Date(2025, 4, 26, 9, 30),
-          },
-          {
-            id: '2',
-            author: 'John',
-            authorImage: 'assets/profile_pic.png',
-            content: 'I will complete this task tonight.',
-            timestamp: new Date(2025, 4, 27, 14, 15),
-          },
-        ],
-      },
-      '2': {
-        id: '2',
-        title: 'Wash the Car',
-        description:
-          'Wash the family car, including interior vacuuming. Use the car wash kit in the garage.',
-        assignedTo: 'Sarah',
-        assigneeImage: 'assets/profile_pic.png',
-        dueDate: new Date(2025, 4, 29),
-        status: 'pending',
-        points: 75,
-        remainingTime: '1h 5m 20s',
-        priority: 'high',
-        category: 'Outdoors',
-        createdBy: 'Admin',
-        createdDate: new Date(2025, 4, 24),
-        subTasks: [
-          { id: '2-1', title: 'Wash exterior', completed: false },
-          { id: '2-2', title: 'Clean windows', completed: false },
-          { id: '2-3', title: 'Vacuum interior', completed: false },
-        ],
-        comments: [],
-      },
-      '4': {
-        id: '4',
-        title: 'Do Laundry',
-        description:
-          'Wash, dry, and fold all household laundry. Remember to separate colors from whites.',
-        assignedTo: 'John',
-        assigneeImage: 'assets/profile_pic.png',
-        dueDate: new Date(2025, 5, 10),
-        status: 'upcoming',
-        points: 60,
-        priority: 'low',
-        category: 'Cleaning',
-        createdBy: 'Admin',
-        createdDate: new Date(2025, 4, 20),
-        subTasks: [
-          { id: '4-1', title: 'Sort clothes', completed: false },
-          { id: '4-2', title: 'Wash clothes', completed: false },
-          { id: '4-3', title: 'Dry clothes', completed: false },
-          { id: '4-4', title: 'Fold and put away', completed: false },
-        ],
-        comments: [],
-      },
-    };
+    this.isLoading = true;
+    this.errorMessage = '';
 
-    this.task = mockTasks[this.taskId];
+    this.taskService.getTaskById(this.taskId).subscribe({
+      next: (data) => {
+        this.task = data;
 
-    if (this.task && this.task.subTasks && this.task.subTasks.length > 0) {
-      // Calculate sub-task completion percentage
-      const completedSubTasks = this.task.subTasks.filter(
-        (st) => st.completed
-      ).length;
-      this.subTaskCompletionPercentage =
-        (completedSubTasks / this.task.subTasks.length) * 100;
-    }
+        // Calculate subtask completion percentage
+        if (this.task.subTasks && this.task.subTasks.length > 0) {
+          const completedSubTasks = this.task.subTasks.filter(
+            (st) => st.completed
+          ).length;
+          this.subTaskCompletionPercentage =
+            (completedSubTasks / this.task.subTasks.length) * 100;
+        }
 
-    // Initialize comments array if it doesn't exist
-    if (this.task && !this.task.comments) {
-      this.task.comments = [];
-    }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading task:', err);
+        this.errorMessage = 'Failed to load task. Please try again.';
+        this.isLoading = false;
+      },
+    });
   }
 
   getPriorityClass(priority: string): string {
@@ -199,39 +104,85 @@ export class TaskDetailsComponent implements OnInit {
 
   // Add comment functionality
   addComment(): void {
-    if (!this.task || !this.newComment.trim()) return;
+    if (!this.task || !this.newComment.trim() || !this.currentUser) return;
+
+    this.isSubmittingComment = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
     // Create a new comment
     const newComment: Comment = {
-      id: (this.task.comments?.length || 0) + 1 + '',
-      author: 'You', // Assuming the current user
-      authorImage: 'assets/profile_pic.png',
+      id: Date.now().toString(), // Simple unique ID
+      author:
+        this.currentUser.fullName ||
+        `${this.currentUser.firstName} ${this.currentUser.lastName}`,
+      authorImage: 'assets/profile_pic.png', // Update with actual user image if available
       content: this.newComment.trim(),
       timestamp: new Date(),
     };
 
-    // Add the comment to the task
-    this.task.comments = [...(this.task.comments || []), newComment];
+    this.taskService.addComment(this.taskId, newComment).subscribe({
+      next: (response) => {
+        this.isSubmittingComment = false;
 
-    // Clear the input
-    this.newComment = '';
+        // Add the comment to the task
+        if (!this.task!.comments) {
+          this.task!.comments = [];
+        }
 
-    console.log('Comment added:', newComment);
+        this.task!.comments.push(newComment);
+
+        // Clear the input
+        this.newComment = '';
+
+        this.successMessage = 'Comment added successfully';
+
+        // Clear success message after a few seconds
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.isSubmittingComment = false;
+        this.errorMessage =
+          err.error?.error || 'Failed to add comment. Please try again.';
+        console.error('Error adding comment:', err);
+      },
+    });
   }
 
   markTaskAsComplete(): void {
-    if (this.task) {
-      this.task.status = 'completed';
-      this.task.completionDate = new Date();
+    if (!this.task) return;
 
-      // In a real app, this would call a service to update the task
-      console.log('Task marked as complete:', this.task);
+    this.isCompletingTask = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-      // Navigate back to tasks list after a delay
-      setTimeout(() => {
-        this.router.navigate(['/user/tasks']);
-      }, 2000);
-    }
+    this.taskService.markTaskAsComplete(this.taskId).subscribe({
+      next: (updatedTask) => {
+        // Update the task with the completed info
+        this.task = {
+          ...this.task!,
+          ...updatedTask,
+          status: 'completed',
+          completionDate: new Date(),
+        };
+
+        this.isCompletingTask = false;
+        this.successMessage = 'Task marked as complete';
+
+        // Navigate back to tasks list after a delay
+        setTimeout(() => {
+          this.router.navigate(['/user/tasks']);
+        }, 2000);
+      },
+      error: (err) => {
+        this.isCompletingTask = false;
+        this.errorMessage =
+          err.error?.error || 'Failed to complete task. Please try again.';
+        console.error('Error completing task:', err);
+      },
+    });
   }
 
   navigateToEdit(): void {

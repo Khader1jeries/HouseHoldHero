@@ -1,14 +1,14 @@
 // src/app/user/tasks/tasks.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService, Task } from '../../services/task.service';
 import { MemberService } from '../../services/member.service';
+import { UserService } from '../../services/user.service';
 import { interval, Subscription } from 'rxjs';
 
 // Extended Task interface with additional properties
 interface ExtendedTask extends Task {
-  completedOnTime?: boolean;
   timeUntilStart?: string;
 }
 
@@ -19,7 +19,7 @@ interface ExtendedTask extends Task {
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css',
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnInit, OnDestroy {
   tasks: ExtendedTask[] = [];
   activeTasks: ExtendedTask[] = [];
   finishedTasks: ExtendedTask[] = [];
@@ -29,6 +29,7 @@ export class TasksComponent implements OnInit {
   activeTab: 'active' | 'finished' | 'future' | 'voting' = 'active';
   isLoading: boolean = true;
   error: string | null = null;
+  familyId: string | null = null;
 
   // For updating remaining time
   private timerSubscription?: Subscription;
@@ -37,10 +38,17 @@ export class TasksComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private taskService: TaskService,
-    private memberService: MemberService
+    private memberService: MemberService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
+    // Get the user's family ID
+    const user = this.userService.getCurrentUser();
+    if (user && user.familyId) {
+      this.familyId = user.familyId;
+    }
+
     // Check for tab parameter from the route
     this.route.queryParams.subscribe((params) => {
       if (
@@ -76,18 +84,54 @@ export class TasksComponent implements OnInit {
 
   loadTasks(): void {
     this.isLoading = true;
-    this.taskService.getTasks().subscribe({
+    this.error = null;
+
+    this.taskService.getTasks(undefined, this.familyId || undefined).subscribe({
       next: (data) => {
-        this.tasks = data.map((task) => ({
-          ...task,
-          // Add default values for missing properties
-          completedOnTime:
-            task.completionDate &&
-            new Date(task.completionDate) <= new Date(task.dueDate),
-          timeUntilStart: task.startDate
-            ? this.calculateTimeUntilStart(task.startDate)
-            : '3d 5h 22m',
-        }));
+        this.tasks = data.map((task) => {
+          // Ensure dates are properly formatted as Date objects
+          const formattedTask = { ...task };
+
+          // Convert date objects if they're not already
+          if (
+            formattedTask.dueDate &&
+            !(formattedTask.dueDate instanceof Date)
+          ) {
+            formattedTask.dueDate = new Date(formattedTask.dueDate);
+          }
+
+          if (
+            formattedTask.startDate &&
+            !(formattedTask.startDate instanceof Date)
+          ) {
+            formattedTask.startDate = new Date(formattedTask.startDate);
+          }
+
+          if (
+            formattedTask.completionDate &&
+            !(formattedTask.completionDate instanceof Date)
+          ) {
+            formattedTask.completionDate = new Date(
+              formattedTask.completionDate
+            );
+          }
+
+          // Add computed properties
+          return {
+            ...formattedTask,
+            completedOnTime:
+              formattedTask.completedOnTime !== undefined
+                ? formattedTask.completedOnTime
+                : formattedTask.completionDate && formattedTask.dueDate
+                ? new Date(formattedTask.completionDate) <=
+                  new Date(formattedTask.dueDate)
+                : true,
+            timeUntilStart: formattedTask.startDate
+              ? this.calculateTimeUntilStart(formattedTask.startDate)
+              : undefined,
+          };
+        });
+
         this.enrichTasksWithMemberData();
         this.updateRemainingTimes();
         this.filterTasks();
@@ -102,9 +146,9 @@ export class TasksComponent implements OnInit {
   }
 
   // Calculate time until task starts
-  calculateTimeUntilStart(startDate: Date): string {
+  calculateTimeUntilStart(startDate: Date | string): string {
     const now = new Date();
-    const start = new Date(startDate);
+    const start = startDate instanceof Date ? startDate : new Date(startDate);
     const diff = start.getTime() - now.getTime();
 
     if (diff <= 0) {
@@ -121,7 +165,7 @@ export class TasksComponent implements OnInit {
   // Enrich tasks with member data (like assignee image)
   enrichTasksWithMemberData(): void {
     // Get all members
-    this.memberService.getMembers().subscribe({
+    this.memberService.getMembers(this.familyId || undefined).subscribe({
       next: (members) => {
         // Create a map of member IDs to member data for quick lookup
         const memberMap = new Map(members.map((member) => [member.id, member]));
@@ -132,8 +176,8 @@ export class TasksComponent implements OnInit {
             const member = memberMap.get(task.assignedTo);
             return {
               ...task,
-              assigneeImage: member?.profileImage,
-              assigneeName: member?.name,
+              assigneeImage: member?.profileImage || 'assets/profile_pic.png',
+              assigneeName: member?.fullName || member?.name || 'Unknown',
             };
           }
           return task;
@@ -189,14 +233,12 @@ export class TasksComponent implements OnInit {
     this.router.navigate(['/user/tasks/add']);
   }
 
-  // FIXED: Handle potentially undefined task.id
   navigateToTaskDetails(id: string | undefined): void {
     if (id) {
       this.router.navigate(['/user/tasks/details', id]);
     }
   }
 
-  // FIXED: Handle potentially undefined task.id
   markTaskAsComplete(id: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
@@ -205,11 +247,12 @@ export class TasksComponent implements OnInit {
 
     this.taskService.markTaskAsComplete(id).subscribe({
       next: (updatedTask) => {
-        // Find the task in our array and update its status
+        // Find the task in our array and update it
         const taskIndex = this.tasks.findIndex((t) => t.id === id);
         if (taskIndex !== -1) {
           this.tasks[taskIndex] = {
             ...this.tasks[taskIndex],
+            ...updatedTask,
             status: 'completed',
             completionDate: new Date(),
           };
@@ -223,7 +266,6 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  // FIXED: Handle potentially undefined task.id
   deleteTask(id: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
@@ -245,7 +287,6 @@ export class TasksComponent implements OnInit {
     }
   }
 
-  // FIXED: Handle potentially undefined task.id
   viewVotes(taskId: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
@@ -256,7 +297,6 @@ export class TasksComponent implements OnInit {
     this.router.navigate(['/user/tasks/votes', taskId]);
   }
 
-  // FIXED: Handle potentially undefined task.id
   editTask(taskId: string | undefined, event: Event): void {
     // Stop event propagation to prevent navigation
     event.stopPropagation();
