@@ -1,7 +1,7 @@
-// src/app/services/task.service.ts
+// src/app/services/task.service.ts - Updated to use memory-based user data
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
 import { UserService } from './user.service';
@@ -34,6 +34,8 @@ export interface Task {
   title: string;
   description: string;
   assignedTo: string;
+  assignedToName?: string;
+  assignedToFullName?: string;
   assigneeImage?: string;
   assigneeName?: string;
   dueDate: Date;
@@ -53,7 +55,7 @@ export interface Task {
   createdBy: string;
   createdDate: Date;
   familyId?: string;
-  [key: string]: any; // Add index signature to allow dynamically accessing properties
+  [key: string]: any;
 }
 
 @Injectable({
@@ -64,7 +66,7 @@ export class TaskService {
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
-  // Get all tasks with optional filters
+  // Get all tasks with family filtering
   getTasks(status?: string, familyId?: string): Observable<Task[]> {
     let url = this.apiUrl;
     const params: any = {};
@@ -73,50 +75,57 @@ export class TaskService {
       params.status = status;
     }
 
-    // If family ID is not provided, try to get it from the current user
-    if (!familyId) {
-      const user = this.userService.getCurrentUser();
-      if (user && user.familyId) {
-        params.familyId = user.familyId;
-      }
-    } else {
-      params.familyId = familyId;
+    // Get familyId from user service or parameter
+    const targetFamilyId = familyId || this.userService.getFamilyId();
+
+    if (!targetFamilyId) {
+      console.error(
+        'No family ID available - user may not be logged in or not belong to a family'
+      );
+      return throwError(
+        'No family ID available. Please ensure you are logged in and belong to a family.'
+      );
     }
 
-    // Build query string manually if we have params
-    if (Object.keys(params).length > 0) {
-      const queryString = Object.keys(params)
-        .map((key) => `${key}=${params[key]}`)
-        .join('&');
-      url = `${url}?${queryString}`;
-    }
+    params.familyId = targetFamilyId;
+
+    // Build query string
+    const queryString = Object.keys(params)
+      .map((key) => `${key}=${params[key]}`)
+      .join('&');
+    url = `${url}?${queryString}`;
 
     return this.http.get<Task[]>(url).pipe(
       map((tasks) => this.processTasks(tasks)),
       catchError((error) => {
         console.error('Error fetching tasks:', error);
+        if (error.status === 400 && error.error?.error?.includes('familyId')) {
+          return throwError(
+            'Family ID is required but not available. Please log in again.'
+          );
+        }
         return of([]);
       })
     );
-  }
-
-  // Helper method to process tasks and ensure dates are Date objects
-  private processTasks(tasks: Task[]): Task[] {
-    return tasks.map((task) => this.processTask(task));
   }
 
   // Get tasks filtered by status
   getTasksByStatus(
     status: 'pending' | 'completed' | 'upcoming' | 'voting'
   ): Observable<Task[]> {
-    const user = this.userService.getCurrentUser();
-    let url = `${this.apiUrl}/status/${status}`;
+    const familyId = this.userService.getFamilyId();
 
-    if (user && user.familyId) {
-      url = `${url}?familyId=${user.familyId}`;
+    if (!familyId) {
+      console.error('No family ID available for tasks by status');
+      return throwError(
+        'No family ID available. Please ensure you are logged in and belong to a family.'
+      );
     }
 
+    const url = `${this.apiUrl}/status/${status}?familyId=${familyId}`;
+
     return this.http.get<Task[]>(url).pipe(
+      map((tasks) => this.processTasks(tasks)),
       catchError((error) => {
         console.error(`Error fetching ${status} tasks:`, error);
         return of([]);
@@ -124,9 +133,20 @@ export class TaskService {
     );
   }
 
-  // Get task by ID
+  // Get task by ID with family verification
   getTaskById(id: string): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`).pipe(
+    const familyId = this.userService.getFamilyId();
+    let url = `${this.apiUrl}/${id}`;
+
+    if (familyId) {
+      url = `${url}?familyId=${familyId}`;
+    } else {
+      return throwError(
+        'No family ID available. Cannot retrieve task details.'
+      );
+    }
+
+    return this.http.get<Task>(url).pipe(
       map((task) => this.processTask(task)),
       catchError((error) => {
         console.error(`Error fetching task ${id}:`, error);
@@ -135,61 +155,37 @@ export class TaskService {
     );
   }
 
+  // Helper method to process tasks
+  private processTasks(tasks: Task[]): Task[] {
+    return tasks.map((task) => this.processTask(task));
+  }
+
   // Helper method to process a single task
   private processTask(task: Task): Task {
     const processedTask = { ...task } as Task;
 
     // Process date fields
-    if (processedTask.dueDate && !(processedTask.dueDate instanceof Date)) {
-      try {
-        processedTask.dueDate = new Date(processedTask.dueDate);
-      } catch (e) {
-        console.error(`Error converting dueDate to Date:`, e);
-        processedTask.dueDate = new Date();
+    ['dueDate', 'startDate', 'completionDate', 'createdDate'].forEach(
+      (field) => {
+        if (processedTask[field] && !(processedTask[field] instanceof Date)) {
+          try {
+            processedTask[field] = new Date(processedTask[field]);
+          } catch (e) {
+            console.error(`Error converting ${field} to Date:`, e);
+            processedTask[field] = new Date();
+          }
+        }
       }
-    }
+    );
 
-    if (processedTask.startDate && !(processedTask.startDate instanceof Date)) {
-      try {
-        processedTask.startDate = new Date(processedTask.startDate);
-      } catch (e) {
-        console.error(`Error converting startDate to Date:`, e);
-        processedTask.startDate = new Date();
-      }
-    }
-
-    if (
-      processedTask.completionDate &&
-      !(processedTask.completionDate instanceof Date)
-    ) {
-      try {
-        processedTask.completionDate = new Date(processedTask.completionDate);
-      } catch (e) {
-        console.error(`Error converting completionDate to Date:`, e);
-        processedTask.completionDate = new Date();
-      }
-    }
-
-    if (
-      processedTask.createdDate &&
-      !(processedTask.createdDate instanceof Date)
-    ) {
-      try {
-        processedTask.createdDate = new Date(processedTask.createdDate);
-      } catch (e) {
-        console.error(`Error converting createdDate to Date:`, e);
-        processedTask.createdDate = new Date();
-      }
-    }
-
-    // Process date fields in comments
+    // Process comments timestamps
     if (processedTask.comments && Array.isArray(processedTask.comments)) {
       processedTask.comments = processedTask.comments.map((comment) => {
         if (comment.timestamp && !(comment.timestamp instanceof Date)) {
           try {
             return { ...comment, timestamp: new Date(comment.timestamp) };
           } catch (e) {
-            console.error('Error converting comment timestamp to Date:', e);
+            console.error('Error converting comment timestamp:', e);
             return { ...comment, timestamp: new Date() };
           }
         }
@@ -197,14 +193,14 @@ export class TaskService {
       });
     }
 
-    // Process date fields in votes
+    // Process votes timestamps
     if (processedTask.votes && Array.isArray(processedTask.votes)) {
       processedTask.votes = processedTask.votes.map((vote) => {
         if (vote.timestamp && !(vote.timestamp instanceof Date)) {
           try {
             return { ...vote, timestamp: new Date(vote.timestamp) };
           } catch (e) {
-            console.error('Error converting vote timestamp to Date:', e);
+            console.error('Error converting vote timestamp:', e);
             return { ...vote, timestamp: new Date() };
           }
         }
@@ -212,19 +208,33 @@ export class TaskService {
       });
     }
 
+    // Set assignee name from server response
+    if (processedTask.assignedToName) {
+      processedTask.assigneeName = processedTask.assignedToName;
+    }
+
     return processedTask;
   }
 
   // Create new task
   createTask(task: Task): Observable<Task> {
-    // Ensure the task has the family ID
     const user = this.userService.getCurrentUser();
-    if (user && user.familyId) {
-      task.familyId = user.familyId;
-      task.createdBy = user.fullName || user.firstName + ' ' + user.lastName;
+
+    if (!user) {
+      return throwError('User must be logged in to create tasks');
     }
 
+    if (!user.familyId) {
+      return throwError('User must belong to a family to create tasks');
+    }
+
+    // Set family ID and creator
+    task.familyId = user.familyId;
+    task.createdBy =
+      user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
     return this.http.post<Task>(this.apiUrl, task).pipe(
+      map((createdTask) => this.processTask(createdTask)),
       catchError((error) => {
         console.error('Error creating task:', error);
         throw error;
@@ -234,7 +244,17 @@ export class TaskService {
 
   // Update task
   updateTask(id: string, task: Partial<Task>): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, task).pipe(
+    const familyId = this.userService.getFamilyId();
+    let url = `${this.apiUrl}/${id}`;
+
+    if (familyId) {
+      url = `${url}?familyId=${familyId}`;
+    } else {
+      return throwError('No family ID available. Cannot update task.');
+    }
+
+    return this.http.put<Task>(url, task).pipe(
+      map((updatedTask) => this.processTask(updatedTask)),
       catchError((error) => {
         console.error(`Error updating task ${id}:`, error);
         throw error;
@@ -244,7 +264,16 @@ export class TaskService {
 
   // Delete task
   deleteTask(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+    const familyId = this.userService.getFamilyId();
+    let url = `${this.apiUrl}/${id}`;
+
+    if (familyId) {
+      url = `${url}?familyId=${familyId}`;
+    } else {
+      return throwError('No family ID available. Cannot delete task.');
+    }
+
+    return this.http.delete(url).pipe(
       catchError((error) => {
         console.error(`Error deleting task ${id}:`, error);
         throw error;
@@ -252,7 +281,7 @@ export class TaskService {
     );
   }
 
-  // Add comment to a task
+  // Rest of the methods remain the same...
   addComment(taskId: string, comment: Comment): Observable<Comment> {
     return this.http
       .post<Comment>(`${this.apiUrl}/${taskId}/comments`, comment)
@@ -264,9 +293,9 @@ export class TaskService {
       );
   }
 
-  // Mark task as complete
   markTaskAsComplete(id: string): Observable<Task> {
     return this.http.post<Task>(`${this.apiUrl}/${id}/complete`, {}).pipe(
+      map((completedTask) => this.processTask(completedTask)),
       catchError((error) => {
         console.error(`Error completing task ${id}:`, error);
         throw error;
@@ -274,7 +303,6 @@ export class TaskService {
     );
   }
 
-  // Add a vote to a task
   addVote(taskId: string, vote: Vote): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${taskId}/vote`, vote).pipe(
       catchError((error) => {
@@ -284,7 +312,6 @@ export class TaskService {
     );
   }
 
-  // Assign task from voting results
   assignTaskFromVoting(taskId: string, assignedTo: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/${taskId}/assign-from-voting`, { assignedTo })
@@ -296,7 +323,6 @@ export class TaskService {
       );
   }
 
-  // Reopen voting for a task
   reopenVoting(taskId: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/${taskId}/reopen-voting`, {})
@@ -308,7 +334,24 @@ export class TaskService {
       );
   }
 
-  // Calculate remaining time for a task (client-side function)
+  getTasksForMember(memberId: string): Observable<Task[]> {
+    const familyId = this.userService.getFamilyId();
+
+    if (!familyId) {
+      return throwError('No family ID available for member tasks');
+    }
+
+    const url = `${this.apiUrl}?assignedTo=${memberId}&familyId=${familyId}`;
+
+    return this.http.get<Task[]>(url).pipe(
+      map((tasks) => this.processTasks(tasks)),
+      catchError((error) => {
+        console.error(`Error fetching tasks for member ${memberId}:`, error);
+        return of([]);
+      })
+    );
+  }
+
   calculateRemainingTime(dueDate: Date): string {
     const now = new Date();
     const due = new Date(dueDate);
@@ -323,12 +366,8 @@ export class TaskService {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
     let result = '';
-    if (days > 0) {
-      result += `${days}d `;
-    }
-    if (hours > 0 || days > 0) {
-      result += `${hours}h `;
-    }
+    if (days > 0) result += `${days}d `;
+    if (hours > 0 || days > 0) result += `${hours}h `;
     result += `${minutes}m`;
 
     return result;

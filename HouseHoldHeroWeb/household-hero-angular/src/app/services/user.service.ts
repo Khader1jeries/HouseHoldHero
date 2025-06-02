@@ -1,8 +1,8 @@
-// src/app/services/user.service.ts
+// src/app/services/user.service.ts - Alternative without localStorage
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
 import { isPlatformBrowser } from '@angular/common';
@@ -27,6 +27,10 @@ export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
   private isBrowser: boolean;
 
+  // Use BehaviorSubject to store user data in memory
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -35,12 +39,11 @@ export class UserService {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  // Register a new user - without automatic redirection
+  // Register a new user
   registerUser(user: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register-simple`, user).pipe(
       map((response) => {
         if (response.success && response.user) {
-          // Just return success without storing user or redirecting
           return { success: true, user: response.user };
         }
         return response;
@@ -55,7 +58,7 @@ export class UserService {
     );
   }
 
-  // Create a new family with better error handling
+  // Create a new family
   createFamily(familyName: string, uid: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/create-family`, {
@@ -69,7 +72,6 @@ export class UserService {
         }),
         catchError((error) => {
           console.error('Create family error:', error);
-          // Return a structured error response
           return of({
             success: false,
             message:
@@ -80,20 +82,16 @@ export class UserService {
       );
   }
 
-  // Login user with proper redirection
+  // Login user and store in memory
   loginUser(email: string, password: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/login-simple`, { email, password })
       .pipe(
         tap((response) => {
           if (response.success && response.user) {
-            // Store user in localStorage if in browser
-            if (this.isBrowser) {
-              localStorage.setItem(
-                'currentUser',
-                JSON.stringify(response.user)
-              );
-            }
+            // Store user in memory using BehaviorSubject
+            this.currentUserSubject.next(response.user);
+
             // Navigate to user dashboard
             this.router.navigate(['/user']);
           }
@@ -110,28 +108,14 @@ export class UserService {
 
   // Logout user
   logoutUser(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('currentUser');
-    }
+    // Clear user from memory
+    this.currentUserSubject.next(null);
     this.router.navigate(['/guest/login']);
   }
 
-  // Get current user from localStorage
+  // Get current user from memory (BehaviorSubject)
   getCurrentUser(): User | null {
-    if (!this.isBrowser) {
-      return null; // Return null when running in server environment
-    }
-
-    const userStr = localStorage.getItem('currentUser');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (e) {
-        console.error('Error parsing user data:', e);
-        return null;
-      }
-    }
-    return null;
+    return this.currentUserSubject.value;
   }
 
   // Check if user is logged in
@@ -139,9 +123,17 @@ export class UserService {
     return !!this.getCurrentUser();
   }
 
-  // Update user profile
+  // Update user profile and refresh in-memory data
   updateUserProfile(user: Partial<User>): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${user.uid}`, user);
+    return this.http.put<any>(`${this.apiUrl}/${user.uid}`, user).pipe(
+      tap(() => {
+        // Update the in-memory user data
+        const currentUser = this.getCurrentUser();
+        if (currentUser) {
+          this.currentUserSubject.next({ ...currentUser, ...user });
+        }
+      })
+    );
   }
 
   // Check if email exists
@@ -155,5 +147,16 @@ export class UserService {
       email,
       newPassword,
     });
+  }
+
+  // Set user data manually (useful for testing or initialization)
+  setCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+  }
+
+  // Get user's family ID directly
+  getFamilyId(): string | null {
+    const user = this.getCurrentUser();
+    return user?.familyId || null;
   }
 }

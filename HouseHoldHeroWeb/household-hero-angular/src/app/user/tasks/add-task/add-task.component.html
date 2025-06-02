@@ -1,3 +1,4 @@
+<!-- Updated add-task.component.html to display member names in dropdown -->
 <div class="add-task-container">
   <div class="add-task-box">
     <h2>Create New Task</h2>
@@ -89,10 +90,16 @@
           required
         >
           <option value="">Select Family Member</option>
+          <!-- Updated to show member names in dropdown -->
           <option *ngFor="let member of familyMembers" [value]="member.id">
             {{
-              member.firstName ||
-                (member.fullName ? member.fullName.split(" ")[0] : member.name)
+              member.fullName ||
+                (member.firstName && member.lastName
+                  ? member.firstName + " " + member.lastName
+                  : "") ||
+                member.firstName ||
+                member.name ||
+                "Unknown Member"
             }}
           </option>
         </select>

@@ -1,3 +1,4 @@
+<!-- Updated tasks.component.html to display member names instead of IDs -->
 <div class="tasks-container">
   <div class="tasks-header">
     <h1>Family Tasks</h1>
@@ -66,7 +67,13 @@
         <p>{{ task.description }}</p>
       </div>
       <div class="task-assigned">
-        <span class="assigned-pill">{{ task.assignedTo }}</span>
+        <!-- Updated to show member name instead of ID -->
+        <span class="assigned-pill">{{
+          task.assignedToName ||
+            task.assignedToFullName ||
+            task.assigneeName ||
+            "Unassigned"
+        }}</span>
       </div>
       <div class="task-due">{{ task.dueDate | date : "mediumDate" }}</div>
       <div class="task-remaining">{{ task.remainingTime }}</div>
@@ -110,7 +117,13 @@
         <p>{{ task.description }}</p>
       </div>
       <div class="task-assigned">
-        <span class="assigned-pill">{{ task.assignedTo }}</span>
+        <!-- Updated to show member name instead of ID -->
+        <span class="assigned-pill">{{
+          task.assignedToName ||
+            task.assignedToFullName ||
+            task.assigneeName ||
+            "Unknown"
+        }}</span>
       </div>
       <div class="task-completion-date">
         {{ task.completionDate | date : "dd/MM/yyyy" }}
@@ -129,7 +142,7 @@
     </div>
   </div>
 
-  <!-- Future Tasks Updated Section with improved layout -->
+  <!-- Future Tasks Updated Section -->
   <div
     class="tasks-list"
     *ngIf="activeTab === 'future' && futureTasks.length > 0"
@@ -154,13 +167,21 @@
         <p>{{ task.description }}</p>
       </div>
       <div class="task-assigned">
-        <span class="assigned-pill">{{ task.assignedTo }}</span>
+        <!-- Updated to show member name instead of ID -->
+        <span class="assigned-pill">{{
+          task.assignedToName ||
+            task.assignedToFullName ||
+            task.assigneeName ||
+            "Unassigned"
+        }}</span>
       </div>
       <div class="task-start-date">
         {{ task.startDate | date : "dd/MM/yyyy" }}
       </div>
       <div class="task-due">{{ task.dueDate | date : "dd/MM/yyyy" }}</div>
-      <div class="task-countdown">{{ task.timeUntilStart || "3d 5h 22m" }}</div>
+      <div class="task-countdown">
+        {{ task.timeUntilStart || "Starting soon" }}
+      </div>
       <div class="task-points">
         <span class="points-pill">{{ task.points }}</span>
       </div>
@@ -175,7 +196,7 @@
     </div>
   </div>
 
-  <!-- Tasks Under Voting Updated Section with colored votes and repositioned button -->
+  <!-- Tasks Under Voting Updated Section -->
   <div
     class="tasks-list"
     *ngIf="activeTab === 'voting' && tasksUnderVoting.length > 0"
@@ -204,11 +225,11 @@
       <div class="task-votes">
         <div class="vote-count yes">
           <i class="bi bi-hand-thumbs-up"></i>
-          <span>{{ task.votesYes || 3 }}</span>
+          <span>{{ task.votesYes || 0 }}</span>
         </div>
         <div class="vote-count no">
           <i class="bi bi-hand-thumbs-down"></i>
-          <span>{{ task.votesNo || 2 }}</span>
+          <span>{{ task.votesNo || 0 }}</span>
         </div>
       </div>
       <div class="task-actions">

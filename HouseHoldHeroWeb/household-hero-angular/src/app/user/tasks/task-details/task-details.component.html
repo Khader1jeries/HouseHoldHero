@@ -1,3 +1,4 @@
+<!-- Updated task-details.component.html to display member names -->
 <div class="task-details-container" *ngIf="task">
   <div class="back-button" (click)="goBack()">
     <i class="bi bi-arrow-left-circle"></i>
@@ -61,8 +62,17 @@
         <div class="info-row">
           <div class="info-label">Assigned To</div>
           <div class="info-value assigned-to">
-            <img [src]="task.assigneeImage" [alt]="task.assignedTo" />
-            <span>{{ task.assignedTo }}</span>
+            <!-- Updated to show member name with image -->
+            <img
+              [src]="task.assigneeImage || 'assets/profile_pic.png'"
+              [alt]="task.assignedToFullName || task.assignedToName || 'Member'"
+            />
+            <span>{{
+              task.assignedToFullName ||
+                task.assignedToName ||
+                task.assigneeName ||
+                "Unassigned"
+            }}</span>
           </div>
         </div>
         <div class="info-row">
