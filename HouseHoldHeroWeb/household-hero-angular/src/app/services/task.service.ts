@@ -1,7 +1,6 @@
-// src/app/services/task.service.ts - Updated to use URL parameters for family ID
+// src/app/services/task.service.ts - Complete updated version with Firestore date handling
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
@@ -65,15 +64,41 @@ export interface Task {
 export class TaskService {
   private apiUrl = `${environment.apiUrl}/tasks`;
 
-  constructor(
-    private http: HttpClient,
-    private userService: UserService,
-    private router: Router
-  ) {}
+  constructor(private http: HttpClient, private userService: UserService) {}
 
-  // Get family ID from URL or user service
-  private getFamilyIdFromContext(): string | null {
-    return this.userService.getFamilyId();
+  // Helper method to convert Firestore timestamps to JavaScript Dates
+  private convertFirestoreDate(firestoreDate: any): Date {
+    if (!firestoreDate) return new Date();
+
+    try {
+      // Handle Firestore Timestamp with toDate() method
+      if (firestoreDate.toDate && typeof firestoreDate.toDate === 'function') {
+        return firestoreDate.toDate();
+      }
+
+      // Handle Firestore Timestamp with seconds property
+      if (firestoreDate.seconds !== undefined) {
+        const nanoseconds = firestoreDate.nanoseconds || 0;
+        return new Date(firestoreDate.seconds * 1000 + nanoseconds / 1000000);
+      }
+
+      // Handle _seconds property (another Firestore format)
+      if (firestoreDate._seconds !== undefined) {
+        const nanoseconds = firestoreDate._nanoseconds || 0;
+        return new Date(firestoreDate._seconds * 1000 + nanoseconds / 1000000);
+      }
+
+      // If it's already a Date object
+      if (firestoreDate instanceof Date) {
+        return firestoreDate;
+      }
+
+      // Fallback to regular Date constructor for strings/numbers
+      return new Date(firestoreDate);
+    } catch (error) {
+      console.error('Error converting Firestore date:', error, firestoreDate);
+      return new Date(); // Fallback to current date
+    }
   }
 
   // Get all tasks with family filtering
@@ -85,8 +110,8 @@ export class TaskService {
       params.status = status;
     }
 
-    // Get familyId from URL, parameter, or user service
-    const targetFamilyId = familyId || this.getFamilyIdFromContext();
+    // Get familyId from user service or parameter
+    const targetFamilyId = familyId || this.userService.getFamilyId();
 
     if (!targetFamilyId) {
       console.error(
@@ -123,7 +148,7 @@ export class TaskService {
   getTasksByStatus(
     status: 'pending' | 'completed' | 'upcoming' | 'voting'
   ): Observable<Task[]> {
-    const familyId = this.getFamilyIdFromContext();
+    const familyId = this.userService.getFamilyId();
 
     if (!familyId) {
       console.error('No family ID available for tasks by status');
@@ -145,7 +170,7 @@ export class TaskService {
 
   // Get task by ID with family verification
   getTaskById(id: string): Observable<Task> {
-    const familyId = this.getFamilyIdFromContext();
+    const familyId = this.userService.getFamilyId();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -170,19 +195,28 @@ export class TaskService {
     return tasks.map((task) => this.processTask(task));
   }
 
-  // Helper method to process a single task
+  // Helper method to process a single task with proper Firestore date handling
   private processTask(task: Task): Task {
     const processedTask = { ...task } as Task;
 
-    // Process date fields
+    console.log('Processing task:', processedTask.id, processedTask); // Debug log
+
+    // Process date fields with Firestore handling
     ['dueDate', 'startDate', 'completionDate', 'createdDate'].forEach(
       (field) => {
-        if (processedTask[field] && !(processedTask[field] instanceof Date)) {
+        if (processedTask[field]) {
           try {
-            processedTask[field] = new Date(processedTask[field]);
+            processedTask[field] = this.convertFirestoreDate(
+              processedTask[field]
+            );
+            console.log(`Converted ${field}:`, processedTask[field]);
           } catch (e) {
-            console.error(`Error converting ${field} to Date:`, e);
-            processedTask[field] = new Date();
+            console.error(
+              `Error converting ${field} to Date:`,
+              e,
+              processedTask[field]
+            );
+            processedTask[field] = new Date(); // Fallback to current date
           }
         }
       }
@@ -193,7 +227,10 @@ export class TaskService {
       processedTask.comments = processedTask.comments.map((comment) => {
         if (comment.timestamp && !(comment.timestamp instanceof Date)) {
           try {
-            return { ...comment, timestamp: new Date(comment.timestamp) };
+            return {
+              ...comment,
+              timestamp: this.convertFirestoreDate(comment.timestamp),
+            };
           } catch (e) {
             console.error('Error converting comment timestamp:', e);
             return { ...comment, timestamp: new Date() };
@@ -208,7 +245,10 @@ export class TaskService {
       processedTask.votes = processedTask.votes.map((vote) => {
         if (vote.timestamp && !(vote.timestamp instanceof Date)) {
           try {
-            return { ...vote, timestamp: new Date(vote.timestamp) };
+            return {
+              ...vote,
+              timestamp: this.convertFirestoreDate(vote.timestamp),
+            };
           } catch (e) {
             console.error('Error converting vote timestamp:', e);
             return { ...vote, timestamp: new Date() };
@@ -223,6 +263,8 @@ export class TaskService {
       processedTask.assigneeName = processedTask.assignedToName;
     }
 
+    console.log('Processed task result:', processedTask); // Debug log
+
     return processedTask;
   }
 
@@ -234,13 +276,12 @@ export class TaskService {
       return throwError('User must be logged in to create tasks');
     }
 
-    const familyId = this.getFamilyIdFromContext();
-    if (!familyId) {
+    if (!user.familyId) {
       return throwError('User must belong to a family to create tasks');
     }
 
     // Set family ID and creator
-    task.familyId = familyId;
+    task.familyId = user.familyId;
     task.createdBy =
       user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
 
@@ -255,7 +296,7 @@ export class TaskService {
 
   // Update task
   updateTask(id: string, task: Partial<Task>): Observable<Task> {
-    const familyId = this.getFamilyIdFromContext();
+    const familyId = this.userService.getFamilyId();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -275,7 +316,7 @@ export class TaskService {
 
   // Delete task
   deleteTask(id: string): Observable<any> {
-    const familyId = this.getFamilyIdFromContext();
+    const familyId = this.userService.getFamilyId();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -292,6 +333,7 @@ export class TaskService {
     );
   }
 
+  // Add comment to task
   addComment(taskId: string, comment: Comment): Observable<Comment> {
     return this.http
       .post<Comment>(`${this.apiUrl}/${taskId}/comments`, comment)
@@ -303,6 +345,7 @@ export class TaskService {
       );
   }
 
+  // Mark task as complete
   markTaskAsComplete(id: string): Observable<Task> {
     return this.http.post<Task>(`${this.apiUrl}/${id}/complete`, {}).pipe(
       map((completedTask) => this.processTask(completedTask)),
@@ -313,6 +356,7 @@ export class TaskService {
     );
   }
 
+  // Add vote to task
   addVote(taskId: string, vote: Vote): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${taskId}/vote`, vote).pipe(
       catchError((error) => {
@@ -322,6 +366,7 @@ export class TaskService {
     );
   }
 
+  // Assign task from voting results
   assignTaskFromVoting(taskId: string, assignedTo: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/${taskId}/assign-from-voting`, { assignedTo })
@@ -333,6 +378,7 @@ export class TaskService {
       );
   }
 
+  // Reopen voting for a task
   reopenVoting(taskId: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/${taskId}/reopen-voting`, {})
@@ -344,8 +390,9 @@ export class TaskService {
       );
   }
 
+  // Get tasks for a specific member
   getTasksForMember(memberId: string): Observable<Task[]> {
-    const familyId = this.getFamilyIdFromContext();
+    const familyId = this.userService.getFamilyId();
 
     if (!familyId) {
       return throwError('No family ID available for member tasks');
@@ -362,24 +409,131 @@ export class TaskService {
     );
   }
 
-  calculateRemainingTime(dueDate: Date): string {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const diff = due.getTime() - now.getTime();
+  // Calculate remaining time with proper Firestore date handling
+  calculateRemainingTime(dueDate: any): string {
+    try {
+      const now = new Date();
+      let due: Date;
 
-    if (diff <= 0) {
-      return 'Overdue';
+      console.log('Processing due date for remaining time:', dueDate); // Debug log
+
+      // Convert Firestore date to proper Date object
+      due = this.convertFirestoreDate(dueDate);
+
+      // Validate the converted date
+      if (!due || isNaN(due.getTime())) {
+        console.error('Invalid date after conversion:', due, 'from:', dueDate);
+        return 'Invalid Date';
+      }
+
+      console.log('Final due date for calculation:', due); // Debug log
+
+      const diff = due.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        return 'Overdue';
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      // Ensure we don't get NaN values
+      const validDays = isNaN(days) ? 0 : days;
+      const validHours = isNaN(hours) ? 0 : hours;
+      const validMinutes = isNaN(minutes) ? 0 : minutes;
+
+      let result = '';
+      if (validDays > 0) result += `${validDays}d `;
+      if (validHours > 0 || validDays > 0) result += `${validHours}h `;
+      result += `${validMinutes}m`;
+
+      return result.trim();
+    } catch (error) {
+      console.error(
+        'Error calculating remaining time:',
+        error,
+        'for date:',
+        dueDate
+      );
+      return 'Calculation Error';
+    }
+  }
+
+  // Calculate time until task starts (for future tasks)
+  calculateTimeUntilStart(startDate: any): string {
+    try {
+      const now = new Date();
+      const start = this.convertFirestoreDate(startDate);
+
+      if (!start || isNaN(start.getTime())) {
+        return 'Invalid Start Date';
+      }
+
+      const diff = start.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        return 'Starting now';
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      let result = '';
+      if (days > 0) result += `${days}d `;
+      if (hours > 0) result += `${hours}h `;
+      result += `${minutes}m`;
+
+      return result.trim();
+    } catch (error) {
+      console.error('Error calculating time until start:', error);
+      return 'Calculation Error';
+    }
+  }
+
+  // Check if task was completed on time
+  isCompletedOnTime(task: Task): boolean {
+    if (!task.completionDate || !task.dueDate) {
+      return true; // Default to true if dates are missing
     }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const completion = this.convertFirestoreDate(task.completionDate);
+    const due = this.convertFirestoreDate(task.dueDate);
 
-    let result = '';
-    if (days > 0) result += `${days}d `;
-    if (hours > 0 || days > 0) result += `${hours}h `;
-    result += `${minutes}m`;
+    return completion.getTime() <= due.getTime();
+  }
 
-    return result;
+  // Get task status based on dates and current time
+  getTaskStatus(task: Task): string {
+    const now = new Date();
+
+    if (task.status === 'completed') {
+      return 'completed';
+    }
+
+    if (task.status === 'voting') {
+      return 'voting';
+    }
+
+    if (task.startDate) {
+      const start = this.convertFirestoreDate(task.startDate);
+      if (start.getTime() > now.getTime()) {
+        return 'upcoming';
+      }
+    }
+
+    if (task.dueDate) {
+      const due = this.convertFirestoreDate(task.dueDate);
+      if (due.getTime() < now.getTime()) {
+        return 'overdue';
+      }
+    }
+
+    return 'pending';
   }
 }
