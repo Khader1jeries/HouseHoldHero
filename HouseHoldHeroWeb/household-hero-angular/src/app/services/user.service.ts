@@ -1,7 +1,7 @@
-// src/app/services/user.service.ts - Alternative without localStorage
+// src/app/services/user.service.ts - Updated to use URL parameters for family ID
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
@@ -82,7 +82,7 @@ export class UserService {
       );
   }
 
-  // Login user and store in memory
+  // Login user and store in memory with URL navigation
   loginUser(email: string, password: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/login-simple`, { email, password })
@@ -92,8 +92,15 @@ export class UserService {
             // Store user in memory using BehaviorSubject
             this.currentUserSubject.next(response.user);
 
-            // Navigate to user dashboard
-            this.router.navigate(['/user']);
+            // Navigate to user dashboard with family ID in URL
+            if (response.user.familyId) {
+              this.router.navigate(['/user'], {
+                queryParams: { familyId: response.user.familyId },
+              });
+            } else {
+              // If no family ID, go to user page without family context
+              this.router.navigate(['/user']);
+            }
           }
         }),
         catchError((error) => {
@@ -154,9 +161,47 @@ export class UserService {
     this.currentUserSubject.next(user);
   }
 
-  // Get user's family ID directly
+  // Get user's family ID from URL first, then fallback to user data
   getFamilyId(): string | null {
+    if (this.isBrowser) {
+      // Try to get family ID from current URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const familyIdFromUrl = urlParams.get('familyId');
+
+      if (familyIdFromUrl) {
+        return familyIdFromUrl;
+      }
+    }
+
+    // Fallback to user data
     const user = this.getCurrentUser();
     return user?.familyId || null;
+  }
+
+  // Helper method to ensure family ID is in URL
+  ensureFamilyIdInUrl(familyId?: string): void {
+    const targetFamilyId = familyId || this.getCurrentUser()?.familyId;
+
+    if (targetFamilyId && this.isBrowser) {
+      const currentUrl = new URL(window.location.href);
+      const currentFamilyId = currentUrl.searchParams.get('familyId');
+
+      if (currentFamilyId !== targetFamilyId) {
+        currentUrl.searchParams.set('familyId', targetFamilyId);
+        window.history.replaceState({}, '', currentUrl.toString());
+      }
+    }
+  }
+
+  // Navigate with family ID preserved
+  navigateWithFamilyId(route: string[], additionalParams?: any): void {
+    const familyId = this.getFamilyId();
+    const queryParams = additionalParams || {};
+
+    if (familyId) {
+      queryParams.familyId = familyId;
+    }
+
+    this.router.navigate(route, { queryParams });
   }
 }

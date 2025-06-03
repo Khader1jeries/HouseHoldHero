@@ -1,5 +1,7 @@
+// src/app/user/index/index.component.ts - Updated to preserve family ID in navigation
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-index',
@@ -8,34 +10,38 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class IndexComponent {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private userService: UserService
+  ) {}
 
   goTo(route: string) {
-    window.location.href = '/' + route;
-    // Or use Angular Router: this.router.navigate([route]);
+    // Use the UserService to navigate with family ID preserved
+    this.userService.navigateWithFamilyId([route]);
   }
 
-  // Navigation methods
+  // Navigation methods that preserve family ID
   goToMembers() {
-    this.router.navigate(['/user/members']);
+    this.userService.navigateWithFamilyId(['/user/members']);
   }
 
   goToTasksVoting() {
-    this.router.navigate(['/user/tasks'], { queryParams: { tab: 'voting' } });
+    this.userService.navigateWithFamilyId(['/user/tasks'], { tab: 'voting' });
   }
 
   goToLeaderboard() {
-    this.router.navigate(['/user/members'], {
-      queryParams: { view: 'leaderboard' },
+    this.userService.navigateWithFamilyId(['/user/members'], {
+      view: 'leaderboard',
     });
   }
 
   goToActiveTasks() {
-    this.router.navigate(['/user/tasks'], { queryParams: { tab: 'active' } });
+    this.userService.navigateWithFamilyId(['/user/tasks'], { tab: 'active' });
   }
 
   // New method for Analytics navigation
   goToAnalytics() {
-    this.router.navigate(['/user/analytics']);
+    this.userService.navigateWithFamilyId(['/user/analytics']);
   }
 }

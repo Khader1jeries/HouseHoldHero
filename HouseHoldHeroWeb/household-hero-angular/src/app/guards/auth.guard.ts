@@ -1,33 +1,55 @@
-// src/app/guards/auth.guard.ts
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+// src/app/guards/auth.guard.ts - Updated to handle URL-based family ID
+import { Injectable } from '@angular/core';
+import {
+  CanActivate,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { UserService } from '../services/user.service';
-import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private router: Router,
-    private userService: UserService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private userService: UserService, private router: Router) {}
 
-  canActivate(): Observable<boolean> {
-    // During SSR, always allow navigation (authentication will be checked client-side)
-    if (!isPlatformBrowser(this.platformId)) {
-      return of(true);
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean {
+    const user = this.userService.getCurrentUser();
+
+    if (!user) {
+      // User is not logged in, redirect to login
+      this.router.navigate(['/guest/login']);
+      return false;
     }
 
-    // On the client, check if user is logged in
-    if (this.userService.isLoggedIn()) {
-      return of(true);
+    // Check if we have family ID in URL or user data
+    const familyIdFromUrl = route.queryParams['familyId'];
+    const userFamilyId = user.familyId;
+
+    if (familyIdFromUrl) {
+      // If family ID is in URL but different from user data, update user data
+      if (userFamilyId !== familyIdFromUrl) {
+        this.userService.setCurrentUser({
+          ...user,
+          familyId: familyIdFromUrl,
+        });
+      }
+      return true;
+    } else if (userFamilyId) {
+      // If user has family ID but URL doesn't, redirect with family ID in URL
+      const urlTree = this.router.createUrlTree([state.url], {
+        queryParams: { familyId: userFamilyId },
+        queryParamsHandling: 'merge',
+      });
+      this.router.navigateByUrl(urlTree);
+      return false;
     }
 
-    // Not logged in, redirect to login page
-    this.router.navigate(['/guest/login']);
-    return of(false);
+    // User is logged in but no family context - allow access but may show family setup
+    return true;
   }
 }

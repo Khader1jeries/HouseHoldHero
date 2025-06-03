@@ -1,3 +1,4 @@
+<!-- src/app/user/navbar/navbar.component.html - Updated with queryParamsHandling -->
 <nav class="navbar-container">
   <div class="navbar-left">
     <span class="dashboard-text">{{ currentPageTitle }}</span>
@@ -9,19 +10,35 @@
       routerLink="/user"
       [routerLinkActiveOptions]="{ exact: true }"
       routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
     >
       <i class="bi bi-columns-gap"></i>
       <span>Dashboard</span>
     </div>
-    <div class="menu-item" routerLink="/user/members" routerLinkActive="active">
+    <div
+      class="menu-item"
+      routerLink="/user/members"
+      routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
+    >
       <i class="bi bi-person"></i>
       <span>Members</span>
     </div>
-    <div class="menu-item" routerLink="/user/tasks" routerLinkActive="active">
+    <div
+      class="menu-item"
+      routerLink="/user/tasks"
+      routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
+    >
       <i class="bi bi-bullseye"></i>
       <span>Tasks</span>
     </div>
-    <div class="menu-item" routerLink="/user/support" routerLinkActive="active">
+    <div
+      class="menu-item"
+      routerLink="/user/support"
+      routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
+    >
       <i class="bi bi-telephone"></i>
       <span>Support</span>
     </div>
@@ -29,11 +46,17 @@
       class="menu-item"
       routerLink="/user/analytics"
       routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
     >
       <i class="bi bi-pie-chart"></i>
       <span>Analytics</span>
     </div>
-    <div class="menu-item" routerLink="/user/reports" routerLinkActive="active">
+    <div
+      class="menu-item"
+      routerLink="/user/reports"
+      routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
+    >
       <i class="bi bi-file-earmark-text"></i>
       <span>Reports</span>
     </div>
@@ -41,6 +64,7 @@
       class="menu-item"
       routerLink="/user/settings"
       routerLinkActive="active"
+      [queryParamsHandling]="'merge'"
     >
       <i class="bi bi-gear"></i>
       <span>Settings</span>
@@ -109,11 +133,19 @@
         </div>
 
         <div class="menu-items">
-          <a routerLink="/user/settings" (click)="showUserMenu = false">
+          <a
+            routerLink="/user/settings"
+            (click)="showUserMenu = false"
+            [queryParamsHandling]="'merge'"
+          >
             <i class="bi bi-person-circle"></i>
             <span>My Profile</span>
           </a>
-          <a routerLink="/user/settings" (click)="showUserMenu = false">
+          <a
+            routerLink="/user/settings"
+            (click)="showUserMenu = false"
+            [queryParamsHandling]="'merge'"
+          >
             <i class="bi bi-gear"></i>
             <span>Settings</span>
           </a>

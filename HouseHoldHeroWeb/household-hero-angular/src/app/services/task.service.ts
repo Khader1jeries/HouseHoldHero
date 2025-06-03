@@ -1,6 +1,7 @@
-// src/app/services/task.service.ts - Updated to use memory-based user data
+// src/app/services/task.service.ts - Updated to use URL parameters for family ID
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../enviroments/enviroment';
@@ -64,7 +65,16 @@ export interface Task {
 export class TaskService {
   private apiUrl = `${environment.apiUrl}/tasks`;
 
-  constructor(private http: HttpClient, private userService: UserService) {}
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+    private router: Router
+  ) {}
+
+  // Get family ID from URL or user service
+  private getFamilyIdFromContext(): string | null {
+    return this.userService.getFamilyId();
+  }
 
   // Get all tasks with family filtering
   getTasks(status?: string, familyId?: string): Observable<Task[]> {
@@ -75,8 +85,8 @@ export class TaskService {
       params.status = status;
     }
 
-    // Get familyId from user service or parameter
-    const targetFamilyId = familyId || this.userService.getFamilyId();
+    // Get familyId from URL, parameter, or user service
+    const targetFamilyId = familyId || this.getFamilyIdFromContext();
 
     if (!targetFamilyId) {
       console.error(
@@ -113,7 +123,7 @@ export class TaskService {
   getTasksByStatus(
     status: 'pending' | 'completed' | 'upcoming' | 'voting'
   ): Observable<Task[]> {
-    const familyId = this.userService.getFamilyId();
+    const familyId = this.getFamilyIdFromContext();
 
     if (!familyId) {
       console.error('No family ID available for tasks by status');
@@ -135,7 +145,7 @@ export class TaskService {
 
   // Get task by ID with family verification
   getTaskById(id: string): Observable<Task> {
-    const familyId = this.userService.getFamilyId();
+    const familyId = this.getFamilyIdFromContext();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -224,12 +234,13 @@ export class TaskService {
       return throwError('User must be logged in to create tasks');
     }
 
-    if (!user.familyId) {
+    const familyId = this.getFamilyIdFromContext();
+    if (!familyId) {
       return throwError('User must belong to a family to create tasks');
     }
 
     // Set family ID and creator
-    task.familyId = user.familyId;
+    task.familyId = familyId;
     task.createdBy =
       user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
 
@@ -244,7 +255,7 @@ export class TaskService {
 
   // Update task
   updateTask(id: string, task: Partial<Task>): Observable<Task> {
-    const familyId = this.userService.getFamilyId();
+    const familyId = this.getFamilyIdFromContext();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -264,7 +275,7 @@ export class TaskService {
 
   // Delete task
   deleteTask(id: string): Observable<any> {
-    const familyId = this.userService.getFamilyId();
+    const familyId = this.getFamilyIdFromContext();
     let url = `${this.apiUrl}/${id}`;
 
     if (familyId) {
@@ -281,7 +292,6 @@ export class TaskService {
     );
   }
 
-  // Rest of the methods remain the same...
   addComment(taskId: string, comment: Comment): Observable<Comment> {
     return this.http
       .post<Comment>(`${this.apiUrl}/${taskId}/comments`, comment)
@@ -335,7 +345,7 @@ export class TaskService {
   }
 
   getTasksForMember(memberId: string): Observable<Task[]> {
-    const familyId = this.userService.getFamilyId();
+    const familyId = this.getFamilyIdFromContext();
 
     if (!familyId) {
       return throwError('No family ID available for member tasks');

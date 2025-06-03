@@ -1,10 +1,11 @@
-// src/app/user/navbar/navbar.component.ts
+// src/app/user/navbar/navbar.component.ts - Updated to preserve family ID in navigation
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
   Router,
   RouterLink,
   RouterModule,
   NavigationEnd,
+  ActivatedRoute,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -40,7 +41,11 @@ export class NavbarComponent implements OnInit {
   // User data
   userData: any = null;
 
-  constructor(private router: Router, private userService: UserService) {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private userService: UserService
+  ) {
     // Listen to route changes to update the page title
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -104,8 +109,9 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  // Navigate to routes while preserving family ID
   navigateTo(route: string): void {
-    this.router.navigate([`/user/${route}`]);
+    this.userService.navigateWithFamilyId([`/user/${route}`]);
   }
 
   // Toggle notifications dropdown
