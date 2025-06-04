@@ -39,12 +39,14 @@ export class LoginComponent {
       .loginUser(this.loginData.email, this.loginData.password)
       .subscribe({
         next: (response) => {
+          console.log('🔍 Login response:', response); // Add this
           this.isSubmitting = false;
 
           if (!response.success) {
             this.errorMessage = response.message || 'Invalid email or password';
           } else {
-            this.router.navigate(['/user']); // ✅ Redirect on success
+            console.log('✅ Login successful, about to navigate'); // Add this
+            this.router.navigate(['/user']);
           }
         },
         error: (error) => {

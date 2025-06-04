@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
   ): boolean {
     const user = this.userService.getCurrentUser();
 
+    console.log('🔍 AuthGuard - Current user:', user);
     if (!user) {
       // User is not logged in, redirect to login
       this.router.navigate(['/guest/login']);
