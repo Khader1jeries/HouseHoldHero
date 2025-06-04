@@ -45,7 +45,6 @@ router.post("/register", async (req, res) => {
           fullName: firstName + " " + lastName,
           phoneNumber: phoneNumber,
           countryCode: countryCode,
-          role: "admin",
           createdAt: createdAt,
           password: hashPassword,
         });
@@ -167,4 +166,66 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+router.delete("/delete-user/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required to delete user",
+      });
+    }
+
+    const userRef = db.collection("users").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    await userRef.delete();
+
+    return res.status(200).json({
+      success: true,
+      message: `User with email ${email} deleted successfully`,
+    });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error while deleting user",
+    });
+  }
+});
+router.get("/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const userDoc = await db.collection("users").doc(email).get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const userData = userDoc.data();
+    delete userData.password; // never expose password
+
+    return res.status(200).json({
+      success: true,
+      user: userData,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 module.exports = router;
