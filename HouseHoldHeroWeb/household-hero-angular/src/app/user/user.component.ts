@@ -27,22 +27,22 @@ export class UserComponent implements OnInit {
 
       if (familyIdFromUrl && currentUser) {
         // Update user data with family ID from URL if it's different
-        if (currentUser.familyId !== familyIdFromUrl) {
+        if (currentUser.email !== familyIdFromUrl) {
           this.userService.setCurrentUser({
             ...currentUser,
-            familyId: familyIdFromUrl,
+            email: familyIdFromUrl,
           });
         }
-      } else if (currentUser?.familyId && !familyIdFromUrl) {
+      } else if (currentUser?.email && !familyIdFromUrl) {
         // If user has family ID but URL doesn't, add it to URL
-        this.userService.ensureFamilyIdInUrl(currentUser.familyId);
+        this.userService.ensureFamilyIdInUrl(currentUser.email);
       }
     });
 
     // Ensure family ID is in URL on component initialization
     const currentUser = this.userService.getCurrentUser();
-    if (currentUser?.familyId) {
-      this.userService.ensureFamilyIdInUrl(currentUser.familyId);
+    if (currentUser?.email) {
+      this.userService.ensureFamilyIdInUrl(currentUser.email);
     }
   }
 }

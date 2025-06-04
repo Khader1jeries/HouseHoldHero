@@ -58,11 +58,11 @@ export class AddTaskComponent implements OnInit {
         `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim();
 
       // Only set familyId if it exists
-      if (currentUser.familyId) {
-        this.newTask.familyId = currentUser.familyId;
+      if (currentUser.email) {
+        this.newTask.familyId = currentUser.email;
 
         // Load family members for the dropdown
-        this.loadFamilyMembers(currentUser.familyId);
+        this.loadFamilyMembers(currentUser.email);
       } else {
         console.warn('No family ID found for current user');
         this.errorMessage = 'No family ID found. Please set up a family first.';

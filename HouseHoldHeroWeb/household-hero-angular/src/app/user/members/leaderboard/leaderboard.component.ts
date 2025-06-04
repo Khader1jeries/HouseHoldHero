@@ -36,8 +36,8 @@ export class LeaderboardComponent implements OnInit {
   ngOnInit(): void {
     // Get the user's family ID
     const user = this.userService.getCurrentUser();
-    if (user && user.familyId) {
-      this.familyId = user.familyId;
+    if (user && user.email) {
+      this.familyId = user.email;
       this.loadLeaderboardData();
     } else {
       this.error = 'No family information found. Please log in again.';

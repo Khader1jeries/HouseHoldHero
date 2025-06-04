@@ -9,22 +9,19 @@ import { UserService } from '../../services/user.service';
   standalone: true,
   imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   loginData = {
     email: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
   };
 
   errorMessage: string = '';
   isSubmitting: boolean = false;
 
-  constructor(
-    private router: Router,
-    private userService: UserService
-  ) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   onSubmit() {
     this.isSubmitting = true;
@@ -38,21 +35,24 @@ export class LoginComponent {
     }
 
     // Attempt login
-    this.userService.loginUser(this.loginData.email, this.loginData.password)
+    this.userService
+      .loginUser(this.loginData.email, this.loginData.password)
       .subscribe({
         next: (response) => {
           this.isSubmitting = false;
-          
+
           if (!response.success) {
             this.errorMessage = response.message || 'Invalid email or password';
+          } else {
+            this.router.navigate(['/user']); // ✅ Redirect on success
           }
-          // If successful, the service will automatically redirect to the user dashboard
         },
         error: (error) => {
           this.isSubmitting = false;
-          this.errorMessage = error.error?.message || 'An error occurred during login';
+          this.errorMessage =
+            error.error?.message || 'An error occurred during login';
           console.error('Login error:', error);
-        }
+        },
       });
   }
 }

@@ -30,8 +30,8 @@ export class DataService {
     // Try to get the family ID from the current user
     if (this.isBrowser) {
       const user = this.userService.getCurrentUser();
-      if (user && user.familyId) {
-        this.familyId = user.familyId;
+      if (user && user.firstName) {
+        this.familyId = user.firstName;
       }
     }
   }

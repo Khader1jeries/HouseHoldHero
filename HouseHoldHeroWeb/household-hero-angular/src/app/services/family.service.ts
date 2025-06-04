@@ -25,14 +25,14 @@ export class FamilyService {
   // Create a new family
   createFamily(familyName: string): Observable<any> {
     const currentUser = this.userService.getCurrentUser();
-    if (!currentUser?.uid) {
+    if (!currentUser?.email) {
       return of({ success: false, message: 'User not logged in' });
     }
 
     return this.http
       .post<any>(`${this.apiUrl}/create`, {
         name: familyName,
-        admin: currentUser.uid,
+        admin: currentUser.email,
       })
       .pipe(
         catchError((error) => {
@@ -48,14 +48,14 @@ export class FamilyService {
   // Join an existing family
   joinFamily(familyCode: string): Observable<any> {
     const currentUser = this.userService.getCurrentUser();
-    if (!currentUser?.uid) {
+    if (!currentUser?.email) {
       return of({ success: false, message: 'User not logged in' });
     }
 
     return this.http
       .post<any>(`${this.apiUrl}/join`, {
         familyCode,
-        userId: currentUser.uid,
+        userId: currentUser.email,
       })
       .pipe(
         catchError((error) => {
@@ -104,13 +104,13 @@ export class FamilyService {
     const currentUser = this.userService.getCurrentUser();
     const targetFamilyId = familyId || this.userService.getFamilyId();
 
-    if (!currentUser?.uid || !targetFamilyId) {
+    if (!currentUser?.email || !targetFamilyId) {
       return of({ success: false, message: 'Invalid user or family ID' });
     }
 
     return this.http
       .post<any>(`${this.apiUrl}/${targetFamilyId}/leave`, {
-        userId: currentUser.uid,
+        userId: currentUser.email,
       })
       .pipe(
         catchError((error) => {

@@ -45,8 +45,8 @@ export class TasksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get the user's family ID
     const user = this.userService.getCurrentUser();
-    if (user && user.familyId) {
-      this.familyId = user.familyId;
+    if (user && user.email) {
+      this.familyId = user.email;
     }
 
     // Check for tab parameter from the route

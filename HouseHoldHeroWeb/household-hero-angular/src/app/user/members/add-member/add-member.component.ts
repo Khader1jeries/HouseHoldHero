@@ -75,7 +75,7 @@ export class AddMemberComponent {
 
     // Get the current user's family ID
     const currentUser = this.userService.getCurrentUser();
-    if (!currentUser || !currentUser.familyId) {
+    if (!currentUser || !currentUser.email) {
       this.errorMessage = 'No family information found. Please log in again.';
       this.isSubmitting = false;
       return;
@@ -87,7 +87,7 @@ export class AddMemberComponent {
     const memberData: any = {
       ...this.newMember,
       fullName: fullName, // Explicitly set fullName
-      familyId: currentUser.familyId,
+      familyId: currentUser.email,
       phone: `${this.newMember.countryCode} ${this.newMember.phoneNumber}`,
       createdAt: new Date(),
       score: 0,

@@ -28,14 +28,14 @@ export class AuthGuard implements CanActivate {
 
     // Check if we have family ID in URL or user data
     const familyIdFromUrl = route.queryParams['familyId'];
-    const userFamilyId = user.familyId;
+    const userFamilyId = user.email;
 
     if (familyIdFromUrl) {
       // If family ID is in URL but different from user data, update user data
       if (userFamilyId !== familyIdFromUrl) {
         this.userService.setCurrentUser({
           ...user,
-          familyId: familyIdFromUrl,
+          email: familyIdFromUrl,
         });
       }
       return true;

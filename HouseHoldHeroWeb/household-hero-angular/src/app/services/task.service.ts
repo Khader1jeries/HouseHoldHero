@@ -276,12 +276,12 @@ export class TaskService {
       return throwError('User must be logged in to create tasks');
     }
 
-    if (!user.familyId) {
+    if (!user.email) {
       return throwError('User must belong to a family to create tasks');
     }
 
     // Set family ID and creator
-    task.familyId = user.familyId;
+    task.familyId = user.email;
     task.createdBy =
       user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
 
