@@ -31,8 +31,7 @@ app.use((req, res, next) => {
 // Import routes AFTER Firebase is initialized
 const userRoutes = require("./routes/users");
 const memberRoutes = require("./routes/members"); // Import the members module
-const taskRoutes = require("./tasks"); // Import the tasks module
-
+const taskRoutes = require("./routes/tasks/tasks"); // Import the tasks module
 
 // Set up our API routes
 app.use("/api/users", userRoutes);

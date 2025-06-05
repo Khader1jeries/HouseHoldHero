@@ -40,7 +40,6 @@ router.post("/register", async (req, res) => {
 
       const hashedPassword = hashPassword(password);
 
-      
       await userRef.set({
         firstName,
         lastName,
@@ -50,8 +49,8 @@ router.post("/register", async (req, res) => {
         createdAt,
         password: hashedPassword,
       });
-      const adminEmail=req.body.email;
-       const result = await createMember(req.body,adminEmail);
+      const adminEmail = req.body.email;
+      const result = await createMember(req.body, adminEmail);
       return res.status(200).json({
         success: true,
         message: "User registered successfully",
@@ -70,7 +69,6 @@ router.post("/register", async (req, res) => {
     });
   }
 });
-
 
 router.post("/login", async (req, res) => {
   try {
