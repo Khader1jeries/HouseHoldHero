@@ -4,18 +4,18 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
-// Get all members with REQUIRED family filtering
+// Get all members with REQUIRED admin filtering
 router.get("/", async (req, res) => {
   try {
-    const { familyId } = req.query;
+    const { adminEmail } = req.query;
 
-    if (!familyId) {
+    if (!adminEmail) {
       return res.status(400).json({
-        error: "familyId is required to retrieve members",
+        error: "adminEmail is required to retrieve members",
       });
     }
 
-    const query = db.collection("members").where("familyId", "==", familyId);
+    const query = db.collection("members").where("adminEmail", "==", adminEmail);
     const membersSnapshot = await query.get();
 
     const members = [];
@@ -51,9 +51,9 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Name and email are required" });
     }
 
-    // REQUIRE familyId
-    if (!newMember.familyId) {
-      return res.status(400).json({ error: "familyId is required" });
+    // REQUIRE adminEmail
+    if (!newMember.adminEmail) {
+      return res.status(400).json({ error: "adminEmail is required" });
     }
 
     // Ensure fullName is set if using firstName/lastName
@@ -71,11 +71,13 @@ router.post("/", async (req, res) => {
     newMember.completionRate = 0;
     newMember.completedTasks = 0;
     newMember.totalTasks = 0;
-
-    const docRef = await db.collection("members").add(newMember);
+  const email = newMember.email;
+    delete newMember.email; 
+   const docRef = db.collection("members").doc(email);
+await docRef.set(newMember);
      await db
-      .collection("families")
-      .doc(newMember.familyId)
+      .collection("users")
+      .doc(newMember.adminEmail)
       .update({
         members: admin.firestore.FieldValue.arrayUnion(docRef.id),
       });
@@ -90,8 +92,28 @@ router.post("/", async (req, res) => {
 });
 
 
-// Update member with family verification
 router.put("/:id", async (req, res) => {
+  try {
+    const memberEmail = req.params.id;
+    const updateData = req.body;
+
+    const memberRef = db.collection("members").doc(memberEmail);
+    const memberDoc = await memberRef.get();
+
+    if (!memberDoc.exists) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+
+    await memberRef.update(updateData);
+
+    res.status(200).json({
+      success: true,
+      message: "Member updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating member:", error);
+    res.status(500).json({ error: "Failed to update member" });
+  }
 });
 
 // Get member's tasks with family filtering

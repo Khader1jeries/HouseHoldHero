@@ -32,10 +32,9 @@ app.use((req, res, next) => {
 const userRoutes = require("./routes/users");
 const memberRoutes = require("./routes/members"); // Import the members module
 const taskRoutes = require("./tasks"); // Import the tasks module
-const familyRoutes = require("./routes/families");
+
 
 // Set up our API routes
-app.use("/api/families", familyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/members", memberRoutes); // Use the members routes
 app.use("/api/tasks", taskRoutes); // Use the tasks routes

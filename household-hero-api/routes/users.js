@@ -3,7 +3,7 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const crypto = require("crypto");
-const { createFamilyForUser } = require("../controllers/familyController");
+const { createMember } = require("../controllers/memberController");
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
 
       const hashedPassword = hashPassword(password);
 
-      // 1. Create user document first (without familyId)
+      
       await userRef.set({
         firstName,
         lastName,
@@ -50,11 +50,8 @@ router.post("/register", async (req, res) => {
         createdAt,
         password: hashedPassword,
       });
-
-      // 2. Create family and update user
-      const familyId = await createFamilyForUser(lastName, email);
-      await userRef.update({ familyId });
-
+      const adminEmail=req.body.email;
+       const result = await createMember(req.body,adminEmail);
       return res.status(200).json({
         success: true,
         message: "User registered successfully",
