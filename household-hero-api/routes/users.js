@@ -3,6 +3,7 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const crypto = require("crypto");
+const { createFamilyForUser } = require("../controllers/familyController");
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
@@ -27,27 +28,32 @@ router.post("/register", async (req, res) => {
       createdAt &&
       password
     ) {
-      const userRef = req.firestore.collection("users").doc(email);
+      const userRef = db.collection("users").doc(email); // fixed: use db not req.firestore
       const userDoc = await userRef.get();
+
       if (userDoc.exists) {
         return res.status(400).json({
           success: false,
           message: "User already exists",
         });
       }
-      hashPassword = hashPassword(password);
-      await db
-        .collection("users")
-        .doc(email)
-        .set({
-          firstName: firstName,
-          lastName: lastName,
-          fullName: firstName + " " + lastName,
-          phoneNumber: phoneNumber,
-          countryCode: countryCode,
-          createdAt: createdAt,
-          password: hashPassword,
-        });
+
+      const hashedPassword = hashPassword(password);
+
+      // 1. Create user document first (without familyId)
+      await userRef.set({
+        firstName,
+        lastName,
+        fullName: firstName + " " + lastName,
+        phoneNumber,
+        countryCode,
+        createdAt,
+        password: hashedPassword,
+      });
+
+      // 2. Create family and update user
+      const familyId = await createFamilyForUser(lastName, email);
+      await userRef.update({ familyId });
 
       return res.status(200).json({
         success: true,
@@ -67,6 +73,7 @@ router.post("/register", async (req, res) => {
     });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   try {

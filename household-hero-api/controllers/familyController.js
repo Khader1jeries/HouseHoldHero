@@ -1,12 +1,8 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
+createFamilyForUser
 async function createFamilyForUser(name, email) {
-  const userDoc = await db.collection("users").doc(email).get();
-  if (!userDoc.exists) {
-    throw new Error("Admin user not found");
-  }
-
   const newFamily = {
     name,
     admin: email,
