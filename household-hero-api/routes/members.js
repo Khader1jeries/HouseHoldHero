@@ -3,12 +3,15 @@ const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
-
+const {
+  activeTasks,
+  completedTasks,
+} = require("../controllers/memberController");
 // Get all members with REQUIRED admin filtering
 router.get("/", async (req, res) => {
   try {
     const { adminEmail } = req.query;
-
+    console.log(adminEmail);
     if (!adminEmail) {
       return res.status(400).json({
         error: "adminEmail is required to retrieve members",
@@ -21,12 +24,14 @@ router.get("/", async (req, res) => {
     const membersSnapshot = await query.get();
 
     const members = [];
-    membersSnapshot.forEach((doc) => {
+    for (const doc of membersSnapshot.docs) {
+      await activeTasks(doc.id);
+      await completedTasks(doc.id);
       members.push({
         id: doc.id,
         ...doc.data(),
       });
-    });
+    }
 
     res.status(200).json(members);
   } catch (error) {

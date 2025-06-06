@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const { addTaskToMember } = require("../../controllers/memberController");
+const {
+  addTaskToMember,
+  activeTasks,
+} = require("../../controllers/memberController");
+
 // Create a new task
 router.post("/", async (req, res) => {
   try {
@@ -26,18 +30,30 @@ router.post("/", async (req, res) => {
         return res.status(400).json({ error: `${field} is required` });
       }
     }
-
-    // Set default status for subtasks if present
+    let count = 0;
     if (task.subtasks && typeof task.subtasks === "object") {
+      Object.keys(task.subtasks).forEach((subtaskId) => {
+        count++;
+      });
+    }
+    let pointsDivided;
+    if (count == 0) pointsDivided = 0;
+    else pointsDivided = task.score / count;
+    if (task.subtasks && typeof task.subtasks === "object") {
+      // Set default status for subtasks if present
       Object.keys(task.subtasks).forEach((subtaskId) => {
         const subtask = task.subtasks[subtaskId];
         if (typeof subtask.status !== "boolean") subtask.status = false;
-        if (typeof subtask.score !== "number") subtask.score = 0;
+        if (typeof subtask.score !== "number") subtask.score = pointsDivided;
       });
     }
-
+    const status = false;
+    task.status = status;
+    const completionRate = 0;
+    task.completionRate = completionRate;
     const docRef = await db.collection("tasks").add(task);
     await addTaskToMember(task.assignedTo, docRef.id);
+    await activeTasks(task.assignedTo);
     res.status(201).json({
       success: true,
       message: "Task created successfully",
@@ -128,6 +144,42 @@ router.get("/filter", async (req, res) => {
   } catch (error) {
     console.error("Error filtering tasks:", error);
     res.status(500).json({ error: "Failed to filter tasks" });
+  }
+});
+router.put("/:taskId/subtasks/:title", async (req, res) => {
+  try {
+    const { taskId, title } = req.params;
+
+    const taskRef = db.collection("tasks").doc(taskId);
+    const taskDoc = await taskRef.get();
+
+    if (!taskDoc.exists) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const taskData = taskDoc.data();
+    const subtasks = taskData.subtasks || {};
+
+    if (!subtasks[title]) {
+      return res
+        .status(404)
+        .json({ error: "Subtask not found with the given title" });
+    }
+
+    // Flip status
+    subtasks[title].status = !subtasks[title].status;
+
+    // Update the entire subtasks field
+    await taskRef.update({ subtasks });
+
+    res.status(200).json({
+      success: true,
+      message: `Subtask '${title}' status updated`,
+      newStatus: subtasks[title].status,
+    });
+  } catch (error) {
+    console.error("Error updating subtask status:", error);
+    res.status(500).json({ error: "Failed to update subtask status" });
   }
 });
 
