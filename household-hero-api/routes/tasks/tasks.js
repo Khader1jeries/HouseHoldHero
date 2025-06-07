@@ -30,11 +30,20 @@ router.post("/", async (req, res) => {
         return res.status(400).json({ error: `${field} is required` });
       }
     }
+
     let count = 0;
     if (task.subtasks && typeof task.subtasks === "object") {
       Object.keys(task.subtasks).forEach((subtaskId) => {
         count++;
       });
+    } else {
+      task.subtasks = {
+        [task.title]: {
+          score: task.score,
+          status: false,
+        },
+      };
+      count = 1;
     }
     let pointsDivided;
     if (count == 0) pointsDivided = 0;
@@ -63,36 +72,6 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("Error creating task:", error);
     res.status(500).json({ error: "Failed to create task" });
-  }
-});
-
-//update
-router.put("/:taskId", async (req, res) => {
-  try {
-    const taskId = req.params.taskId;
-    const updatedData = req.body;
-
-    await db.collection("tasks").doc(taskId).update(updatedData);
-
-    res
-      .status(200)
-      .json({ success: true, message: "Task updated successfully" });
-  } catch (error) {
-    console.error("Error updating task:", error);
-    res.status(500).json({ success: false, message: "Failed to update task" });
-  }
-});
-
-router.delete("/:taskId", async (req, res) => {
-  try {
-    const taskId = req.params.taskId;
-    await db.collection("tasks").doc(taskId).delete();
-    res
-      .status(200)
-      .json({ success: true, message: "Task deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    res.status(500).json({ success: false, message: "Failed to delete task" });
   }
 });
 
@@ -144,42 +123,6 @@ router.get("/filter", async (req, res) => {
   } catch (error) {
     console.error("Error filtering tasks:", error);
     res.status(500).json({ error: "Failed to filter tasks" });
-  }
-});
-router.put("/:taskId/subtasks/:title", async (req, res) => {
-  try {
-    const { taskId, title } = req.params;
-
-    const taskRef = db.collection("tasks").doc(taskId);
-    const taskDoc = await taskRef.get();
-
-    if (!taskDoc.exists) {
-      return res.status(404).json({ error: "Task not found" });
-    }
-
-    const taskData = taskDoc.data();
-    const subtasks = taskData.subtasks || {};
-
-    if (!subtasks[title]) {
-      return res
-        .status(404)
-        .json({ error: "Subtask not found with the given title" });
-    }
-
-    // Flip status
-    subtasks[title].status = !subtasks[title].status;
-
-    // Update the entire subtasks field
-    await taskRef.update({ subtasks });
-
-    res.status(200).json({
-      success: true,
-      message: `Subtask '${title}' status updated`,
-      newStatus: subtasks[title].status,
-    });
-  } catch (error) {
-    console.error("Error updating subtask status:", error);
-    res.status(500).json({ error: "Failed to update subtask status" });
   }
 });
 

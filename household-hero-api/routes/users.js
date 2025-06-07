@@ -112,13 +112,35 @@ router.post("/login", async (req, res) => {
 });
 
 router.put("/:email", async (req, res) => {
-  console.log("PUT request hit with email:", req.params.email);
   try {
     const userEmail = req.params.email;
     const userData = req.body;
     if (userData.password) {
       delete userData.password;
     }
+    if (userData.members) {
+      delete userData.members;
+    }
+    if (userData.createdAt) {
+      delete userData.createdAt;
+    }
+    if (userData.firstName && userData.lastName) {
+      const userRef = db.collection("users").doc(userEmail);
+      const userDoc = await userRef.get();
+      const user = userDoc.data();
+      userData.fullName = userData.firstName + " " + userData.lastName;
+    } else if (userData.firstName) {
+      const userRef = db.collection("users").doc(userEmail);
+      const userDoc = await userRef.get();
+      const user = userDoc.data(); // ✅ get document fields
+      userData.fullName = userData.firstName + " " + user.lastName;
+    } else if (userData.lastName) {
+      const userRef = db.collection("users").doc(userEmail);
+      const userDoc = await userRef.get();
+      const user = userDoc.data(); // ✅ get document fields
+      userData.fullName = user.firstName + " " + userData.lastName;
+    }
+
     await db.collection("users").doc(userEmail).update(userData);
     res.status(200).json({
       success: true,

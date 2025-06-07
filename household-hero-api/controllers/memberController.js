@@ -111,54 +111,9 @@ async function activeTasks(memberId) {
     return { success: false, error: error.message };
   }
 }
-async function completedTasks(memberId) {
-  try {
-    const memberRef = db.collection("members").doc(memberId);
-    const memberDoc = await memberRef.get();
-
-    if (!memberDoc.exists) {
-      throw new Error("Member not found");
-    }
-
-    const memberData = memberDoc.data();
-    const taskIds = memberData.tasks || [];
-
-    let completedCount = 0;
-    let updatedScore = 0;
-    for (const taskId of taskIds) {
-      if (!taskId || typeof taskId !== "string" || taskId.trim().length === 0) {
-        console.warn(`Skipped invalid task ID:`, taskId);
-        continue;
-      }
-
-      const taskRef = db.collection("tasks").doc(taskId);
-      const taskDoc = await taskRef.get();
-
-      if (taskDoc.exists) {
-        const taskData = taskDoc.data();
-        if (taskData.status === true) {
-          completedCount++;
-          updatedScore += taskData.score;
-        }
-      }
-    }
-
-    // Update completedTasks field
-    await memberRef.update({ completedTasks: completedCount });
-    await memberRef.update({ score: updatedScore });
-    console.log(
-      `Updated completedTasks to ${completedCount} for member ${memberId}`
-    );
-    return { success: true, completedTasks: completedCount };
-  } catch (error) {
-    console.error("Failed to update completedTasks:", error);
-    return { success: false, error: error.message };
-  }
-}
 
 module.exports = {
   activeTasks,
   createMember,
   addTaskToMember,
-  completedTasks,
 };

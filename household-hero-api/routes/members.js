@@ -3,66 +3,8 @@ const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const {
-  activeTasks,
-  completedTasks,
-} = require("../controllers/memberController");
-// Get all members with REQUIRED admin filtering
-router.get("/", async (req, res) => {
-  try {
-    const { adminEmail } = req.query;
-    console.log(adminEmail);
-    if (!adminEmail) {
-      return res.status(400).json({
-        error: "adminEmail is required to retrieve members",
-      });
-    }
-
-    const query = db
-      .collection("members")
-      .where("adminEmail", "==", adminEmail);
-    const membersSnapshot = await query.get();
-
-    const members = [];
-    for (const doc of membersSnapshot.docs) {
-      await activeTasks(doc.id);
-      await completedTasks(doc.id);
-      members.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    }
-
-    res.status(200).json(members);
-  } catch (error) {
-    console.error("Error getting members:", error);
-    res.status(500).json({ error: "Failed to retrieve members" });
-  }
-});
-
-// Get member by email
-router.get("/:email", async (req, res) => {
-  try {
-    const memberEmail = req.params.email;
-
-    const memberRef = db.collection("members").doc(memberEmail);
-    const memberDoc = await memberRef.get();
-
-    if (!memberDoc.exists) {
-      return res.status(404).json({ error: "Member not found" });
-    }
-
-    res.status(200).json({
-      email: memberDoc.id,
-      ...memberDoc.data(),
-    });
-  } catch (error) {
-    console.error("Error fetching member:", error);
-    res.status(500).json({ error: "Failed to fetch member" });
-  }
-});
-
-// Create new member - ensure familyId is set
+const { activeTasks } = require("../controllers/memberController");
+// Create new member - ensure adminEmail is set
 router.post("/", async (req, res) => {
   try {
     const newMember = req.body;
@@ -96,13 +38,14 @@ router.post("/", async (req, res) => {
     const email = newMember.email;
     delete newMember.email;
     const docRef = db.collection("members").doc(email);
-    await docRef.set(newMember);
+
     await db
       .collection("users")
       .doc(newMember.adminEmail)
       .update({
         members: admin.firestore.FieldValue.arrayUnion(docRef.id),
       });
+    await docRef.set(newMember);
     res.status(201).json({
       id: docRef.id,
       ...newMember,
@@ -112,11 +55,46 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Failed to create member" });
   }
 });
-
-router.put("/:id", async (req, res) => {
+// Get all members with REQUIRED admin filtering
+router.get("/", async (req, res) => {
   try {
-    const memberEmail = req.params.id;
-    const updateData = req.body;
+    const { adminEmail } = req.query;
+    console.log(adminEmail);
+    if (!adminEmail) {
+      return res.status(400).json({
+        error: "adminEmail is required to retrieve members",
+      });
+    }
+
+    const query = db
+      .collection("members")
+      .where("adminEmail", "==", adminEmail);
+    const membersSnapshot = await query.get();
+
+    const members = [];
+    for (const doc of membersSnapshot.docs) {
+      members.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    }
+
+    res.status(200).json(members);
+  } catch (error) {
+    console.error("Error getting members:", error);
+    res.status(500).json({ error: "Failed to retrieve members" });
+  }
+});
+
+// Get member by email with adminEmail verification
+router.get("/:email", async (req, res) => {
+  try {
+    const memberEmail = req.params.email;
+    const adminEmail = req.query.adminEmail;
+
+    if (!adminEmail) {
+      return res.status(400).json({ error: "adminEmail is required" });
+    }
 
     const memberRef = db.collection("members").doc(memberEmail);
     const memberDoc = await memberRef.get();
@@ -125,15 +103,21 @@ router.put("/:id", async (req, res) => {
       return res.status(404).json({ error: "Member not found" });
     }
 
-    await memberRef.update(updateData);
+    const memberData = memberDoc.data();
+
+    if (memberData.adminEmail !== adminEmail) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: adminEmail mismatch" });
+    }
 
     res.status(200).json({
-      success: true,
-      message: "Member updated successfully",
+      email: memberDoc.id,
+      ...memberData,
     });
   } catch (error) {
-    console.error("Error updating member:", error);
-    res.status(500).json({ error: "Failed to update member" });
+    console.error("Error fetching member:", error);
+    res.status(500).json({ error: "Failed to fetch member" });
   }
 });
 

@@ -32,12 +32,12 @@ app.use((req, res, next) => {
 const userRoutes = require("./routes/users");
 const memberRoutes = require("./routes/members"); // Import the members module
 const taskRoutes = require("./routes/tasks/tasks"); // Import the tasks module
-
+const tasksUnderVoteRoutes = require("./routes/tasks/tasksUnderVote");
 // Set up our API routes
 app.use("/api/users", userRoutes);
 app.use("/api/members", memberRoutes); // Use the members routes
 app.use("/api/tasks", taskRoutes); // Use the tasks routes
-
+app.use("/api/tasksUnderVote", tasksUnderVoteRoutes);
 // Basic route for testing
 app.get("/", (req, res) => {
   res.send("Household Hero API is running");
