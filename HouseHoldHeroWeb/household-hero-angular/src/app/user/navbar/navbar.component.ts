@@ -4,6 +4,7 @@ import {
   RouterLink,
   RouterModule,
   NavigationEnd,
+  ActivatedRoute,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -32,7 +33,11 @@ export class NavbarComponent implements OnInit {
   showUserMenu: boolean = false;
   userData: any = null;
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     // Subscribe to router events to update page title
@@ -42,12 +47,19 @@ export class NavbarComponent implements OnInit {
         this.updatePageTitle(event.urlAfterRedirects);
       });
 
-    // Subscribe to user data (reactive)
-    this.userService.currentUser$.subscribe((user) => {
-      if (user) {
-        this.userData = user;
-      }
-    });
+    // ✅ Get email from query parameters
+    const email = this.activatedRoute.snapshot.queryParams['email'];
+    if (email) {
+      this.userService.getCurrentUser(email).subscribe({
+        next: (user) => {
+          this.userData = user; // make sure this is bound to the view
+          console.log('✅ User loaded:', user);
+        },
+        error: (err) => {
+          console.error('❌ Error fetching user:', err);
+        },
+      });
+    }
 
     // Initial unread count setup
     this.updateUnreadCount();
@@ -106,8 +118,7 @@ export class NavbarComponent implements OnInit {
 
   logout(): void {
     this.userService.logoutUser();
-    this.showUserMenu = false;
-    this.showNotifications = false;
+    this.router.navigate(['/guest/home-content']);
   }
 
   addNotification(sender: string, message: string): void {

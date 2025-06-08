@@ -1,5 +1,5 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { isPlatformBrowser } from '@angular/common';
@@ -53,8 +53,9 @@ export class MemberService {
     return null;
   }
 
-  getMembers(familyId?: string): Observable<Member[]> {
-    return of([]);
+  getMembers(adminEmail?: string): Observable<Member[]> {
+    const params = adminEmail ? { params: { adminEmail } } : {};
+    return this.http.get<Member[]>(`${this.apiUrl}`, params);
   }
 
   getMemberById(id: string): Observable<Member> {

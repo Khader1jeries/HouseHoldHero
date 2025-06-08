@@ -36,9 +36,10 @@ export class LoginComponent {
       next: (res) => {
         this.successMessage = 'Login successful!';
         this.isSubmitting = false;
-        this.userService.setCurrentUser(email);
-        // Optional: navigate after 2s or save user info
-        this.router.navigate(['/user']);
+
+        this.router.navigate(['/user'], {
+          queryParams: { email: email },
+        });
       },
       error: (err) => {
         this.errorMessage =

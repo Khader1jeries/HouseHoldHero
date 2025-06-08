@@ -26,9 +26,36 @@ export class MembersComponent implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('🔄 ngOnInit called');
+    this.loadMembers();
+  }
 
-  loadMembers(): void {}
+  loadMembers(): void {
+    const email = this.route.snapshot.queryParams['email'];
+    if (!email) {
+      console.error('❌ Missing email in queryParams');
+      return;
+    }
+
+    console.log('📨 Fetching members for email:', email);
+
+    this.memberService.getMembers(email).subscribe({
+      next: (members) => {
+        console.log('✅ Members received from service:', members);
+        this.members = members;
+        this.topMembers = [...members]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Error fetching members:', err);
+        this.error = 'Failed to load members.';
+        this.isLoading = false;
+      },
+    });
+  }
 
   navigateToAddMember(): void {}
 

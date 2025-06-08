@@ -239,7 +239,7 @@ router.get("/:email", async (req, res) => {
 
     const userData = userDoc.data();
     delete userData.password; // never expose password
-
+    userData.email = userDoc.id;
     return res.status(200).json({
       success: true,
       user: userData,
