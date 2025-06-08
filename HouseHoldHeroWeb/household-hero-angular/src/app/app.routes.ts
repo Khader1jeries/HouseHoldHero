@@ -6,7 +6,6 @@ import { LoginComponent } from './guest/login/login.component';
 import { RegistrationComponent } from './guest/registration/registration.component';
 import { UserComponent } from './user/user.component';
 import { ForgotPasswordComponent } from './guest/forget-password/forget-password.component';
-import { ResetPasswordComponent } from './guest/reset-password/reset-password.component';
 import { IndexComponent } from './user/index/index.component';
 import { MembersComponent } from './user/members/members.component';
 import { AddMemberComponent } from './user/members/add-member/add-member.component';
@@ -39,7 +38,7 @@ export const routes: Routes = [
       { path: 'guest/login', component: LoginComponent },
       { path: 'guest/registration', component: RegistrationComponent },
       { path: 'guest/forgot-password', component: ForgotPasswordComponent },
-      { path: 'guest/reset-password', component: ResetPasswordComponent },
+
       { path: 'guest/privacy-policy', component: PrivacyPolicyComponent },
       { path: 'guest/terms-of-service', component: TermsServiceComponent },
       { path: 'guest/contact', component: ContactComponent },

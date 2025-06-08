@@ -17,33 +17,36 @@
     </div>
 
     <form (ngSubmit)="onSubmit()">
-      <input 
-        type="email" 
-        placeholder="Enter your email" 
-        [(ngModel)]="loginData.email" 
+      <input
+        type="email"
+        placeholder="Enter your email"
+        [(ngModel)]="loginData.email"
         name="email"
-        required 
+        required
+        [disabled]="isSubmitting"
       />
-      <input 
-        type="password" 
-        placeholder="Enter your password" 
+      <input
+        type="password"
+        placeholder="Enter your password"
         [(ngModel)]="loginData.password"
         name="password"
-        required 
+        required
+        [disabled]="isSubmitting"
       />
 
       <div class="remember-me">
-        <input 
-          type="checkbox" 
-          id="remember" 
+        <input
+          type="checkbox"
+          id="remember"
           [(ngModel)]="loginData.rememberMe"
           name="rememberMe"
+          [disabled]="isSubmitting"
         />
         <label for="remember">Remember me</label>
       </div>
 
       <button type="submit" class="login-btn" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Logging in...' : 'Login' }}
+        {{ isSubmitting ? "Logging in..." : "Login" }}
       </button>
     </form>
 

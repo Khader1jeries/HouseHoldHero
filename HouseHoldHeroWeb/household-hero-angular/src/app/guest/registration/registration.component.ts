@@ -32,60 +32,41 @@ export class RegistrationComponent implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
-      if (params['email']) {
-        this.user.email = params['email'];
-      }
-    });
-  }
+  ngOnInit(): void {}
 
-  onSubmit() {
-    this.isSubmitting = true;
-    this.errorMessage = '';
+  onSubmit(): void {
     this.successMessage = '';
+    this.errorMessage = '';
 
     if (this.user.password !== this.user.confirmPassword) {
-      this.errorMessage = 'Passwords do not match';
-      this.isSubmitting = false;
+      this.errorMessage = 'Passwords do not match.';
       return;
     }
 
-    if (this.user.password.length < 6) {
-      this.errorMessage = 'Password must be at least 6 characters';
-      this.isSubmitting = false;
-      return;
-    }
+    this.isSubmitting = true;
+    this.user.email = this.user.email.toLowerCase();
 
-    const registrationData = {
+    const userToRegister = {
       ...this.user,
-      fullName: `${this.user.firstName} ${this.user.lastName}`,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
 
-    this.userService.registerUser(registrationData).subscribe({
-      next: (response) => {
+    this.userService.registerUser(userToRegister).subscribe({
+      next: (res) => {
+        this.successMessage = 'Registration successful!';
         this.isSubmitting = false;
-        if (response.success) {
-          this.successMessage =
-            'Registration successful! Redirecting to login...';
-          setTimeout(() => {
-            this.router.navigate(['/guest/login']);
-          }, 2000);
-        } else {
-          this.errorMessage = response.message || 'Registration failed';
-        }
+        setTimeout(() => {
+          this.router.navigate(['/guest/login']);
+        }, 2000); // 2 seconds delay
       },
-      error: (error) => {
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Registration failed.';
         this.isSubmitting = false;
-        this.errorMessage =
-          error.error?.message || 'An error occurred during registration';
-        console.error('Registration error:', error);
       },
     });
   }
 
-  navigateToLogin() {
+  navigateToLogin(): void {
     this.router.navigate(['/guest/login']);
   }
 }

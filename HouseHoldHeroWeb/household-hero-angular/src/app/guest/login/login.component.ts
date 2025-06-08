@@ -20,41 +20,31 @@ export class LoginComponent {
 
   errorMessage: string = '';
   isSubmitting: boolean = false;
+  successMessage: string = '';
 
   constructor(private router: Router, private userService: UserService) {}
 
-  onSubmit() {
-    this.isSubmitting = true;
+  onSubmit(): void {
     this.errorMessage = '';
+    this.successMessage = '';
+    this.isSubmitting = true;
 
-    // Validate input
-    if (!this.loginData.email || !this.loginData.password) {
-      this.errorMessage = 'Please enter both email and password';
-      this.isSubmitting = false;
-      return;
-    }
+    const email = this.loginData.email.toLowerCase();
+    const password = this.loginData.password;
 
-    // Attempt login
-    this.userService
-      .loginUser(this.loginData.email, this.loginData.password)
-      .subscribe({
-        next: (response) => {
-          console.log('🔍 Login response:', response); // Add this
-          this.isSubmitting = false;
-
-          if (!response.success) {
-            this.errorMessage = response.message || 'Invalid email or password';
-          } else {
-            console.log('✅ Login successful, about to navigate'); // Add this
-            this.router.navigate(['/user']);
-          }
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          this.errorMessage =
-            error.error?.message || 'An error occurred during login';
-          console.error('Login error:', error);
-        },
-      });
+    this.userService.loginUser(email, password).subscribe({
+      next: (res) => {
+        this.successMessage = 'Login successful!';
+        this.isSubmitting = false;
+        this.userService.setCurrentUser(email);
+        // Optional: navigate after 2s or save user info
+        this.router.navigate(['/user']);
+      },
+      error: (err) => {
+        this.errorMessage =
+          err.error?.message || 'Invalid credentials or server error.';
+        this.isSubmitting = false;
+      },
+    });
   }
 }

@@ -4,6 +4,10 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const { activeTasks } = require("../controllers/memberController");
+const crypto = require("crypto");
+function hashPassword(password) {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
 // Create new member - ensure adminEmail is set
 router.post("/", async (req, res) => {
   try {
@@ -29,6 +33,8 @@ router.post("/", async (req, res) => {
       }`.trim();
     }
 
+    let password = newMember.password;
+    newMember.password = hashPassword(password);
     // Initialize default values
     newMember.score = 0;
     newMember.activeTasks = 0;

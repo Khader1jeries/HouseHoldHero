@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, BehaviorSubject, catchError, map } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { isPlatformBrowser } from '@angular/common';
 import { User } from './interfaces/user.interface';
@@ -14,13 +14,25 @@ export class UserService {
   private isBrowser: boolean;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-
+  private currentUser: User | null = null;
   constructor(
     private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    this.loadUserFromStorage();
+  }
+
+  private loadUserFromStorage(): void {
+    if (this.isBrowser) {
+      const userJson = localStorage.getItem('currentUser');
+      if (userJson) {
+        const user: User = JSON.parse(userJson);
+        this.currentUser = user;
+        this.currentUserSubject.next(user);
+      }
+    }
   }
 
   registerUser(user: any): Observable<any> {
@@ -28,104 +40,76 @@ export class UserService {
   }
 
   loginUser(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password }).pipe(
-      map((response: any) => {
-        // Optional: You can store user session data here
-        if (response.success) {
-          // Create user object since backend doesn't return it
-          const user: User = {
-            email: email,
-            firstName: '',
-            lastName: '',
-            fullName: email,
-          };
+    return this.http.post(`${this.apiUrl}/login`, { email, password });
+  }
 
-          console.log('🔍 Setting user:', user);
-          this.setCurrentUser(user);
-          console.log('🔍 User after setting:', this.getCurrentUser());
-        }
-        return response;
-      }),
-      catchError((error) => {
-        console.error('Login error:', error);
-        return of({
-          success: false,
-          message: error.error?.message || 'Login failed',
-        });
-      })
+  fetchUserData(email: string): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/${encodeURIComponent(email)}`);
+  }
+
+  checkEmail(email: string): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/forgot-password/${encodeURIComponent(email)}`
     );
   }
 
-  logoutUser(): void {
-    // Clear the user from BehaviorSubject
-    this.currentUserSubject.next(null);
+  resetPassword(data: { email: string; password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, data);
+  }
 
-    // Optionally clear from local storage if you're storing user info there
-    if (this.isBrowser) {
-      localStorage.removeItem('currentUser');
-    }
+  logoutUser(): void {}
 
-    // Redirect to login page
-    this.router.navigate(['/guest/login']);
+  isLoggedIn(): boolean {
+    return false;
+  }
+
+  setCurrentUser(email: string): void {
+    this.fetchUserData(email).subscribe({
+      next: (user: User) => {
+        this.currentUser = user;
+
+        if (this.isBrowser) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+
+        this.currentUserSubject.next(user);
+      },
+      error: (err) => {
+        console.error('❌ Failed to fetch user by email:', err);
+      },
+    });
   }
 
   getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
-  }
+    if (this.currentUser) return this.currentUser;
 
-  isLoggedIn(): boolean {
-    return this.currentUserSubject.value !== null;
+    if (this.isBrowser) {
+      const userJson = localStorage.getItem('currentUser');
+      if (userJson) {
+        this.currentUser = JSON.parse(userJson);
+        this.currentUserSubject.next(this.currentUser); // keep observable in sync
+      }
+    }
+
+    return this.currentUser;
   }
 
   updateUserProfile(user: Partial<User>): Observable<any> {
-    return of(null);
-  }
-  checkEmail(email: string): Observable<any> {
-    return this.http
-      .get(`${this.apiUrl}/check-email`, {
-        params: { email },
-      })
-      .pipe(
-        map((response: any) => response),
-        catchError((error) => {
-          console.error('Check email error:', error);
-          return of({
-            success: false,
-            message: error.error?.message || 'Failed to check email',
-          });
-        })
-      );
+    return of({});
   }
 
-  resetPassword(email: string, newPassword: string): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/reset-password`, {
-        email,
-        password: newPassword,
-      })
-      .pipe(
-        map((response: any) => {
-          return response;
-        }),
-        catchError((error) => {
-          console.error('Reset password error:', error);
-          return of({
-            success: false,
-            message: error.error?.message || 'Failed to reset password',
-          });
-        })
-      );
-  }
-
-  setCurrentUser(user: User): void {
-    this.currentUserSubject.next(user);
-  }
-
-  getFamilyId(): string | null {
+  getUserEmail(): string | null {
     return null;
   }
 
-  ensureFamilyIdInUrl(familyId?: string): void {}
+  ensureEmailInUrl(email?: string): void {}
 
-  navigateWithFamilyId(route: string[], additionalParams?: any): void {}
+  navigateWithEmail(route: string[], additionalParams?: any): void {}
+  setCurrentUserObject(user: User): void {
+    this.currentUser = user;
+    if (this.isBrowser) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    }
+    this.currentUserSubject.next(user);
+  }
 }

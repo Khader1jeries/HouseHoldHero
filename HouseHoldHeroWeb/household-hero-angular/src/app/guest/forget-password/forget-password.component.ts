@@ -7,61 +7,82 @@ import { UserService } from '../../services/user.service';
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './forget-password.component.html',
-  styleUrls: ['./forget-password.component.css'],
+  styleUrl: './forget-password.component.css',
 })
 export class ForgotPasswordComponent {
-  email: string = '';
-  isSubmitting: boolean = false;
+  currentStep: 'email' | 'reset' = 'email';
+
+  emailData = {
+    email: '',
+  };
+
+  resetData = {
+    newPassword: '',
+    confirmPassword: '',
+  };
+
   errorMessage: string = '';
   successMessage: string = '';
+  isSubmitting: boolean = false;
 
-  constructor(
-    private router: Router,
-    private userService: UserService
-  ) {}
+  constructor(private router: Router, private userService: UserService) {}
 
-  onSubmit() {
-    this.isSubmitting = true;
-    this.errorMessage = '';
+  onCheckEmail(): void {
     this.successMessage = '';
+    this.errorMessage = '';
+    this.isSubmitting = true;
 
-    if (!this.email) {
-      this.errorMessage = 'Please enter your email address';
-      this.isSubmitting = false;
+    const email = this.emailData.email.toLowerCase();
+
+    this.userService.checkEmail(email).subscribe({
+      next: (res) => {
+        // Assume backend returns success if email exists
+        this.successMessage = 'Email found. Please reset your password.';
+        this.currentStep = 'reset';
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Email not found.';
+        this.isSubmitting = false;
+      },
+    });
+  }
+
+  onResetPassword(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    if (this.resetData.newPassword !== this.resetData.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
       return;
     }
 
-    // Check if email exists
-    this.userService.checkEmail(this.email)
-      .subscribe({
-        next: (response) => {
-          this.isSubmitting = false;
-          
-          if (response.success && response.exists) {
-            this.successMessage = 'Email found! Redirecting to reset password...';
-            
-            // Store the email for the reset password page
-            localStorage.setItem('resetEmail', this.email);
-            
-            // Navigate to reset password page after a brief delay
-            setTimeout(() => {
-              this.router.navigate(['/guest/reset-password']);
-            }, 2000);
-          } else {
-            this.errorMessage = 'Email not found in our records';
-          }
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          this.errorMessage = 'An error occurred. Please try again later.';
-          console.error('Check email error:', error);
-        }
-      });
+    this.isSubmitting = true;
+
+    const payload = {
+      email: this.emailData.email.toLowerCase(),
+      password: this.resetData.newPassword,
+    };
+
+    this.userService.resetPassword(payload).subscribe({
+      next: () => {
+        this.successMessage = 'Password reset successful!';
+        this.isSubmitting = false;
+        setTimeout(() => this.router.navigate(['/guest/login']), 2000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to reset password.';
+        this.isSubmitting = false;
+      },
+    });
   }
-  
-  navigateToLogin() {
-    this.router.navigate(['/guest/login']);
+
+  goBackToEmail(): void {
+    this.currentStep = 'email';
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.isSubmitting = false;
   }
 }

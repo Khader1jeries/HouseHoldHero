@@ -1,4 +1,3 @@
-// src/app/user/index/index.component.ts - Updated to preserve family ID in navigation
 import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user.service';
@@ -16,32 +15,15 @@ export class IndexComponent {
     private userService: UserService
   ) {}
 
-  goTo(route: string) {
-    // Use the UserService to navigate with family ID preserved
-    this.userService.navigateWithFamilyId([route]);
-  }
+  goTo(route: string): void {}
 
-  // Navigation methods that preserve family ID
-  goToMembers() {
-    this.userService.navigateWithFamilyId(['/user/members']);
-  }
+  goToMembers(): void {}
 
-  goToTasksVoting() {
-    this.userService.navigateWithFamilyId(['/user/tasks'], { tab: 'voting' });
-  }
+  goToTasksVoting(): void {}
 
-  goToLeaderboard() {
-    this.userService.navigateWithFamilyId(['/user/members'], {
-      view: 'leaderboard',
-    });
-  }
+  goToLeaderboard(): void {}
 
-  goToActiveTasks() {
-    this.userService.navigateWithFamilyId(['/user/tasks'], { tab: 'active' });
-  }
+  goToActiveTasks(): void {}
 
-  // New method for Analytics navigation
-  goToAnalytics() {
-    this.userService.navigateWithFamilyId(['/user/analytics']);
-  }
+  goToAnalytics(): void {}
 }

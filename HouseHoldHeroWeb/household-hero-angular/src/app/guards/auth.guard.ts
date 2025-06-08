@@ -1,4 +1,3 @@
-// src/app/guards/auth.guard.ts - Updated to handle URL-based family ID
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
@@ -21,36 +20,39 @@ export class AuthGuard implements CanActivate {
     const user = this.userService.getCurrentUser();
 
     console.log('🔍 AuthGuard - Current user:', user);
+
+    const emailFromUrl = route.queryParams['email'];
+
     if (!user) {
-      // User is not logged in, redirect to login
-      this.router.navigate(['/guest/login']);
-      return false;
+      if (emailFromUrl) {
+        // No user loaded yet, but email is in the URL — fetch the user
+        this.userService.setCurrentUser(emailFromUrl);
+        return true; // allow navigation; user will be loaded
+      } else {
+        // No user and no email — redirect to login
+        this.router.navigate(['/guest/login']);
+        return false;
+      }
     }
 
-    // Check if we have family ID in URL or user data
-    const familyIdFromUrl = route.queryParams['familyId'];
-    const userFamilyId = user.email;
+    const userEmail = user.email;
 
-    if (familyIdFromUrl) {
-      // If family ID is in URL but different from user data, update user data
-      if (userFamilyId !== familyIdFromUrl) {
-        this.userService.setCurrentUser({
-          ...user,
-          email: familyIdFromUrl,
-        });
+    if (emailFromUrl) {
+      if (userEmail !== emailFromUrl) {
+        // Email in URL is different — re-fetch correct user
+        this.userService.setCurrentUser(emailFromUrl);
       }
       return true;
-    } else if (userFamilyId) {
-      // If user has family ID but URL doesn't, redirect with family ID in URL
+    } else if (userEmail) {
+      // Add email to URL for consistency
       const urlTree = this.router.createUrlTree([state.url], {
-        queryParams: { familyId: userFamilyId },
+        queryParams: { email: userEmail },
         queryParamsHandling: 'merge',
       });
       this.router.navigateByUrl(urlTree);
       return false;
     }
 
-    // User is logged in but no family context - allow access but may show family setup
-    return true;
+    return true; // fallback
   }
 }

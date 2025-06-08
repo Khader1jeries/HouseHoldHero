@@ -1,7 +1,10 @@
 // controllers/memberController.js
 const admin = require("firebase-admin");
 const db = admin.firestore();
-
+const crypto = require("crypto");
+function hashPassword(password) {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
 async function createMember(memberData, adminEmail) {
   // Validate required fields
   if (
@@ -21,7 +24,8 @@ async function createMember(memberData, adminEmail) {
       memberData.lastName || ""
     }`.trim();
   }
-
+  let password = memberData.password;
+  memberData.password = hashPassword(password);
   // Default values
   memberData.score = 0;
   memberData.activeTasks = 0;
@@ -31,7 +35,7 @@ async function createMember(memberData, adminEmail) {
   memberData.adminEmail = adminEmail;
   const email = memberData.email;
   delete memberData.email;
-
+  delete memberData.confirmPassword;
   const docRef = db.collection("members").doc(email);
   await docRef.set(memberData);
 
