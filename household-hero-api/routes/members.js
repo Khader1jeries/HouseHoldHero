@@ -150,7 +150,45 @@ router.get("/leaderboard/:adminEmail", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch leaderboard" });
   }
 });
+router.delete("/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
 
-// Rest of the routes (performance, score update) remain similar with family verification...
+    const memberRef = db.collection("members").doc(email);
+    const memberDoc = await memberRef.get();
 
+    if (!memberDoc.exists) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+
+    const memberData = memberDoc.data();
+    const adminEmail = memberData.adminEmail;
+
+    if (!adminEmail) {
+      return res
+        .status(400)
+        .json({ error: "Member is missing adminEmail field" });
+    }
+
+    // Remove this member's email from the user's members array
+    const userRef = db.collection("users").doc(adminEmail);
+    const userDoc = await userRef.get();
+
+    if (userDoc.exists) {
+      await userRef.update({
+        members: admin.firestore.FieldValue.arrayRemove(email),
+      });
+    }
+
+    // Delete the member
+    await memberRef.delete();
+
+    res
+      .status(200)
+      .json({ message: "Member deleted and reference removed from user" });
+  } catch (error) {
+    console.error("Error deleting member and updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 module.exports = router;

@@ -252,4 +252,80 @@ router.get("/:email", async (req, res) => {
     });
   }
 });
+router.get("/forgot-password/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const userRef = db.collection("users").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "User exists" });
+  } catch (error) {
+    console.error("Error checking user email:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+router.delete("/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    // Step 1: Delete all tasks where adminEmail == email
+    const tasksSnapshot = await db
+      .collection("tasks")
+      .where("adminEmail", "==", email)
+      .get();
+
+    const deleteTasks = tasksSnapshot.docs.map((doc) =>
+      db.collection("tasks").doc(doc.id).delete()
+    );
+
+    // Step 2: Delete all members where adminEmail == email
+    const membersSnapshot = await db
+      .collection("members")
+      .where("adminEmail", "==", email)
+      .get();
+
+    const deleteMembers = membersSnapshot.docs.map((doc) =>
+      db.collection("members").doc(doc.id).delete()
+    );
+
+    // Step 3: Delete all tasksUnderVote where adminEmail == email
+    const tasksUnderVoteSnapshot = await db
+      .collection("tasksUnderVote")
+      .where("adminEmail", "==", email)
+      .get();
+
+    const deleteTasksUnderVote = tasksUnderVoteSnapshot.docs.map((doc) =>
+      db.collection("tasksUnderVote").doc(doc.id).delete()
+    );
+
+    // Step 4: Wait for all deletions to finish
+    await Promise.all([
+      ...deleteTasks,
+      ...deleteMembers,
+      ...deleteTasksUnderVote,
+    ]);
+
+    // Step 5: Delete the user document
+    const userRef = db.collection("users").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await userRef.delete();
+
+    res
+      .status(200)
+      .json({ message: "User and related data deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user and related data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 module.exports = router;

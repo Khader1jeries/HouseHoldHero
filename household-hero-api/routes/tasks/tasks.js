@@ -125,5 +125,48 @@ router.get("/filter", async (req, res) => {
     res.status(500).json({ error: "Failed to filter tasks" });
   }
 });
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Step 1: Get the task
+    const taskRef = db.collection("tasks").doc(id);
+    const taskDoc = await taskRef.get();
+
+    if (!taskDoc.exists) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const taskData = taskDoc.data();
+    const memberEmail = taskData.assignedTo;
+
+    if (!memberEmail) {
+      return res
+        .status(400)
+        .json({ error: "Task is missing assignedTo field" });
+    }
+
+    // Step 2: Remove task ID from member's tasks array
+    const memberRef = db.collection("members").doc(memberEmail);
+    const memberDoc = await memberRef.get();
+
+    if (!memberDoc.exists) {
+      return res.status(404).json({ error: "Assigned member not found" });
+    }
+
+    await memberRef.update({
+      tasks: admin.firestore.FieldValue.arrayRemove(id),
+    });
+
+    // Step 3: Delete the task
+    await taskRef.delete();
+
+    res
+      .status(200)
+      .json({ message: "Task deleted and reference removed from member" });
+  } catch (error) {
+    console.error("Error deleting task and updating member:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 module.exports = router;
