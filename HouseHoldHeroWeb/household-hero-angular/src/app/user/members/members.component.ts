@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MemberService, Member } from '../../services/member.service';
-import { UserService } from '../../services/user.service';
+import { MemberService } from '../../services/member.service';
+import { Member } from '../../services/interfaces/member.interface';
 
 @Component({
   selector: 'app-members',
@@ -17,17 +17,14 @@ export class MembersComponent implements OnInit {
   showLeaderboard: boolean = true;
   isLoading: boolean = true;
   error: string | null = null;
-  familyId: string | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private memberService: MemberService,
-    private userService: UserService
+    private memberService: MemberService
   ) {}
 
   ngOnInit(): void {
-    console.log('🔄 ngOnInit called');
     this.loadMembers();
   }
 
@@ -38,14 +35,11 @@ export class MembersComponent implements OnInit {
       return;
     }
 
-    console.log('📨 Fetching members for email:', email);
-
     this.memberService.getMembers(email).subscribe({
       next: (members) => {
-        console.log('✅ Members received from service:', members);
         this.members = members;
         this.topMembers = [...members]
-          .sort((a, b) => b.score - a.score)
+          .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
           .slice(0, 3);
         this.isLoading = false;
       },
@@ -57,11 +51,53 @@ export class MembersComponent implements OnInit {
     });
   }
 
-  navigateToAddMember(): void {}
+  navigateToAddMember(): void {
+    const adminEmail = this.route.snapshot.queryParams['email'];
+
+    if (adminEmail) {
+      this.router.navigate(['/user/members/add'], {
+        // Changed from '/user/add-member'
+        queryParams: { email: adminEmail },
+      });
+    } else {
+      console.error('Admin email not found in route');
+    }
+  }
 
   navigateToMemberDetails(id: string | undefined): void {}
 
-  deleteMember(id: string | undefined, event: Event): void {}
+  deleteMember(email: string, event: Event): void {
+    // Prevent event bubbling (so clicking delete doesn't trigger row click)
+    event.stopPropagation();
+
+    // Check if id exists
+    if (!email) {
+      console.error('Member ID is required');
+      return;
+    }
+
+    const adminEmail = this.route.snapshot.queryParams['email'];
+
+    if (!adminEmail) {
+      console.error('Admin email not found');
+      return;
+    }
+
+    // Optional: Show confirmation dialog
+    if (confirm('Are you sure you want to delete this member?')) {
+      this.memberService.deleteMember(email).subscribe({
+        next: (response) => {
+          console.log('Member deleted successfully', response);
+          // Refresh the members list
+          this.loadMembers();
+        },
+        error: (error) => {
+          console.error('Error deleting member:', error);
+          // Show error message to user
+        },
+      });
+    }
+  }
 
   editMember(id: string | undefined, event: Event): void {}
 

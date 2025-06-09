@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskService, Task, SubTask } from '../../../services/task.service';
-import { MemberService, Member } from '../../../services/member.service';
+import { MemberService } from '../../../services/member.service';
 import { UserService } from '../../../services/user.service';
-
+import { Member } from '../../../services/interfaces/member.interface';
 @Component({
   selector: 'app-add-task',
   standalone: true,

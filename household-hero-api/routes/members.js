@@ -80,7 +80,7 @@ router.get("/", async (req, res) => {
     const members = [];
     for (const doc of membersSnapshot.docs) {
       members.push({
-        id: doc.id,
+        email: doc.id,
         ...doc.data(),
       });
     }

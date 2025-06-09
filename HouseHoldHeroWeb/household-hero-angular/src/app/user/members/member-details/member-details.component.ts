@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  MemberService,
-  PerformanceData,
-} from '../../../services/member.service';
+import { MemberService } from '../../../services/member.service';
 
 interface Task {
   id: string;
@@ -27,7 +24,7 @@ export class MemberDetailsComponent implements OnInit {
   activeTasksCount: number = 0;
   completedTasksCount: number = 0;
   overdueTasksCount: number = 0;
-  weekPerformance: PerformanceData[] = [];
+
   isLoading: boolean = true;
   error: string | null = null;
 

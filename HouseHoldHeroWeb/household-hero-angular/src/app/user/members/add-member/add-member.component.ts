@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MemberService } from '../../../services/member.service';
 import { UserService } from '../../../services/user.service';
 
@@ -14,16 +14,15 @@ import { UserService } from '../../../services/user.service';
 })
 export class AddMemberComponent {
   newMember = {
+    email: '',
+    adminEmail: '',
+    countryCode: '',
+    createdAt: new Date(),
     firstName: '',
     lastName: '',
-    email: '',
     phoneNumber: '',
-    countryCode: '+972',
-    password: '',
     confirmPassword: '',
-    age: null as number | null,
-    role: 'member',
-    profileImage: 'assets/profile_pic.png',
+    password: '',
   };
 
   isSubmitting = false;
@@ -33,10 +32,52 @@ export class AddMemberComponent {
   constructor(
     private router: Router,
     private memberService: MemberService,
-    private userService: UserService
+    private userService: UserService,
+    private route: ActivatedRoute
   ) {}
 
-  onSubmit(): void {}
+  onSubmit(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.isSubmitting = true;
+
+    // Check password match
+    if (this.newMember.password !== this.newMember.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      this.isSubmitting = false;
+      return;
+    }
+
+    // Get admin email from URL
+    const adminEmail = this.route.snapshot.queryParams['email'];
+    if (!adminEmail) {
+      this.errorMessage = 'Admin email not found in URL.';
+      this.isSubmitting = false;
+      return;
+    }
+    this.newMember.adminEmail = adminEmail;
+    this.newMember.createdAt = new Date();
+    // Remove confirmPassword before sending
+    const { confirmPassword, ...member } = this.newMember;
+
+    // Call service with correct parameters
+    this.memberService.createMember(member).subscribe({
+      next: () => {
+        this.successMessage = 'Member added successfully!';
+        this.isSubmitting = false;
+        setTimeout(() => {
+          this.router.navigate(['user/members'], {
+            queryParams: { email: adminEmail },
+          });
+        }, 1500);
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to add member. Please try again.';
+        console.error(error);
+        this.isSubmitting = false;
+      },
+    });
+  }
 
   cancel(): void {}
 }

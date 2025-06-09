@@ -4,36 +4,7 @@ import { Observable, of } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { isPlatformBrowser } from '@angular/common';
 import { UserService } from './user.service';
-
-export interface Member {
-  id?: string;
-  name?: string;
-  fullName?: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-  phone: string;
-  phoneNumber?: string;
-  countryCode?: string;
-  age?: number;
-  role: string;
-  profileImage: string;
-  activeTasks?: number;
-  score: number;
-  completionRate?: number;
-  joinDate?: Date;
-  lastActive?: Date;
-  familyId?: string;
-  tasks?: any[];
-}
-
-export interface PerformanceData {
-  week: number;
-  tasks: number;
-  completed: number;
-  points: number;
-}
-
+import { Member } from './interfaces/member.interface';
 @Injectable({
   providedIn: 'root',
 })
@@ -48,44 +19,17 @@ export class MemberService {
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
-
-  getMembers(adminEmail?: string): Observable<Member[]> {
-    const params = adminEmail ? { params: { adminEmail } } : {};
-    return this.http.get<Member[]>(`${this.apiUrl}`, params);
-  }
-
-  getMemberById(id: string): Observable<Member> {
-    return of({} as Member);
-  }
-
   createMember(member: Member): Observable<Member> {
-    return of({} as Member);
+    const memberData = {
+      ...member,
+    };
+    return this.http.post<Member>(this.apiUrl, memberData);
   }
-
-  deleteMember(id: string, familyId?: string): Observable<any> {
-    return of({});
+  getMembers(adminEmail: string): Observable<Member[]> {
+    const params = new HttpParams().set('adminEmail', adminEmail);
+    return this.http.get<Member[]>(this.apiUrl, { params });
   }
-
-  getMemberTasks(id: string): Observable<any[]> {
-    return of([]);
-  }
-
-  getMemberPerformance(id: string): Observable<PerformanceData[]> {
-    return of([]);
-  }
-
-  getLeaderboard(
-    familyId?: string,
-    period: 'week' | 'month' | 'year' = 'month'
-  ): Observable<any[]> {
-    return of([]);
-  }
-
-  updateMemberScore(
-    id: string,
-    points: number,
-    operation: 'add' | 'subtract' | 'set' = 'add'
-  ): Observable<any> {
-    return of({});
+  deleteMember(email: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${email}`);
   }
 }

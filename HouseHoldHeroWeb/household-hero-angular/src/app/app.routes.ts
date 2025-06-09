@@ -23,7 +23,7 @@ import { AuthGuard } from './guards/auth.guard';
 // Import new components
 import { LeaderboardComponent } from './user/members/leaderboard/leaderboard.component';
 import { MemberDetailsComponent } from './user/members/member-details/member-details.component';
-import { MemberEditComponent } from './user/members/member-edit/member-edit.component';
+
 import { TaskDetailsComponent } from './user/tasks/task-details/task-details.component';
 import { VotesComponent } from './user/tasks/votes/votes.component';
 import { EditTaskComponent } from './user/tasks/edit-task/edit-task.component';
@@ -55,7 +55,7 @@ export const routes: Routes = [
       // New member routes
       { path: 'members/leaderboard', component: LeaderboardComponent },
       { path: 'members/details/:id', component: MemberDetailsComponent },
-      { path: 'members/edit/:id', component: MemberEditComponent },
+
       { path: 'tasks', component: TasksComponent },
       { path: 'tasks/add', component: AddTaskComponent },
       // New task routes

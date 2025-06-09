@@ -53,7 +53,6 @@ export class NavbarComponent implements OnInit {
       this.userService.getCurrentUser(email).subscribe({
         next: (user) => {
           this.userData = user; // make sure this is bound to the view
-          console.log('✅ User loaded:', user);
         },
         error: (err) => {
           console.error('❌ Error fetching user:', err);

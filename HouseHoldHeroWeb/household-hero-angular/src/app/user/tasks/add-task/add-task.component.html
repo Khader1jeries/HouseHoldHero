@@ -91,14 +91,14 @@
         >
           <option value="">Select Family Member</option>
           <!-- Updated to show member names in dropdown -->
-          <option *ngFor="let member of familyMembers" [value]="member.id">
+          <option *ngFor="let member of familyMembers" [value]="member.email">
             {{
               member.fullName ||
                 (member.firstName && member.lastName
                   ? member.firstName + " " + member.lastName
                   : "") ||
                 member.firstName ||
-                member.name ||
+                member.lastName ||
                 "Unknown Member"
             }}
           </option>

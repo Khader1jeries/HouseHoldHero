@@ -20,15 +20,15 @@
     <div
       class="member-item"
       *ngFor="let member of members"
-      (click)="navigateToMemberDetails(member.id)"
+      (click)="navigateToMemberDetails(member.email)"
     >
       <div class="member-info">
-        <img src="assets/profile_pic.png" [alt]="member.name" />
+        <img src="assets/profile_pic.png" [alt]="member.firstName" />
         <div>
-          <p class="member-name">{{ member.name }}</p>
+          <p class="member-name">{{ member.firstName }}</p>
         </div>
       </div>
-      <div class="member-email">{{ member.id }}</div>
+      <div class="member-email">{{ member.email }}</div>
       <div class="member-phone">
         {{ member.countryCode }}
         {{ member.phoneNumber }}
@@ -39,7 +39,7 @@
         <span class="score-pill">{{ member.score }}</span>
       </div>
       <div class="member-actions">
-        <button class="delete-btn" (click)="deleteMember(member.id, $event)">
+        <button class="delete-btn" (click)="deleteMember(member.email, $event)">
           <i class="bi bi-trash"></i>
         </button>
       </div>
@@ -77,7 +77,7 @@
         <div
           class="podium-item second-place"
           *ngIf="topMembers.length > 1"
-          (click)="navigateToMemberDetails(topMembers[1].id)"
+          (click)="navigateToMemberDetails(topMembers[1].email)"
         >
           <div class="rank">2</div>
           <img
@@ -92,7 +92,7 @@
         <div
           class="podium-item first-place"
           *ngIf="topMembers.length > 0"
-          (click)="navigateToMemberDetails(topMembers[0].id)"
+          (click)="navigateToMemberDetails(topMembers[0].email)"
         >
           <div class="rank">1</div>
           <img
@@ -108,7 +108,7 @@
         <div
           class="podium-item third-place"
           *ngIf="topMembers.length > 2"
-          (click)="navigateToMemberDetails(topMembers[2].id)"
+          (click)="navigateToMemberDetails(topMembers[2].email)"
         >
           <div class="rank">3</div>
           <img
