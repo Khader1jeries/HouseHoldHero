@@ -49,10 +49,6 @@ export class MemberService {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  private getFamilyIdFromContext(): string | null {
-    return null;
-  }
-
   getMembers(adminEmail?: string): Observable<Member[]> {
     const params = adminEmail ? { params: { adminEmail } } : {};
     return this.http.get<Member[]>(`${this.apiUrl}`, params);
@@ -63,10 +59,6 @@ export class MemberService {
   }
 
   createMember(member: Member): Observable<Member> {
-    return of({} as Member);
-  }
-
-  updateMember(id: string, member: Partial<Member>): Observable<Member> {
     return of({} as Member);
   }
 
