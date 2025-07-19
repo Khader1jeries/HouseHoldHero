@@ -34,9 +34,34 @@ export class MemberDetailsComponent implements OnInit {
     private memberService: MemberService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadMemberData();
+  }
 
-  loadMemberData(): void {}
+  loadMemberData(): void {
+    const memberEmail = this.route.snapshot.paramMap.get('id');
+    const adminEmail = sessionStorage.getItem('adminEmail');
+
+    if (!memberEmail || !adminEmail) {
+      console.error('❌ Missing memberEmail or adminEmail');
+      this.error = 'Missing member or admin information.';
+      this.isLoading = false;
+      return;
+    }
+
+    this.memberService.getMemberByEmail(memberEmail, adminEmail).subscribe({
+      next: (memberData) => {
+        this.member = memberData;
+        this.memberId = memberEmail;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Error fetching member data:', err);
+        this.error = 'Failed to load member details.';
+        this.isLoading = false;
+      },
+    });
+  }
 
   loadPerformanceData(): void {}
 
@@ -44,7 +69,7 @@ export class MemberDetailsComponent implements OnInit {
 
   showWeekDetails(weekIndex: number): void {}
 
-  navigateToEdit(): void {}
-
-  goBack(): void {}
+  goBack(): void {
+    this.router.navigate(['/user/members']);
+  }
 }

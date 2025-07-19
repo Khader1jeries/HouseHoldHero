@@ -29,6 +29,16 @@ export class MemberService {
     const params = new HttpParams().set('adminEmail', adminEmail);
     return this.http.get<Member[]>(this.apiUrl, { params });
   }
+  getMemberByEmail(
+    memberEmail: string,
+    adminEmail: string
+  ): Observable<Member> {
+    const params = new HttpParams().set('adminEmail', adminEmail);
+    return this.http.get<Member>(`${this.apiUrl}/${memberEmail}`, { params });
+  }
+  getLeaderboard(adminEmail: string): Observable<Member[]> {
+    return this.http.get<Member[]>(`${this.apiUrl}/leaderboard/${adminEmail}`);
+  }
   deleteMember(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${email}`);
   }

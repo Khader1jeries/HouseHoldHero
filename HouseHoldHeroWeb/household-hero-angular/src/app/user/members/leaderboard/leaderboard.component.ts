@@ -32,11 +32,41 @@ export class LeaderboardComponent implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadLeaderboardData();
+  }
+  loadLeaderboardData(): void {
+    const adminEmail = sessionStorage.getItem('adminEmail');
 
-  loadLeaderboardData(): void {}
+    if (!adminEmail) {
+      console.error('❌ adminEmail not found in session');
+      this.error = 'Missing admin session. Please log in again.';
+      this.isLoading = false;
+      return;
+    }
 
-  useMockLeaderboardData(): void {}
+    this.memberService.getLeaderboard(adminEmail).subscribe({
+      next: (data) => {
+        // Optional: transform to LeaderboardMember[] if needed
+        this.leaderboardData = data.map((member, index) => ({
+          id: member.email,
+          name: `${member.firstName} ${member.lastName}`,
+          position: index + 1,
+          score: member.score || 0,
+          profileImage: 'assets/profile_pic.png', // Default image, replace if dynamic
+          tasks: member.completedTasks || 0,
+          completionRate: member.completionRate || 0,
+        }));
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Error fetching leaderboard:', err);
+        this.error = 'Failed to load leaderboard.';
+        this.isLoading = false;
+      },
+    });
+  }
 
   changePeriod(period: 'week' | 'month' | 'year'): void {}
 }

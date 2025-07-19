@@ -48,8 +48,8 @@ export class AddMemberComponent {
       return;
     }
 
-    // Get admin email from URL
-    const adminEmail = this.route.snapshot.queryParams['email'];
+    const adminEmail = sessionStorage.getItem('adminEmail');
+
     if (!adminEmail) {
       this.errorMessage = 'Admin email not found in URL.';
       this.isSubmitting = false;

@@ -48,9 +48,10 @@ export class NavbarComponent implements OnInit {
       });
 
     // ✅ Get email from query parameters
-    const email = this.activatedRoute.snapshot.queryParams['email'];
-    if (email) {
-      this.userService.getCurrentUser(email).subscribe({
+    const adminEmail = sessionStorage.getItem('adminEmail');
+
+    if (adminEmail) {
+      this.userService.getCurrentUser(adminEmail).subscribe({
         next: (user) => {
           this.userData = user; // make sure this is bound to the view
         },

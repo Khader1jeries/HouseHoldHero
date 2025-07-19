@@ -37,9 +37,11 @@ export class LoginComponent {
         this.successMessage = 'Login successful!';
         this.isSubmitting = false;
 
-        this.router.navigate(['/user'], {
-          queryParams: { email: email },
-        });
+        // Save the email in session storage
+        sessionStorage.setItem('adminEmail', email);
+
+        // Navigate without queryParams
+        this.router.navigate(['/user']);
       },
       error: (err) => {
         this.errorMessage =

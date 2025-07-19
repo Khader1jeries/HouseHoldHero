@@ -16,9 +16,9 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    const emailFromUrl = route.queryParams['email'];
+    const emailFromSession = sessionStorage.getItem('adminEmail');
 
-    if (!emailFromUrl) {
+    if (!emailFromSession) {
       this.router.navigate(['/guest/login']);
       return false;
     }

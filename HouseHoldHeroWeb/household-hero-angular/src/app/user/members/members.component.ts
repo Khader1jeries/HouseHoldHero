@@ -29,13 +29,14 @@ export class MembersComponent implements OnInit {
   }
 
   loadMembers(): void {
-    const email = this.route.snapshot.queryParams['email'];
-    if (!email) {
+    const adminEmail = sessionStorage.getItem('adminEmail');
+
+    if (!adminEmail) {
       console.error('❌ Missing email in queryParams');
       return;
     }
 
-    this.memberService.getMembers(email).subscribe({
+    this.memberService.getMembers(adminEmail).subscribe({
       next: (members) => {
         this.members = members;
         this.topMembers = [...members]
@@ -64,7 +65,14 @@ export class MembersComponent implements OnInit {
     }
   }
 
-  navigateToMemberDetails(id: string | undefined): void {}
+  navigateToMemberDetails(memberEmail: string | undefined): void {
+    if (!memberEmail) {
+      console.error('❌ Member email is required');
+      return;
+    }
+
+    this.router.navigate(['/user/members/details', memberEmail]);
+  }
 
   deleteMember(email: string, event: Event): void {
     // Prevent event bubbling (so clicking delete doesn't trigger row click)
@@ -99,21 +107,28 @@ export class MembersComponent implements OnInit {
     }
   }
 
-  editMember(id: string | undefined, event: Event): void {}
+  toggleLeaderboard(): void {
+    this.showLeaderboard = !this.showLeaderboard;
+  }
 
-  toggleLeaderboard(): void {}
-
-  navigateToLeaderboard(): void {}
+  navigateToLeaderboard(): void {
+    this.router.navigate(['/user/members/leaderboard']);
+  }
 
   getTotalScore(): number {
-    return 0;
+    return this.members.reduce(
+      (total, member) => total + (member.score || 0),
+      0
+    );
   }
 
   getAverageScore(): number {
-    return 0;
+    if (this.members.length === 0) return 0;
+
+    return Math.round(this.getTotalScore() / this.members.length);
   }
 
   getActiveMembers(): number {
-    return 0;
+    return this.members.length;
   }
 }
