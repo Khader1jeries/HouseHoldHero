@@ -3,9 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TaskService, Task, SubTask } from '../../../services/task.service';
+import { TaskService } from '../../../services/task.service';
 import { MemberService } from '../../../services/member.service';
-
+import { Task, SubTask } from '../../../services/interfaces/task.interface';
 @Component({
   selector: 'app-edit-task',
   standalone: true,
@@ -28,6 +28,9 @@ export class EditTaskComponent implements OnInit {
     category: 'General',
     createdBy: '',
     createdDate: new Date(),
+    createdAt: new Date(),
+    adminEmail: '',
+    score: 0,
   };
 
   familyMembers: { id: string; name: string }[] = [];

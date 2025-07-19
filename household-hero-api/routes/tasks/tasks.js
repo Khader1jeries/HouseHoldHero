@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
     ];
 
     for (const field of requiredFields) {
-      if (!task[field]) {
+      if (task[field] === undefined || task[field] === null) {
         return res.status(400).json({ error: `${field} is required` });
       }
     }
@@ -60,7 +60,9 @@ router.post("/", async (req, res) => {
     task.status = status;
     const completionRate = 0;
     task.completionRate = completionRate;
+    console.log("📤 Adding task to Firestore...");
     const docRef = await db.collection("tasks").add(task);
+    console.log("✅ Task added with ID:", docRef.id);
     await addTaskToMember(task.assignedTo, docRef.id);
     await activeTasks(task.assignedTo);
     res.status(201).json({

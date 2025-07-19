@@ -10,7 +10,7 @@
       <div class="task-meta">
         <div class="task-meta-item">
           <i class="bi bi-tag-fill"></i>
-          <span>{{ task.category }}</span>
+          <!-- <span>{{ task.category }}</span> -->
         </div>
         <div class="task-meta-item">
           <i class="bi bi-calendar-date"></i>
@@ -18,7 +18,7 @@
         </div>
         <div class="task-meta-item">
           <i class="bi bi-trophy-fill"></i>
-          <span>{{ task.points }} points</span>
+          <span>{{ task.score }} points</span>
         </div>
       </div>
       <p class="task-description">{{ task.description }}</p>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="results-chart">
-      <div class="chart-bar">
+      <!-- <div class="chart-bar">
         <div
           class="yes-bar"
           [style.width.%]="
@@ -68,24 +68,24 @@
         <div class="yes-label">Yes</div>
         <div class="no-label">No</div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="voting-actions" *ngIf="!currentUserVoted">
-      <button class="vote-yes-btn" (click)="vote('yes')">
-        <i class="bi bi-hand-thumbs-up-fill"></i>
-        <span>Vote Yes</span>
-      </button>
-      <button class="vote-no-btn" (click)="vote('no')">
-        <i class="bi bi-hand-thumbs-down-fill"></i>
-        <span>Vote No</span>
-      </button>
-    </div>
+      <div class="voting-actions" *ngIf="!currentUserVoted">
+        <button class="vote-yes-btn" (click)="vote('yes')">
+          <i class="bi bi-hand-thumbs-up-fill"></i>
+          <span>Vote Yes</span>
+        </button>
+        <button class="vote-no-btn" (click)="vote('no')">
+          <i class="bi bi-hand-thumbs-down-fill"></i>
+          <span>Vote No</span>
+        </button>
+      </div>
 
-    <!-- Fixed the nullish check here -->
-    <div
+      <!-- Fixed the nullish check here -->
+      <!-- <div
       class="admin-actions"
       *ngIf="(task.votesYes || 0) + (task.votesNo || 0) > 0"
-    >
+    > -->
       <button
         class="assign-btn"
         (click)="assignTask()"
@@ -111,7 +111,7 @@
         <div class="header-comment">Comment</div>
       </div>
 
-      <div *ngFor="let vote of task.votes" class="vote-row">
+      <!-- <div *ngFor="let vote of task.votes" class="vote-row">
         <div class="cell-member">
           <img [src]="vote.memberImage" [alt]="vote.memberName" />
           <span>{{ vote.memberName }}</span>
@@ -129,7 +129,7 @@
         </div>
         <div class="cell-time">{{ vote.timestamp | date : "short" }}</div>
         <div class="cell-comment">{{ vote.comment || "No comment" }}</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>

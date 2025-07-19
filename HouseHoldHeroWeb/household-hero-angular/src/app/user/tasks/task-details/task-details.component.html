@@ -1,4 +1,4 @@
-<!-- Updated task-details.component.html to display member names -->
+Updated task-details.component.html to display member names
 <div class="task-details-container" *ngIf="task">
   <div class="back-button" (click)="goBack()">
     <i class="bi bi-arrow-left-circle"></i>
@@ -16,7 +16,7 @@
               'bi-hourglass-split': task.status === 'pending',
               'bi-check-circle-fill': task.status === 'completed',
               'bi-calendar-date': task.status === 'upcoming',
-              'bi-people-fill': task.status === 'voting'
+              
             }"
           ></i>
           <span>{{ task.status | titlecase }}</span>
@@ -24,10 +24,6 @@
         <div class="task-priority" [ngClass]="getPriorityClass(task.priority)">
           <i class="bi bi-flag-fill"></i>
           <span>{{ task.priority | titlecase }}</span>
-        </div>
-        <div class="task-category">
-          <i class="bi bi-tag-fill"></i>
-          <span>{{ task.category }}</span>
         </div>
       </div>
     </div>
@@ -63,16 +59,16 @@
           <div class="info-label">Assigned To</div>
           <div class="info-value assigned-to">
             <!-- Updated to show member name with image -->
-            <img
-              [src]="task.assigneeImage || 'assets/profile_pic.png'"
+            <!-- <img
+              [src]="'assets/profile_pic.png'"
               [alt]="task.assignedToFullName || task.assignedToName || 'Member'"
-            />
-            <span>{{
+            /> -->
+            <!-- <span>{{
               task.assignedToFullName ||
                 task.assignedToName ||
                 task.assigneeName ||
                 "Unassigned"
-            }}</span>
+            }}</span> -->
           </div>
         </div>
         <div class="info-row">
@@ -95,16 +91,16 @@
         <div class="info-row">
           <div class="info-label">Points</div>
           <div class="info-value">
-            <span class="points-pill">{{ task.points }}</span>
+            <!-- <span class="points-pill">{{ task.points }}</span> -->
           </div>
         </div>
         <div class="info-row">
           <div class="info-label">Created By</div>
-          <div class="info-value">{{ task.createdBy }}</div>
+          <!-- <div class="info-value">{{ task.createdBy }}</div> -->
         </div>
         <div class="info-row">
           <div class="info-label">Created On</div>
-          <div class="info-value">{{ task.createdDate | date : "medium" }}</div>
+          <!-- <div class="info-value">{{ task.createdDate | date : "medium" }}</div> -->
         </div>
       </div>
     </div>
@@ -141,11 +137,11 @@
     <div class="details-card comments">
       <h3>Comments</h3>
       <div class="comments-container">
-        <div
+        <!-- <div
           *ngIf="task.comments && task.comments.length > 0"
           class="comments-list"
-        >
-          <div *ngFor="let comment of task.comments" class="comment-item">
+        > -->
+        <!-- <div *ngFor="let comment of task.comments" class="comment-item">
             <div class="comment-author">
               <img [src]="comment.authorImage" [alt]="comment.author" />
               <div class="author-info">
@@ -158,39 +154,39 @@
             <div class="comment-content">
               <p>{{ comment.content }}</p>
             </div>
-          </div>
-        </div>
-        <div
+          </div> -->
+      </div>
+      <!-- <div
           *ngIf="!task.comments || task.comments.length === 0"
           class="no-comments"
         >
           <i class="bi bi-chat-left-text"></i>
           <p>No comments yet</p>
-        </div>
+        </div> -->
 
-        <!-- Active Comment Form -->
-        <div class="add-comment-form">
-          <textarea
-            class="comment-textarea"
-            placeholder="Add your comment here..."
-            [(ngModel)]="newComment"
-            rows="4"
-          ></textarea>
-          <div class="comment-submit">
-            <button
-              class="submit-btn"
-              [disabled]="!newComment.trim()"
-              (click)="addComment()"
-            >
-              <i class="bi bi-send"></i>
-              <span>Submit Comment</span>
-            </button>
-          </div>
+      <!-- Active Comment Form -->
+      <div class="add-comment-form">
+        <textarea
+          class="comment-textarea"
+          placeholder="Add your comment here..."
+          [(ngModel)]="newComment"
+          rows="4"
+        ></textarea>
+        <div class="comment-submit">
+          <button
+            class="submit-btn"
+            [disabled]="!newComment.trim()"
+            (click)="addComment()"
+          >
+            <i class="bi bi-send"></i>
+            <span>Submit Comment</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- </div> -->
 
 <div class="no-task-message" *ngIf="!task">
   <div class="message-icon">

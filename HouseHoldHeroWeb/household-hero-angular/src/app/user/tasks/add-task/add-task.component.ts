@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TaskService, Task, SubTask } from '../../../services/task.service';
+import { TaskService } from '../../../services/task.service';
 import { MemberService } from '../../../services/member.service';
 import { UserService } from '../../../services/user.service';
 import { Member } from '../../../services/interfaces/member.interface';
+import { Task, SubTask } from '../../../services/interfaces/task.interface';
 @Component({
   selector: 'app-add-task',
   standalone: true,
@@ -16,16 +17,16 @@ import { Member } from '../../../services/interfaces/member.interface';
 })
 export class AddTaskComponent implements OnInit {
   newTask: Task = {
-    title: '',
+    createdAt: new Date(),
     description: '',
-    assignedTo: '',
     dueDate: new Date(),
-    points: 50,
-    status: 'pending',
+    startDate: new Date(),
     priority: 'medium',
-    category: 'General',
-    createdBy: '',
-    createdDate: new Date(),
+    title: '',
+    adminEmail: '',
+    assignedTo: '',
+    score: 50,
+    status: 'pending',
   };
 
   familyMembers: Member[] = [];
@@ -43,9 +44,28 @@ export class AddTaskComponent implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadFamilyMembers();
+  }
 
-  loadFamilyMembers(familyId: string): void {}
+  loadFamilyMembers(): void {
+    const adminEmail = sessionStorage.getItem('adminEmail');
+
+    if (!adminEmail) {
+      console.error('❌ adminEmail not found in session');
+      return;
+    }
+
+    this.memberService.getMembers(adminEmail).subscribe({
+      next: (members) => {
+        console.log('✅ Family members loaded:', members);
+        this.familyMembers = members; // ✅ Store them here
+      },
+      error: (err) => {
+        console.error('❌ Failed to load family members:', err);
+      },
+    });
+  }
 
   addSubTask(): void {}
 

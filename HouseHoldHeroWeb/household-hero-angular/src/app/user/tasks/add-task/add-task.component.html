@@ -111,13 +111,13 @@
         <input
           type="range"
           id="points"
-          [(ngModel)]="newTask.points"
+          [(ngModel)]="newTask.score"
           name="points"
           min="10"
           max="100"
           step="5"
         />
-        <div class="range-value">{{ newTask.points }} points</div>
+        <div class="range-value">{{ newTask.score }} points</div>
       </div>
 
       <!-- Priority -->
@@ -132,24 +132,6 @@
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
-        </select>
-      </div>
-
-      <!-- Category -->
-      <div class="form-group">
-        <label for="category">Category</label>
-        <select
-          id="category"
-          [(ngModel)]="newTask.category"
-          name="category"
-          class="form-control"
-        >
-          <option value="Cleaning">Cleaning</option>
-          <option value="Cooking">Cooking</option>
-          <option value="Outdoors">Outdoors</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Maintenance">Maintenance</option>
-          <option value="General">General</option>
         </select>
       </div>
 

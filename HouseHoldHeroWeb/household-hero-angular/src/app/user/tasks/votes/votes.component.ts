@@ -3,9 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TaskService, Task, Vote } from '../../../services/task.service';
+import { TaskService, Vote } from '../../../services/task.service';
 import { UserService } from '../../../services/user.service';
-
+import { Task } from '../../../services/interfaces/task.interface';
 @Component({
   selector: 'app-votes',
   standalone: true,

@@ -3,12 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { UserService } from './user.service';
-
-export interface SubTask {
-  id: string;
-  title: string;
-  completed: boolean;
-}
+import { Task } from './interfaces/task.interface';
 
 export interface Comment {
   id?: string;
@@ -25,35 +20,6 @@ export interface Vote {
   vote: 'yes' | 'no';
   timestamp: Date;
   comment?: string;
-}
-
-export interface Task {
-  id?: string;
-  title: string;
-  description: string;
-  assignedTo: string;
-  assignedToName?: string;
-  assignedToFullName?: string;
-  assigneeImage?: string;
-  assigneeName?: string;
-  dueDate: Date;
-  startDate?: Date;
-  status: 'pending' | 'completed' | 'upcoming' | 'voting';
-  points: number;
-  remainingTime?: string;
-  completionDate?: Date;
-  completedOnTime?: boolean;
-  priority: 'low' | 'medium' | 'high';
-  category: string;
-  subTasks?: SubTask[];
-  comments?: Comment[];
-  votes?: Vote[];
-  votesYes?: number;
-  votesNo?: number;
-  createdBy: string;
-  createdDate: Date;
-  familyId?: string;
-  [key: string]: any;
 }
 
 @Injectable({
