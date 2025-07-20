@@ -100,7 +100,28 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 });
+// Get task by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ error: "Task ID is required" });
+    }
+
+    const taskRef = db.collection("tasks").doc(id); //
+    const taskDoc = await taskRef.get();
+    console.log(taskDoc);
+    if (!taskDoc.exists) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(200).json({ id: taskDoc.id, ...taskDoc.data() });
+  } catch (error) {
+    console.error("Error fetching task by ID:", error);
+    res.status(500).json({ error: "Failed to fetch task" });
+  }
+});
 //by assignedTo and adminEmail
 router.get("/filter", async (req, res) => {
   try {

@@ -26,7 +26,6 @@ import { MemberDetailsComponent } from './user/members/member-details/member-det
 
 import { TaskDetailsComponent } from './user/tasks/task-details/task-details.component';
 import { VotesComponent } from './user/tasks/votes/votes.component';
-import { EditTaskComponent } from './user/tasks/edit-task/edit-task.component';
 
 export const routes: Routes = [
   {
@@ -61,7 +60,7 @@ export const routes: Routes = [
       // New task routes
       { path: 'tasks/details/:id', component: TaskDetailsComponent },
       { path: 'tasks/votes/:id', component: VotesComponent },
-      { path: 'tasks/edit/:id', component: EditTaskComponent },
+
       { path: 'support', component: SupportComponent },
       { path: 'analytics', component: AnalyticsComponent },
       { path: 'reports', component: ReportsComponent },

@@ -34,18 +34,22 @@ export class TaskService {
     return new Date();
   }
 
-  getTasks(status?: string, familyId?: string): Observable<Task[]> {
-    return of([]);
-  }
+  getTasks(adminEmail: string): Observable<Task[]> {
+    if (!adminEmail) {
+      throw new Error('adminEmail is required to fetch tasks');
+    }
 
-  getTasksByStatus(
-    status: 'pending' | 'completed' | 'upcoming' | 'voting'
-  ): Observable<Task[]> {
-    return of([]);
+    const url = `${this.apiUrl}?adminEmail=${encodeURIComponent(adminEmail)}`;
+    return this.http.get<Task[]>(url);
   }
 
   getTaskById(id: string): Observable<Task> {
-    return of({} as Task);
+    if (!id) {
+      throw new Error('Task ID is required');
+    }
+
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.get<Task>(url);
   }
 
   private processTasks(tasks: Task[]): Task[] {
@@ -56,8 +60,12 @@ export class TaskService {
     return {} as Task;
   }
 
-  createTask(task: Task): Observable<Task> {
-    return of({} as Task);
+  createTask(task: Task): Observable<any> {
+    const taskData = {
+      ...task,
+    };
+
+    return this.http.post<Task>(this.apiUrl, taskData);
   }
 
   updateTask(id: string, task: Partial<Task>): Observable<Task> {
@@ -65,7 +73,7 @@ export class TaskService {
   }
 
   deleteTask(id: string): Observable<any> {
-    return of({});
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   addComment(taskId: string, comment: Comment): Observable<Comment> {

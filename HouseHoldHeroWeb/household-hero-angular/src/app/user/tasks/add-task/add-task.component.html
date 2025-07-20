@@ -138,25 +138,25 @@
       <!-- Sub-Tasks Section -->
       <div class="form-section">
         <h3>Sub-Tasks</h3>
-        <div *ngIf="subTasks.length > 0" class="subtasks-list">
+        <div *ngIf="getSubTaskKeys().length > 0" class="subtasks-list">
           <div
-            *ngFor="let subTask of subTasks; let i = index"
+            *ngFor="let entry of subTasks | keyvalue; let i = index"
             class="subtask-item"
           >
             <div class="subtask-info">
-              <span>{{ subTask.title }}</span>
+              <span>{{ entry.key }}</span>
             </div>
             <button
               type="button"
               class="remove-subtask-btn"
-              (click)="removeSubTask(i)"
+              (click)="removeSubTask(entry.key)"
             >
               <i class="bi bi-trash"></i>
             </button>
           </div>
         </div>
 
-        <div *ngIf="subTasks.length === 0" class="empty-subtasks">
+        <div *ngIf="getSubTaskKeys().length === 0" class="empty-subtasks">
           <p>No sub-tasks added yet. Add some below to break down this task.</p>
         </div>
 

@@ -8,7 +8,7 @@ export interface Task {
   createdAt: Date;
   description: string;
   dueDate: Date;
-  startDate?: Date;
+  startDate: Date;
   priority: 'low' | 'medium' | 'high';
   title: string;
   adminEmail: string;

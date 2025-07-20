@@ -27,12 +27,13 @@ export class AddTaskComponent implements OnInit {
     assignedTo: '',
     score: 50,
     status: 'pending',
+    subtasks: {},
   };
 
   familyMembers: Member[] = [];
   assignmentType = 'direct';
-  subTasks: SubTask[] = [];
-  newSubTaskTitle = '';
+  subTasks: { [title: string]: {} } = {};
+  newSubTaskTitle: string = '';
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
@@ -67,11 +68,87 @@ export class AddTaskComponent implements OnInit {
     });
   }
 
-  addSubTask(): void {}
+  addSubTask(): void {
+    console.log('Adding subtask:', this.newSubTaskTitle);
+    const trimmedTitle = this.newSubTaskTitle.trim();
 
-  removeSubTask(index: number): void {}
+    if (trimmedTitle && !this.subTasks[trimmedTitle]) {
+      this.subTasks[trimmedTitle] = {};
 
-  onSubmit(): void {}
+      this.newTask['subtasks'] = this.subTasks;
+      this.newSubTaskTitle = '';
+    }
+  }
 
-  cancel(): void {}
+  removeSubTask(title: string): void {
+    delete this.subTasks[title];
+    this.newTask['subtasks'] = this.subTasks;
+  }
+  getSubTaskKeys(): string[] {
+    return Object.keys(this.subTasks || {});
+  }
+  onSubmit(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.isSubmitting = true;
+
+    // Add admin email from session
+    const adminEmail = sessionStorage.getItem('adminEmail');
+    if (!adminEmail) {
+      this.errorMessage = 'Admin email not found. Please log in again.';
+      this.isSubmitting = false;
+      return;
+    }
+
+    this.newTask.adminEmail = adminEmail;
+
+    // If assignment type is 'voting', clear assignedTo
+    if (this.assignmentType === 'voting') {
+      this.newTask.assignedTo = '';
+    }
+
+    // Assign subtasks if not already set
+    // Assign subtasks if not already set
+    if (Object.keys(this.subTasks).length > 0) {
+      this.newTask['subtasks'] = this.subTasks;
+    } else {
+      delete this.newTask['subtasks'];
+    }
+
+    // Call the service to create the task
+    this.taskService.createTask(this.newTask).subscribe({
+      next: (response) => {
+        console.log('✅ Task created:', response);
+        this.successMessage = 'Task created successfully!';
+        this.isSubmitting = false;
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('❌ Failed to create task:', error);
+        this.errorMessage = 'Failed to create task. Please try again.';
+        this.isSubmitting = false;
+      },
+    });
+  }
+  resetForm(): void {
+    this.newTask = {
+      createdAt: new Date(),
+      description: '',
+      dueDate: new Date(),
+      startDate: new Date(),
+      priority: 'medium',
+      title: '',
+      adminEmail: '',
+      assignedTo: '',
+      score: 50,
+      status: 'pending',
+      subtasks: {},
+    };
+    this.subTasks = {};
+    this.newSubTaskTitle = '';
+    this.assignmentType = 'direct';
+  }
+  cancel(): void {
+    this.router.navigate(['/user/tasks']);
+  }
 }
