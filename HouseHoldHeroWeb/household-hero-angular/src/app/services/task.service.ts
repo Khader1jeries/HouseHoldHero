@@ -67,52 +67,11 @@ export class TaskService {
 
     return this.http.post<Task>(this.apiUrl, taskData);
   }
-
-  updateTask(id: string, task: Partial<Task>): Observable<Task> {
-    return of({} as Task);
+  getTwoActiveTasks(adminEmail: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}/getTwo/${adminEmail}`);
   }
 
   deleteTask(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-
-  addComment(taskId: string, comment: Comment): Observable<Comment> {
-    return of({} as Comment);
-  }
-
-  markTaskAsComplete(id: string): Observable<Task> {
-    return of({} as Task);
-  }
-
-  addVote(taskId: string, vote: Vote): Observable<any> {
-    return of({});
-  }
-
-  assignTaskFromVoting(taskId: string, assignedTo: string): Observable<any> {
-    return of({});
-  }
-
-  reopenVoting(taskId: string): Observable<any> {
-    return of({});
-  }
-
-  getTasksForMember(memberId: string): Observable<Task[]> {
-    return of([]);
-  }
-
-  calculateRemainingTime(dueDate: any): string {
-    return '';
-  }
-
-  calculateTimeUntilStart(startDate: any): string {
-    return '';
-  }
-
-  isCompletedOnTime(task: Task): boolean {
-    return true;
-  }
-
-  getTaskStatus(task: Task): string {
-    return '';
   }
 }

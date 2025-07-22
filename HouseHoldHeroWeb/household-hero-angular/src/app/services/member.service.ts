@@ -42,4 +42,7 @@ export class MemberService {
   deleteMember(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${email}`);
   }
+  getTwoMembers(adminEmail: string): Observable<Member[]> {
+    return this.http.get<Member[]>(`${this.apiUrl}/getTwo/${adminEmail}`);
+  }
 }

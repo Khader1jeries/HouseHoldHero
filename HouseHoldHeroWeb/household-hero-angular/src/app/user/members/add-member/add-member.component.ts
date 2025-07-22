@@ -23,6 +23,7 @@ export class AddMemberComponent {
     phoneNumber: '',
     confirmPassword: '',
     password: '',
+    DOB: '',
   };
 
   isSubmitting = false;
@@ -79,5 +80,7 @@ export class AddMemberComponent {
     });
   }
 
-  cancel(): void {}
+  cancel(): void {
+    this.router.navigate(['/user/members']);
+  }
 }

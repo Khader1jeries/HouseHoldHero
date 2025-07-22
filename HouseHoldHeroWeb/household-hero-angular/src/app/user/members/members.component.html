@@ -33,7 +33,7 @@
         {{ member.countryCode }}
         {{ member.phoneNumber }}
       </div>
-      <div class="member-age">working</div>
+      <div class="member-age">{{ getAge(member.DOB) }}</div>
       <div class="member-tasks">{{ member.activeTasks }}</div>
       <div class="member-score">
         <span class="score-pill">{{ member.score }}</span>

@@ -53,13 +53,10 @@ export class MembersComponent implements OnInit {
   }
 
   navigateToAddMember(): void {
-    const adminEmail = this.route.snapshot.queryParams['email'];
+    const adminEmail = sessionStorage.getItem('adminEmail');
 
     if (adminEmail) {
-      this.router.navigate(['/user/members/add'], {
-        // Changed from '/user/add-member'
-        queryParams: { email: adminEmail },
-      });
+      this.router.navigate(['/user/members/add']);
     } else {
       console.error('Admin email not found in route');
     }
@@ -84,7 +81,7 @@ export class MembersComponent implements OnInit {
       return;
     }
 
-    const adminEmail = this.route.snapshot.queryParams['email'];
+    const adminEmail = sessionStorage.getItem('adminEmail');
 
     if (!adminEmail) {
       console.error('Admin email not found');
@@ -130,5 +127,20 @@ export class MembersComponent implements OnInit {
 
   getActiveMembers(): number {
     return this.members.length;
+  }
+  getAge(dateOfBirth: string): number {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+
+    // Adjust if birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
   }
 }

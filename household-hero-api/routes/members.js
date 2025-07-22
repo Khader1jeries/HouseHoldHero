@@ -38,7 +38,6 @@ router.post("/", async (req, res) => {
     // Initialize default values
     newMember.score = 0;
     newMember.activeTasks = 0;
-    newMember.completionRate = 0;
     newMember.completedTasks = 0;
     newMember.totalTasks = 0;
     const email = newMember.email;
@@ -126,7 +125,34 @@ router.get("/:email", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch member" });
   }
 });
+router.get("/getTwo/:adminEmail", async (req, res) => {
+  try {
+    const { adminEmail } = req.params;
 
+    const snapshot = await db
+      .collection("members")
+      .where("adminEmail", "==", adminEmail)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(200).json([]); // return empty array if no members found
+    }
+
+    const allMembers = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Shuffle and take 2 random members
+    const shuffled = allMembers.sort(() => 0.5 - Math.random());
+    const twoMembers = shuffled.slice(0, 2);
+
+    res.status(200).json(twoMembers);
+  } catch (error) {
+    console.error("Error fetching two members:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 // Get leaderboard data with REQUIRED family filtering
 router.get("/leaderboard/:adminEmail", async (req, res) => {
   try {

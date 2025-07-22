@@ -58,8 +58,7 @@ router.post("/", async (req, res) => {
     }
     const status = false;
     task.status = status;
-    const completionRate = 0;
-    task.completionRate = completionRate;
+
     console.log("📤 Adding task to Firestore...");
     const docRef = await db.collection("tasks").add(task);
     console.log("✅ Task added with ID:", docRef.id);
@@ -122,6 +121,49 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch task" });
   }
 });
+router.get("/getTwo/:adminEmail", async (req, res) => {
+  try {
+    const { adminEmail } = req.params;
+    const now = new Date();
+
+    if (!adminEmail) {
+      return res.status(400).json({ error: "Admin email is required." });
+    }
+
+    const tasksSnapshot = await db
+      .collection("tasks")
+      .where("adminEmail", "==", adminEmail)
+      .get();
+
+    const filteredTasks = [];
+
+    tasksSnapshot.forEach((doc) => {
+      const task = { id: doc.id, ...doc.data() };
+
+      const startDate = task.startDate?.toDate?.() || new Date(task.startDate);
+      const dueDate = task.dueDate?.toDate?.() || new Date(task.dueDate);
+
+      if (startDate <= now && dueDate >= now) {
+        filteredTasks.push(task);
+      }
+    });
+
+    // Return empty array if no tasks match
+    if (filteredTasks.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // Shuffle and pick 2 random tasks
+    const shuffled = filteredTasks.sort(() => 0.5 - Math.random());
+    const twoTasks = shuffled.slice(0, 2);
+
+    res.status(200).json(twoTasks);
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //by assignedTo and adminEmail
 router.get("/filter", async (req, res) => {
   try {

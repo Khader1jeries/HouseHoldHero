@@ -6,6 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService, Vote } from '../../../services/task.service';
 import { UserService } from '../../../services/user.service';
 import { Task } from '../../../services/interfaces/task.interface';
+import { VoteTask } from '../../../services/interfaces/votes.interface';
+import { VotesService } from '../../../services/votes.service';
+import { MemberService } from '../../../services/member.service';
+import { Member } from '../../../services/interfaces/member.interface';
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-votes',
   standalone: true,
@@ -15,7 +20,8 @@ import { Task } from '../../../services/interfaces/task.interface';
 })
 export class VotesComponent implements OnInit {
   taskId: string = '';
-  task?: Task;
+  loading: boolean = true;
+  task?: VoteTask;
   votingResult: 'pending' | 'approved' | 'rejected' = 'pending';
   currentUserVoted: boolean = false;
   currentUser: any;
@@ -23,27 +29,55 @@ export class VotesComponent implements OnInit {
   isSubmitting: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
-
+  members: Member[] = [];
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private taskService: TaskService,
-    private userService: UserService
+    private votesService: VotesService,
+    private memberService: MemberService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadVoteData();
+  }
 
-  loadTaskData(): void {}
+  loadVoteData(): void {
+    this.loading = true;
+    const taskId = this.route.snapshot.paramMap.get('id');
+    const adminEmail = sessionStorage.getItem('adminEmail');
 
-  determineVotingResult(): void {}
+    if (!taskId || !adminEmail) {
+      console.error('❌ Task ID or Admin Email missing.');
+      this.loading = false;
+      return;
+    }
 
-  checkCurrentUserVoted(): void {}
+    forkJoin({
+      task: this.votesService.getVoteById(taskId),
+      members: this.memberService.getMembers(adminEmail),
+    }).subscribe({
+      next: ({ task, members }) => {
+        this.task = task;
+        this.members = members;
+        console.log('✅ Task and members loaded:', { task, members });
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load vote data:', err);
+        this.errorMessage = 'Failed to load vote task or members.';
+        this.loading = false;
+      },
+    });
+  }
+  checkVote(email: string): string {
+    console.log('Yes votes:', this.task?.yes);
+    console.log('No votes:', this.task?.no);
+    if (this.task?.yes?.includes(email)) return 'yes';
+    if (this.task?.no?.includes(email)) return 'no';
+    return 'not voted';
+  }
 
-  vote(voteType: 'yes' | 'no'): void {}
-
-  assignTask(): void {}
-
-  reopenVoting(): void {}
-
-  goBack(): void {}
+  goBack(): void {
+    this.router.navigate(['/user/tasks']);
+  }
 }

@@ -10,7 +10,8 @@ interface LeaderboardMember {
   score: number;
   profileImage: string;
   tasks: number;
-  completionRate: number;
+  completedTasks: number;
+  totalTasks: number;
 }
 
 @Component({
@@ -55,7 +56,8 @@ export class LeaderboardComponent implements OnInit {
           score: member.score || 0,
           profileImage: 'assets/profile_pic.png', // Default image, replace if dynamic
           tasks: member.completedTasks || 0,
-          completionRate: member.completionRate || 0,
+          completedTasks: member.completedTasks || 0,
+          totalTasks: member.totalTasks || 0,
         }));
 
         this.isLoading = false;
@@ -67,6 +69,13 @@ export class LeaderboardComponent implements OnInit {
       },
     });
   }
+  getCompletionRate(totalTasks: number, completedTasks: number): number {
+    if (totalTasks === 0) {
+      return 0; // Avoid division by zero
+    }
 
+    const percentage = (completedTasks / totalTasks) * 100;
+    return parseFloat(percentage.toFixed(2)); // Keep 2 decimal places
+  }
   changePeriod(period: 'week' | 'month' | 'year'): void {}
 }

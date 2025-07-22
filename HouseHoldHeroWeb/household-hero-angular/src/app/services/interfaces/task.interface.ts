@@ -14,7 +14,7 @@ export interface Task {
   adminEmail: string;
   assignedTo: string;
   score: number;
-
+  assignedToName: string;
   status: 'pending' | 'completed' | 'upcoming';
   remainingTime?: string;
   completionDate?: Date;

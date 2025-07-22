@@ -86,11 +86,13 @@
         </div>
         <div class="cell-tasks">{{ member.tasks }}</div>
         <div class="cell-rate">
-          {{ member.completionRate }}%
+          {{ getCompletionRate(member.totalTasks, member.completedTasks) }}%
           <div class="completion-bar">
             <div
               class="completion-value"
-              [style.width.%]="member.completionRate"
+              [style.width.%]="
+                getCompletionRate(member.totalTasks, member.completedTasks)
+              "
             ></div>
           </div>
         </div>

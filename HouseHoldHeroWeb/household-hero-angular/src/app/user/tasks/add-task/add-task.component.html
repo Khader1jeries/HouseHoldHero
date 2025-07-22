@@ -42,9 +42,9 @@
 
       <!-- Due Date -->
       <div class="form-group">
-        <label for="dueDate">Due Date</label>
+        <label for="dueDate">Due Date & Time</label>
         <input
-          type="date"
+          type="datetime-local"
           id="dueDate"
           [(ngModel)]="newTask.dueDate"
           name="dueDate"
@@ -59,13 +59,24 @@
           <div class="radio-option">
             <input
               type="radio"
-              id="assignDirectly"
+              id="startNow"
               name="assignmentType"
               value="direct"
               [(ngModel)]="assignmentType"
               checked
             />
-            <label for="assignDirectly">Assign Directly</label>
+            <label for="startNow">Start Now</label>
+          </div>
+
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="future"
+              name="assignmentType"
+              value="future"
+              [(ngModel)]="assignmentType"
+            />
+            <label for="future">Schedule for Future</label>
           </div>
           <div class="radio-option">
             <input
@@ -80,7 +91,7 @@
         </div>
       </div>
 
-      <!-- Assigned To (shown only if "Assign Directly" is selected) -->
+      <!-- Assigned To (shown only if "Start Now" is selected) -->
       <div class="form-group" *ngIf="assignmentType === 'direct'">
         <label for="assignedTo">Assign To</label>
         <select
@@ -90,7 +101,6 @@
           required
         >
           <option value="">Select Family Member</option>
-          <!-- Updated to show member names in dropdown -->
           <option *ngFor="let member of familyMembers" [value]="member.email">
             {{
               member.fullName ||
@@ -103,6 +113,38 @@
             }}
           </option>
         </select>
+      </div>
+
+      <!-- Starting Date (shown only if "Schedule for Future" is selected) -->
+      <div class="form-group" *ngIf="assignmentType === 'future'">
+        <label for="assignedTo">Assign To</label>
+        <select
+          id="assignedTo"
+          [(ngModel)]="newTask.assignedTo"
+          name="assignedTo"
+          required
+        >
+          <option value="">Select Family Member</option>
+          <option *ngFor="let member of familyMembers" [value]="member.email">
+            {{
+              member.fullName ||
+                (member.firstName && member.lastName
+                  ? member.firstName + " " + member.lastName
+                  : "") ||
+                member.firstName ||
+                member.lastName ||
+                "Unknown Member"
+            }}
+          </option>
+        </select>
+        <label for="startDate">Starting Date & Time</label>
+        <input
+          type="datetime-local"
+          id="startDate"
+          [(ngModel)]="newTask.startDate"
+          name="startDate"
+          required
+        />
       </div>
 
       <!-- Points -->

@@ -29,7 +29,7 @@ async function createMember(memberData, adminEmail) {
   // Default values
   memberData.score = 0;
   memberData.activeTasks = 0;
-  memberData.completionRate = 0;
+
   memberData.completedTasks = 0;
   memberData.totalTasks = 0;
   memberData.adminEmail = adminEmail;

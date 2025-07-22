@@ -177,7 +177,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 0.5fr 2fr 1fr 2fr 1fr;
+  grid-template-columns: 0.5fr 2fr 1fr 2fr 0.5fr;
   padding: 1rem;
   font-weight: bold;
   background-color: rgba(0, 0, 0, 0.3);
@@ -186,7 +186,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 0.5fr 2fr 1fr 2fr 1fr;
+  grid-template-columns: 0.5fr 1.5fr 1fr 2fr 1fr;
   padding: 1rem;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -239,7 +239,7 @@
 
 .completion-value {
   height: 100%;
-  background-color: #ff0055;
+  background-color: #00f50c;
   border-radius: 4px;
 }
 

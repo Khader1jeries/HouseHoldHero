@@ -18,28 +18,19 @@
         <span>Score</span>
       </div>
 
-      <div class="item">
+      <div class="item" *ngFor="let member of twoMembers">
         <div class="member-info">
-          <img src="assets/profile_pic.png" alt="John" />
+          <img src="assets/profile_pic.png" [alt]="member.fullName" />
           <div>
-            <p>John</p>
-            <p class="subtext">Age: 23</p>
+            <p>{{ member.fullName }}</p>
           </div>
         </div>
-        <div><span>3</span></div>
-        <div><span class="score-pill">1500</span></div>
-      </div>
-
-      <div class="item">
-        <div class="member-info">
-          <img src="assets/profile_pic.png" alt="Kavin" />
-          <div>
-            <p>Kavin</p>
-            <p class="subtext">Age: 21</p>
-          </div>
+        <div>
+          <span>{{ member.activeTasks || 0 }}</span>
         </div>
-        <div><span>5</span></div>
-        <div><span class="score-pill">2000</span></div>
+        <div>
+          <span class="score-pill">{{ member.score || 0 }}</span>
+        </div>
       </div>
     </div>
 
@@ -58,16 +49,16 @@
         <span>NO</span>
       </div>
 
-      <div class="item">
-        <div><span class="score-pill">Take the dog to Walk</span></div>
-        <div><span>3</span></div>
-        <div><span>5</span></div>
-      </div>
-
-      <div class="item">
-        <div><span class="score-pill">Wash the laundry</span></div>
-        <div><span>4</span></div>
-        <div><span>2</span></div>
+      <div class="item" *ngFor="let vote of twoVotes">
+        <div>
+          <span class="score-pill">{{ vote.title }}</span>
+        </div>
+        <div>
+          <span>{{ vote["yes"]?.length || 0 }}</span>
+        </div>
+        <div>
+          <span>{{ vote["no"]?.length || 0 }}</span>
+        </div>
       </div>
     </div>
 
@@ -126,16 +117,18 @@
         <span>Assigned To</span>
       </div>
 
-      <div class="item">
-        <div><span class="score-pill">clean bathroom</span></div>
-        <div><span>0h 5m 20s</span></div>
-        <div><span class="score-pill">John</span></div>
-      </div>
-
-      <div class="item">
-        <div><span class="score-pill">Wash the car</span></div>
-        <div><span>1h 5m 20s</span></div>
-        <div><span class="score-pill">Sarah</span></div>
+      <div class="item" *ngFor="let task of twoActiveTasks">
+        <div>
+          <span class="score-pill">{{ task.title }}</span>
+        </div>
+        <div>
+          <span>
+            {{ getDuration(task.startDate, task.dueDate) }}
+          </span>
+        </div>
+        <div>
+          <span class="score-pill">{{ task.assignedToName }}</span>
+        </div>
       </div>
     </div>
   </div>

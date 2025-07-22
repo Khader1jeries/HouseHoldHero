@@ -7,11 +7,15 @@ import { MemberService } from '../../services/member.service';
 import { UserService } from '../../services/user.service';
 import { interval, Subscription } from 'rxjs';
 import { Task } from '../../services/interfaces/task.interface';
+import { VotesService } from '../../services/votes.service';
+import { VoteTask } from '../../services/interfaces/votes.interface';
 
 interface ExtendedTask extends Task {
   timeUntilStart?: string;
 }
-
+interface ExtendedVote extends VoteTask {
+  timeUntilStart?: string;
+}
 @Component({
   selector: 'app-tasks',
   standalone: true,
@@ -21,10 +25,10 @@ interface ExtendedTask extends Task {
 })
 export class TasksComponent implements OnInit, OnDestroy {
   tasks: ExtendedTask[] = [];
+  voteTasks: ExtendedVote[] = [];
   activeTasks: ExtendedTask[] = [];
   finishedTasks: ExtendedTask[] = [];
   futureTasks: ExtendedTask[] = [];
-  tasksUnderVoting: ExtendedTask[] = [];
 
   activeTab: 'active' | 'finished' | 'future' | 'voting' = 'active';
   isLoading: boolean = true;
@@ -37,8 +41,7 @@ export class TasksComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private taskService: TaskService,
-    private memberService: MemberService,
-    private userService: UserService
+    private VotesService: VotesService
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +72,16 @@ export class TasksComponent implements OnInit, OnDestroy {
         console.error('❌ Failed to load tasks:', err);
       },
     });
+    this.VotesService.getVoteByAdmin(adminEmail).subscribe({
+      next: (votes) => {
+        console.log('✅ Tasks loaded:', votes);
+        // Save to a local variable (you must declare it first)
+        this.voteTasks = votes;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load tasks:', err);
+      },
+    });
   }
 
   changeTab(tab: 'active' | 'finished' | 'future' | 'voting'): void {
@@ -92,6 +105,8 @@ export class TasksComponent implements OnInit, OnDestroy {
         this.activeTasks.push(task); // Task is ongoing now
       }
     }
+    for (const voteTask of this.voteTasks) {
+    }
   }
 
   navigateToAddTask(): void {
@@ -105,6 +120,16 @@ export class TasksComponent implements OnInit, OnDestroy {
     }
 
     this.router.navigate(['/user/tasks/details', id]);
+  }
+  navigateToVoteDetails(id: string | undefined): void {
+    if (!id) {
+      console.error(
+        '❌ Vote Task ID is undefined, cannot navigate to details.'
+      );
+      return;
+    }
+
+    this.router.navigate(['/user/tasks/votes', id]);
   }
 
   deleteTask(id: string | undefined, event: Event): void {
@@ -134,10 +159,26 @@ export class TasksComponent implements OnInit, OnDestroy {
   calculateTimeUntilStart(startDate: Date | string): string {
     return '';
   }
+  calculateRemainingTime(dueDateInput: Date | string): string {
+    const now = new Date();
+    const dueDate = new Date(dueDateInput);
 
-  enrichTasksWithMemberData(): void {}
+    const diffMs = dueDate.getTime() - now.getTime();
 
-  updateRemainingTimes(): void {}
+    if (diffMs <= 0) {
+      return 'Overdue';
+    }
 
-  filterTasks(): void {}
+    const totalMinutes = Math.floor(diffMs / 60000);
+    const days = Math.floor(totalMinutes / 1440); // 1440 = minutes in a day
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+
+    let result = '';
+    if (days > 0) result += `${days}d `;
+    if (hours > 0 || days > 0) result += `${hours}h `;
+    result += `${minutes}m`;
+
+    return result.trim();
+  }
 }

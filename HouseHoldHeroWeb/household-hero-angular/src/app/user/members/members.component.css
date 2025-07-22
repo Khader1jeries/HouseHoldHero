@@ -312,7 +312,7 @@
 
 .crown {
   position: absolute;
-  top: -25px;
+  top: -35px;
   font-size: 24px;
   animation: float 2s ease-in-out infinite;
 }

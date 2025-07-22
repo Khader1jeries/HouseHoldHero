@@ -6,9 +6,9 @@ export interface Member {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  DOB: string;
   activeTasks?: number;
   completedTasks?: number;
-  completionRate?: number;
   fullName?: string;
   score?: number;
   totalTasks?: number;

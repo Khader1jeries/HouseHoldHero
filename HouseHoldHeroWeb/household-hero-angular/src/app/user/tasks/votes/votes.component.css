@@ -301,7 +301,10 @@
 .cell-vote.no {
   color: #ff0055;
 }
-
+.cell-vote.not-voted {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
 .cell-time {
   color: rgba(255, 255, 255, 0.7);
 }

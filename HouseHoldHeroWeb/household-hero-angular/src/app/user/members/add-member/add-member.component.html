@@ -82,7 +82,18 @@
           />
         </div>
       </div>
-
+      <!-- Date of Birth Input -->
+      <div class="form-group">
+        <label for="DOB">Date of Birth</label>
+        <input
+          type="date"
+          id="DOB"
+          placeholder="Date of birth"
+          [(ngModel)]="newMember.DOB"
+          name="DOB"
+          required
+        />
+      </div>
       <!-- Password Input -->
       <div class="form-group">
         <label for="password">Password</label>

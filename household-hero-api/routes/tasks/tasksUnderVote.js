@@ -48,8 +48,7 @@ router.post("/", async (req, res) => {
     }
     const status = false;
     task.status = status;
-    const completionRate = 0;
-    task.completionRate = completionRate;
+
     task.yes = [];
     task.no = [];
     await expired(task);
@@ -91,7 +90,51 @@ router.get("/:adminEmail", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+router.get("/id/:taskId", async (req, res) => {
+  try {
+    const { taskId } = req.params;
 
+    if (!taskId) {
+      return res.status(400).json({ error: "Task ID is required" });
+    }
+
+    const taskDoc = await db.collection("tasksUnderVote").doc(taskId).get();
+
+    if (!taskDoc.exists) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(200).json({ id: taskDoc.id, ...taskDoc.data() });
+  } catch (error) {
+    console.error("Error fetching task by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+router.get("/getTwo/:adminEmail", async (req, res) => {
+  const { adminEmail } = req.params;
+
+  try {
+    const snapshot = await db
+      .collection("tasksUnderVote")
+      .where("adminEmail", "==", adminEmail)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(200).json([]); // return empty array if no matching tasks
+    }
+
+    const tasks = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Shuffle and take two random tasks
+    const shuffled = tasks.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 2);
+
+    res.status(200).json(selected);
+  } catch (error) {
+    console.error("❌ Error fetching voting tasks:", error);
+    res.status(500).json({ error: "Failed to fetch voting tasks" });
+  }
+});
 router.get("/active/:adminEmail", async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -273,7 +316,6 @@ router.post("/move/:id", async (req, res) => {
       subtask.score = pointsDivided; // Force set every time
     });
     task.status = false;
-    task.completionRate = 0;
 
     // Add to main tasks
     const newTaskRef = await db.collection("tasks").add(task);
