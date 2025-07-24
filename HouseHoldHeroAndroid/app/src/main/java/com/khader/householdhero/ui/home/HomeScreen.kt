@@ -3,6 +3,8 @@ package com.khader.householdhero.ui.theme.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -24,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.khader.householdhero.R
+import com.khader.householdhero.ui.tasks.TasksContent
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,106 +37,114 @@ fun HomeScreen(
     println("HomeScreen loaded with onSettingsClick: ${onSettingsClick != {}}")
     var selectedTab by remember { mutableStateOf(0) }
 
+    // Define all navigation items
+    val navItems = listOf(
+        NavItem(Icons.Default.Home, "Home", 0),
+        NavItem(Icons.Default.CheckCircle, "Tasks", 1),
+        NavItem(Icons.Default.Star, "Leaderboard", 2),
+        NavItem(Icons.Default.Person, "Profile", 3),
+        NavItem(Icons.Default.Settings, "Settings", 4),
+        NavItem(Icons.Default.Notifications, "Notifications", 5)
+    )
+
     Scaffold(
         topBar = {
-            // Custom Top Bar
+            // Simplified Top Bar with just the logo
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp),
+                    .height(110.dp),
                 color = Color(0xFFF5F5F5), // Light grey background
                 shadowElevation = 4.dp
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Settings Icon (Left)
-                    IconButton(
-                        onClick = {
-                            println("BUTTON CLICKED!")
-                            onSettingsClick()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            modifier = Modifier.size(28.dp),
-                            tint = Color.Red  // Make it red so we know it's the test version
-                        )
-                    }
-
                     // Logo (Center)
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground), // Using your existing launcher icon
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = "HouseHold Hero Logo",
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(100.dp)
                     )
-
-                    // Notification Icon (Right)
-                    IconButton(
-                        onClick = { /* Handle notification click */ }
-                    ) {
-                        Badge(
-                            containerColor = Color.Red
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notifications",
-                                modifier = Modifier.size(28.dp),
-                                tint = Color(0xFF333333)
-                            )
-                        }
-                    }
                 }
             }
         },
         bottomBar = {
-            // Custom Bottom Navigation Bar
+            // Custom Bottom Navigation Bar with horizontal scroll
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.White,
                 shadowElevation = 8.dp
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Home Tab
-                    BottomNavItem(
-                        icon = Icons.Default.Home,
-                        label = "Home",
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 }
-                    )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 32.dp) // More padding for scroll indicators
+                    ) {
+                        items(navItems) { item ->
+                            BottomNavItem(
+                                icon = item.icon,
+                                label = item.label,
+                                selected = selectedTab == item.index,
+                                onClick = {
+                                    selectedTab = item.index
+                                    // Handle special actions
+                                    when (item.index) {
+                                        4 -> onSettingsClick() // Settings
+                                        5 -> { /* Handle notification click */ }
+                                    }
+                                }
+                            )
+                        }
+                    }
 
-                    // Tasks Tab
-                    BottomNavItem(
-                        icon = Icons.Default.CheckCircle,
-                        label = "Tasks",
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 }
-                    )
+                    // Left scroll indicator (shows when there are items to the left)
+                    if (selectedTab > 0) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 4.dp)
+                                .size(24.dp)
+                                .background(
+                                    Color.Black.copy(alpha = 0.1f),
+                                    RoundedCornerShape(12.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "‹",
+                                color = Color.Gray,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
 
-                    // Leaderboard Tab
-                    BottomNavItem(
-                        icon = Icons.Default.Star,
-                        label = "Leaderboard",
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 }
-                    )
-
-                    // Profile Tab
-                    BottomNavItem(
-                        icon = Icons.Default.Person,
-                        label = "Profile",
-                        selected = selectedTab == 3,
-                        onClick = { selectedTab = 3 }
-                    )
+                    // Right scroll indicator (shows when there are items to the right)
+                    if (selectedTab < navItems.size - 1) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 4.dp)
+                                .size(24.dp)
+                                .background(
+                                    Color.Black.copy(alpha = 0.1f),
+                                    RoundedCornerShape(12.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "›",
+                                color = Color.Gray,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -151,10 +162,20 @@ fun HomeScreen(
                 1 -> TasksContent()
                 2 -> LeaderboardContent()
                 3 -> ProfileContent()
+
+                4-> NotificationsContent()
+                5 -> SettingsContent()
             }
         }
     }
 }
+
+// Data class for navigation items
+data class NavItem(
+    val icon: ImageVector,
+    val label: String,
+    val index: Int
+)
 
 @Composable
 fun BottomNavItem(
@@ -165,7 +186,9 @@ fun BottomNavItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .width(80.dp) // Fixed width to ensure 4+ items are visible
     ) {
         IconButton(
             onClick = onClick,
@@ -182,7 +205,8 @@ fun BottomNavItem(
             text = label,
             fontSize = 12.sp,
             color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
-            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal
+            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+            maxLines = 1
         )
     }
 }
@@ -316,19 +340,7 @@ fun ActivityItem(activity: String, time: String) {
     }
 }
 
-@Composable
-fun TasksContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Tasks Screen",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color(0xFF333333)
-        )
-    }
-}
+
 
 @Composable
 fun LeaderboardContent() {
@@ -352,6 +364,34 @@ fun ProfileContent() {
     ) {
         Text(
             text = "Profile Screen",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color(0xFF333333)
+        )
+    }
+}
+
+@Composable
+fun SettingsContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Settings Screen",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color(0xFF333333)
+        )
+    }
+}
+
+@Composable
+fun NotificationsContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Notifications Screen",
             style = MaterialTheme.typography.headlineMedium,
             color = Color(0xFF333333)
         )
