@@ -17,14 +17,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.khader.householdhero.R
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
-import com.khader.householdhero.ui.theme.login.LoginViewModel
+import com.khader.householdhero.network.RetrofitInstance
+import com.khader.householdhero.repository.MemberRepository
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), // ← from Hilt or default
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onForgotPassword: () -> Unit
 ) {
+    // Create ViewModel with repository
+    val repository = remember { MemberRepository(RetrofitInstance.api) }
+    val viewModel: LoginViewModel = viewModel { LoginViewModel(repository) }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -58,6 +63,7 @@ fun LoginScreen(
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Use the existing launcher icon instead of missing logo
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
@@ -116,14 +122,24 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = RoundedCornerShape(32.dp)
+                        shape = RoundedCornerShape(32.dp),
+                        enabled = !isLoading
                     ) {
-                        Text("Log In")
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text("Log In")
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    TextButton(onClick = { /* forgot logic */ }) {
+                    TextButton(
+                        onClick = { onForgotPassword() } // ✅ correct usage
+                    ) {
                         Text("Forgot Password?")
                     }
 
@@ -134,21 +150,9 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.error
                         )
                     }
-
-                    if (isLoading) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        CircularProgressIndicator()
-                    }
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    HouseHoldHeroTheme {
-        LoginScreen(onLoginSuccess = {})
-    }
-}

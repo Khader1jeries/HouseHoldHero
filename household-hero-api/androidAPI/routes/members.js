@@ -46,3 +46,21 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+router.get("/forgot-password/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const userRef = db.collection("members").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "User exists" });
+  } catch (error) {
+    console.error("Error checking user email:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+module.exports = router;

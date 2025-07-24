@@ -16,4 +16,12 @@ class MemberRepository(private val api: MemberApi) {
             Result.failure(e)
         }
     }
+    suspend fun checkIfUserExists(email: String): Result<LoginResponse> {
+        return try {
+            val response = api.checkIfUserExists(email)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

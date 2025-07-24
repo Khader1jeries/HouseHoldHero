@@ -9,7 +9,10 @@ import com.khader.householdhero.model.LoginRequest
 import com.khader.householdhero.model.LoginResponse
 import com.khader.householdhero.network.RetrofitInstance
 import com.khader.householdhero.repository.MemberRepository
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class LoginViewModel(private val repository: MemberRepository) : ViewModel() {
 
@@ -21,8 +24,22 @@ class LoginViewModel(private val repository: MemberRepository) : ViewModel() {
             try {
                 val response = RetrofitInstance.api.loginMember(LoginRequest(email, password))
                 loginResult = Result.success(response)
-            } catch (e: Exception) {
-                loginResult = Result.failure(e)
+            }  catch (e: Exception) {
+                val errorMessage = when (e) {
+                    is HttpException -> {
+                        val errorJson = e.response()?.errorBody()?.string()
+                        val moshi = Moshi.Builder().build()
+                        val adapter = moshi.adapter(LoginResponse::class.java)
+                        val errorResponse = adapter.fromJson(errorJson)
+                        errorResponse?.message ?: "HTTP ${e.code()} error"
+                    }
+
+                    is IOException -> "Network error. Please check your internet connection."
+                    else -> "Unexpected error: ${e.localizedMessage}"
+                }
+
+                // Use LoginResponse just to hold the message
+                loginResult = Result.success(LoginResponse(success = false, message = errorMessage))
             }
         }
     }
