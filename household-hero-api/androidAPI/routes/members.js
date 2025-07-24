@@ -63,4 +63,38 @@ router.get("/forgot-password/:email", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: " Email and new password are required",
+      });
+    }
+    const userRef = db.collection("members").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const hashedPassword = hashPassword(password);
+    await userRef.update({
+      password: hashedPassword,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 module.exports = router;
