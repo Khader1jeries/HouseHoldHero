@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "483440820106",
+    "project_id": "householdhero-1",
+    "storage_bucket": "householdhero-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483440820106:android:9caf33df73a8cd5506d273",
+        "android_client_info": {
+          "package_name": "com.khader.householdhero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJDoTpuyJB4QgqygArB-VNk7FoZ_Z_HeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

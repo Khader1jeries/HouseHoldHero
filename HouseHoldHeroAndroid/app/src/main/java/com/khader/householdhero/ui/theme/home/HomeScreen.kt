@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.theme
+package com.khader.householdhero.ui.theme.home
 
 
 import androidx.compose.foundation.layout.*

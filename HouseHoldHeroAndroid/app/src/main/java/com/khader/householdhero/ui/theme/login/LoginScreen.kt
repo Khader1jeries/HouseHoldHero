@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.theme
+package com.khader.householdhero.ui.theme.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,9 +13,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import com.khader.householdhero.R
+import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier) {
