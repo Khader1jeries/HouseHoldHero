@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
+import com.khader.householdhero.ui.settings.SettingsScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
 
@@ -27,7 +28,12 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(route = Screen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onSettingsClick = {
+                    println("Settings clicked - navigating to settings")
+                    navController.navigate(Screen.Settings.route)
+                }
+            )
         }
 
         composable(Screen.ForgotPassword.route) {
@@ -51,6 +57,40 @@ fun AppNavHost(navController: NavHostController) {
                     }
                 },
                 onBackToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onEditProfile = {
+                    // TODO: Navigate to edit profile screen
+                },
+                onSecurity = {
+                    // TODO: Navigate to security screen
+                },
+                onPrivacy = {
+                    // TODO: Navigate to privacy screen
+                },
+                onContactAdmin = {
+                    // TODO: Navigate to contact admin screen
+                },
+                onHelpSupport = {
+                    // TODO: Navigate to help & support screen
+                },
+                onTermsPolicies = {
+                    // TODO: Navigate to terms & policies screen
+                },
+                onReportProblem = {
+                    // TODO: Navigate to report problem screen
+                },
+                onLogOut = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }

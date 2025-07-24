@@ -15,6 +15,6 @@ interface MemberApi {
     suspend fun loginMember(@Body request: LoginRequest): LoginResponse
     @GET("members/forgot-password/{email}")
     suspend fun checkIfUserExists(@Path("email") email: String): LoginResponse
-    @PUT("members/reset-password")
+    @POST("members/reset-password")
     suspend fun resetPassword(@Body request: ResetPasswordRequest): LoginResponse
 }

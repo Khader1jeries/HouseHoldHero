@@ -1,6 +1,7 @@
 package com.khader.householdhero.ui.resetPassword
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,21 +26,15 @@ fun ResetPasswordScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var showNewPassword by remember { mutableStateOf(false) }
     var showConfirmPassword by remember { mutableStateOf(false) }
-    var shouldNavigate by remember { mutableStateOf(false) }
-
-    // Handle navigation separately
-    LaunchedEffect(shouldNavigate) {
-        if (shouldNavigate) {
-            onPasswordResetSuccess()
-        }
-    }
 
     // Watch for successful password reset
     LaunchedEffect(viewModel.result) {
         viewModel.result?.let { result ->
             result.onSuccess { response ->
                 if (response.success) {
-                    shouldNavigate = true
+                    // Wait a bit to show success message, then navigate
+                    kotlinx.coroutines.delay(1500)
+                    onPasswordResetSuccess()
                 }
             }
         }
@@ -67,7 +62,8 @@ fun ResetPasswordScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 OutlinedTextField(
@@ -114,7 +110,10 @@ fun ResetPasswordScreen(
                     onClick = {
                         viewModel.resetPassword(email, newPassword, confirmPassword)
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(32.dp),
                     enabled = !viewModel.isLoading && newPassword.isNotBlank() && confirmPassword.isNotBlank()
                 ) {
                     if (viewModel.isLoading) {
@@ -134,6 +133,12 @@ fun ResetPasswordScreen(
                         Text("Change Password")
                     }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(onClick = onBackToLogin) {
+                    Text("Back to Login")
+                }
             }
         }
 
@@ -149,7 +154,8 @@ fun ResetPasswordScreen(
                             MaterialTheme.colorScheme.primaryContainer
                         else
                             MaterialTheme.colorScheme.errorContainer
-                    )
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = response.message,
@@ -165,21 +171,16 @@ fun ResetPasswordScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "Error: ${exception.localizedMessage}",
+                        text = "Error: ${exception.localizedMessage ?: "Unknown error"}",
                         modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        TextButton(onClick = onBackToLogin) {
-            Text("Back to Login")
         }
     }
 }

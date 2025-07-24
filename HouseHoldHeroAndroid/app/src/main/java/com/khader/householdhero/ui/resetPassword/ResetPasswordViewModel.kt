@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.khader.householdhero.model.LoginResponse
-import com.khader.householdhero.model.ErrorResponse
 import com.khader.householdhero.model.ResetPasswordRequest
 import com.khader.householdhero.network.RetrofitInstance
 import com.squareup.moshi.Moshi
@@ -51,23 +50,27 @@ class ResetPasswordViewModel : ViewModel() {
             try {
                 val response = RetrofitInstance.api.resetPassword(ResetPasswordRequest(email, newPassword))
                 result = Result.success(response)
-                isLoading = false
-            } catch (e: Exception) {
-                isLoading = false
-                val errorMessage = when (e) {
-                    is HttpException -> {
-                        val errorJson = e.response()?.errorBody()?.string()
+            } catch (e: HttpException) {
+                val errorMessage = try {
+                    val errorJson = e.response()?.errorBody()?.string()
+                    if (!errorJson.isNullOrBlank()) {
                         val moshi = Moshi.Builder().build()
                         val adapter = moshi.adapter(LoginResponse::class.java)
                         val errorResponse = adapter.fromJson(errorJson)
-                        errorResponse?.message ?: "HTTP ${e.code()} error"
+                        errorResponse?.message ?: "Server error: HTTP ${e.code()}"
+                    } else {
+                        "Server error: HTTP ${e.code()}"
                     }
-                    is IOException -> "Network error. Please check your internet connection."
-                    else -> "Unexpected error: ${e.localizedMessage}"
+                } catch (parseException: Exception) {
+                    "Server error: HTTP ${e.code()}"
                 }
-
-                // Use LoginResponse just to hold the message
                 result = Result.success(LoginResponse(success = false, message = errorMessage))
+            } catch (e: IOException) {
+                result = Result.success(LoginResponse(success = false, message = "Network error. Please check your internet connection."))
+            } catch (e: Exception) {
+                result = Result.success(LoginResponse(success = false, message = "Unexpected error: ${e.localizedMessage ?: "Unknown error"}"))
+            } finally {
+                isLoading = false
             }
         }
     }
