@@ -11,31 +11,53 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.khader.householdhero.R
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
+import com.khader.householdhero.ui.theme.login.LoginViewModel
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), // ← from Hilt or default
+    onLoginSuccess: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Observe login result
+    LaunchedEffect(viewModel.loginResult) {
+        viewModel.loginResult?.let { result ->
+            isLoading = false
+            result.onSuccess {
+                if (it.success) {
+                    onLoginSuccess()
+                } else {
+                    errorMessage = it.message
+                }
+            }.onFailure {
+                errorMessage = "Network error: ${it.localizedMessage}"
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        // Main column centered
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Optional logo
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
@@ -44,14 +66,12 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .padding(bottom = 12.dp)
             )
 
-            // Title
             Text(
                 text = "Log In To HouseHoldHero",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Card container
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -59,7 +79,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
-                    // Email Field
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -71,7 +90,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Password Field with Show/Hide
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -89,9 +107,12 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Login Button
                     Button(
-                        onClick = { /* handle login */ },
+                        onClick = {
+                            isLoading = true
+                            errorMessage = null
+                            viewModel.login(email, password)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
@@ -102,9 +123,21 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Forgot Password
                     TextButton(onClick = { /* forgot logic */ }) {
                         Text("Forgot Password?")
+                    }
+
+                    errorMessage?.let {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
+                    if (isLoading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CircularProgressIndicator()
                     }
                 }
             }
@@ -112,15 +145,10 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     }
 }
 
-
-
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     HouseHoldHeroTheme {
-        LoginScreen()
+        LoginScreen(onLoginSuccess = {})
     }
 }

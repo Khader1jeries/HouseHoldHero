@@ -29,15 +29,17 @@ app.use((req, res, next) => {
 });
 
 // Import routes AFTER Firebase is initialized
-const userRoutes = require("./routes/users");
-const memberRoutes = require("./routes/members"); // Import the members module
-const taskRoutes = require("./routes/tasks/tasks"); // Import the tasks module
-const tasksUnderVoteRoutes = require("./routes/tasks/tasksUnderVote");
+const userWebRoutes = require("./webApi/routes/users");
+const memberWebRoutes = require("./webApi/routes/members"); // Import the members module
+const taskWebRoutes = require("./webApi/routes/tasks/tasks"); // Import the tasks module
+const tasksUnderVoteWebRoutes = require("./webApi/routes/tasks/tasksUnderVote");
 // Set up our API routes
-app.use("/api/users", userRoutes);
-app.use("/api/members", memberRoutes); // Use the members routes
-app.use("/api/tasks", taskRoutes); // Use the tasks routes
-app.use("/api/tasksUnderVote", tasksUnderVoteRoutes);
+app.use("/api/users", userWebRoutes);
+app.use("/api/members", memberWebRoutes); // Use the members routes
+app.use("/api/tasks", taskWebRoutes); // Use the tasks routes
+app.use("/api/tasksUnderVote", tasksUnderVoteWebRoutes);
+
+const memberAndroidRoutes = require("./androidAPI/routes/members");
 // Basic route for testing
 app.get("/", (req, res) => {
   res.send("Household Hero API is running");
