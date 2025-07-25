@@ -10,13 +10,6 @@ interface NotificationSetting {
   enabled: boolean;
 }
 
-interface PrivacySetting {
-  id: string;
-  name: string;
-  description: string;
-  enabled: boolean;
-}
-
 interface ThemeSetting {
   id: string;
   name: string;
@@ -33,12 +26,7 @@ interface ThemeSetting {
 })
 export class SettingsComponent implements OnInit {
   // Active settings tab
-  activeTab:
-    | 'profile'
-    | 'notifications'
-    | 'privacy'
-    | 'appearance'
-    | 'account' = 'profile';
+  activeTab: 'profile' | 'appearance' | 'account' = 'profile';
 
   // Success/error messages
   successMessage: string | null = null;
@@ -101,36 +89,6 @@ export class SettingsComponent implements OnInit {
     inApp: true,
   };
 
-  // Privacy settings
-  privacySettings: PrivacySetting[] = [
-    {
-      id: 'show-points',
-      name: 'Show My Points',
-      description:
-        'Allow other family members to see my points on the leaderboard',
-      enabled: true,
-    },
-    {
-      id: 'show-tasks',
-      name: 'Show My Tasks',
-      description: 'Allow other family members to see my active tasks',
-      enabled: true,
-    },
-    {
-      id: 'show-stats',
-      name: 'Show My Statistics',
-      description:
-        'Allow other family members to see my performance statistics',
-      enabled: true,
-    },
-    {
-      id: 'allow-mentions',
-      name: 'Allow Mentions',
-      description: 'Allow other family members to mention me in comments',
-      enabled: true,
-    },
-  ];
-
   // Appearance settings
   selectedTheme: string = 'default';
   availableThemes: ThemeSetting[] = [
@@ -192,9 +150,7 @@ export class SettingsComponent implements OnInit {
   }
 
   // Switch between settings tabs
-  setActiveTab(
-    tab: 'profile' | 'notifications' | 'privacy' | 'appearance' | 'account'
-  ): void {
+  setActiveTab(tab: 'profile' | 'appearance' | 'account'): void {
     this.activeTab = tab;
     // Clear any messages when switching tabs
     this.successMessage = null;
@@ -239,17 +195,6 @@ export class SettingsComponent implements OnInit {
     // Mock success after a delay
     setTimeout(() => {
       this.showSuccess('Notification settings updated successfully');
-    }, 1000);
-  }
-
-  // Save privacy settings
-  savePrivacySettings(): void {
-    // In a real app, this would call an API
-    console.log('Saving privacy settings:', this.privacySettings);
-
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('Privacy settings updated successfully');
     }, 1000);
   }
 

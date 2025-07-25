@@ -129,7 +129,7 @@
           </button>
           <button
             class="delete-btn"
-            (click)="deleteMessage(message.id); $event.stopPropagation()"
+            (click)="deleteMessage(message.id!); $event.stopPropagation()"
             title="Delete this message"
             [disabled]="!message.id"
           >

@@ -163,14 +163,31 @@ export class SupportComponent implements OnInit {
       });
   }
 
-  markAsRead(messageId: string): void {
-    // In a real implementation, you would call a service to mark the message as read
-    console.log('Marking message as read:', messageId);
-    // Find the message and mark it as read locally
-    const message = this.memberMessages.find((msg) => msg.id === messageId);
-    if (message) {
-      message.read = true;
+  markAsRead(messageId?: string): void {
+    if (!messageId) {
+      return;
     }
+
+    /* ---- optimistic UI update ------------------------------------------- */
+    const localMsg = this.memberMessages.find((m) => m.id === messageId);
+    if (localMsg && !localMsg.read) {
+      localMsg.read = true; // immediately remove “unread” styling
+    }
+
+    /* ---- backend call ---------------------------------------------------- */
+    this.supportService.markAsRead(messageId).subscribe({
+      next: () => {
+        // success – UI already up-to-date
+      },
+      error: (err) => {
+        console.error('Failed to mark message as read:', err);
+
+        // optional rollback if you want to keep UI strictly accurate
+        if (localMsg) {
+          localMsg.read = false;
+        }
+      },
+    });
   }
 
   replyToMessage(message: any): void {
@@ -220,11 +237,10 @@ export class SupportComponent implements OnInit {
   }
 
   deleteMessage(id: string): void {
-    // Call the backend
     this.supportService.deleteMessage(id).subscribe({
       next: () => {
-        // On success: remove locally and refresh any filtered lists
-        this.messages = this.messages.filter((msg) => msg.id !== id);
+        // refresh the list from Firestore
+        this.fetchMessages();
       },
       error: (err) => {
         console.error('Failed to delete message:', err);
