@@ -17,14 +17,16 @@
     <div class="form-group">
       <label for="recipients">Send To:</label>
       <div class="recipients-selector">
-        <div *ngFor="let member of familyMembers" class="recipient-option">
+        <div *ngFor="let member of members" class="recipient-option">
           <input
             type="checkbox"
-            [id]="'member-' + member.id"
-            [name]="'member-' + member.id"
-            [(ngModel)]="member.selected"
+            [id]="'member-' + member.email"
+            [name]="'member-' + member.email"
+            [checked]="selectedRecipients.has(member.email)"
+            (change)="onToggleRecipient(member.email, $event.target.checked)"
           />
-          <label [for]="'member-' + member.id">{{ member.name }}</label>
+
+          <label [for]="'member-' + member.email">{{ member.fullName }}</label>
         </div>
       </div>
     </div>
@@ -61,7 +63,7 @@
   <div class="messages-container">
     <div
       class="message-item"
-      *ngFor="let message of memberMessages"
+      *ngFor="let message of messages"
       [class.unread]="!message.read"
     >
       <div class="message-header" (click)="markAsRead(message.id)">

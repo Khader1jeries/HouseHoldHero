@@ -41,6 +41,14 @@ export class MemberService {
       .get<any>(`${this.apiUrl}/monthly-leaderboard/${adminEmail}`)
       .pipe(map((res) => Object.values(res.data || {})));
   }
+  getYearlyLeaderboard(adminEmail: string): Observable<any[]> {
+    return this.http
+      .get<any>(`${this.apiUrl}/yearly-leaderboard/${adminEmail}`)
+      .pipe(map((res) => Object.values(res.data || {})));
+  }
+  getLeaderboard(adminEmail: string): Observable<Member[]> {
+    return this.http.get<Member[]>(`${this.apiUrl}/leaderboard/${adminEmail}`);
+  }
   deleteMember(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${email}`);
   }

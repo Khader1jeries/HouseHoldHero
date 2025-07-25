@@ -6,6 +6,7 @@ const db = admin.firestore();
 const { activeTasks } = require("../controllers/memberController");
 const {
   getMonthlyLeaderboard,
+  getYearlyLeaderboard,
 } = require("../controllers/leaderboardController");
 const crypto = require("crypto");
 function hashPassword(password) {
@@ -167,6 +168,23 @@ router.get("/monthly-leaderboard/:adminEmail", async (req, res) => {
     }
 
     const leaderboard = await getMonthlyLeaderboard(adminEmail);
+    res.status(200).json({ success: true, data: leaderboard });
+  } catch (error) {
+    console.error("Route error:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+router.get("/yearly-leaderboard/:adminEmail", async (req, res) => {
+  try {
+    const adminEmail = req.params.adminEmail;
+
+    if (!adminEmail) {
+      return res
+        .status(400)
+        .json({ error: "adminEmail is required in the URL" });
+    }
+
+    const leaderboard = await getYearlyLeaderboard(adminEmail);
     res.status(200).json({ success: true, data: leaderboard });
   } catch (error) {
     console.error("Route error:", error);

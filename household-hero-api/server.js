@@ -33,12 +33,13 @@ const userWebRoutes = require("./webApi/routes/users");
 const memberWebRoutes = require("./webApi/routes/members"); // Import the members module
 const taskWebRoutes = require("./webApi/routes/tasks/tasks"); // Import the tasks module
 const tasksUnderVoteWebRoutes = require("./webApi/routes/tasks/tasksUnderVote");
+const messagesWebRoutes = require("./webApi/routes/messages");
 // Set up our API routes
 app.use("/api/users", userWebRoutes);
 app.use("/api/members", memberWebRoutes); // Use the members routes
 app.use("/api/tasks", taskWebRoutes); // Use the tasks routes
 app.use("/api/tasksUnderVote", tasksUnderVoteWebRoutes);
-
+app.use("/api/messages", messagesWebRoutes);
 const memberAndroidRoutes = require("./androidAPI/routes/members");
 app.use("/api/members/", memberAndroidRoutes);
 // Basic route for testing

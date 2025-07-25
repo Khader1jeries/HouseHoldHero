@@ -1,18 +1,19 @@
-<div class="leaderboard-container">
+<app-loading [isLoading]="isLoading" message="Fetching data..."></app-loading>
+<div *ngIf="!isLoading" class="leaderboard-container">
   <div class="leaderboard-header">
     <h2>Family Leaderboard</h2>
     <div class="period-selector">
-      <button
-        [class.active]="selectedPeriod === 'week'"
-        (click)="changePeriod('week')"
-      >
-        Week
-      </button>
       <button
         [class.active]="selectedPeriod === 'month'"
         (click)="changePeriod('month')"
       >
         Month
+      </button>
+      <button
+        [class.active]="selectedPeriod === 'overall'"
+        (click)="changePeriod('overall')"
+      >
+        Overall
       </button>
       <button
         [class.active]="selectedPeriod === 'year'"
