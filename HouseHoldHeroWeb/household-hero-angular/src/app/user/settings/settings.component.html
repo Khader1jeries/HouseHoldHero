@@ -16,257 +16,214 @@
         <i class="bi bi-person-circle"></i>
         <span>Profile</span>
       </div>
+      <div
+        class="nav-item"
+        [class.active]="activeTab === 'appearance'"
+        (click)="setActiveTab('appearance')"
+      >
+        <i class="bi bi-palette-fill"></i>
+        <span>Appearance</span>
+      </div>
+      <div
+        class="nav-item"
+        [class.active]="activeTab === 'account'"
+        (click)="setActiveTab('account')"
+      >
+        <i class="bi bi-gear-fill"></i>
+        <span>Account</span>
+      </div>
+      <div class="nav-item logout" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Logout</span>
+      </div>
     </div>
-    <div
-      class="nav-item"
-      [class.active]="activeTab === 'appearance'"
-      (click)="setActiveTab('appearance')"
-    >
-      <i class="bi bi-palette-fill"></i>
-      <span>Appearance</span>
-    </div>
-    <div
-      class="nav-item"
-      [class.active]="activeTab === 'account'"
-      (click)="setActiveTab('account')"
-    >
-      <i class="bi bi-gear-fill"></i>
-      <span>Account</span>
-    </div>
-    <div class="nav-item logout" (click)="logout()">
-      <i class="bi bi-box-arrow-right"></i>
-      <span>Logout</span>
-    </div>
-  </div>
+    <!-- Settings Content -->
+    <div class="settings-panel">
+      <!-- Status Messages -->
+      <div *ngIf="successMessage" class="status-message success">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+      <div *ngIf="errorMessage" class="status-message error">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
 
-  <!-- Settings Content -->
-  <div class="settings-panel">
-    <!-- Status Messages -->
-    <div *ngIf="successMessage" class="status-message success">
-      <i class="bi bi-check-circle-fill"></i>
-      <span>{{ successMessage }}</span>
-    </div>
-    <div *ngIf="errorMessage" class="status-message error">
-      <i class="bi bi-exclamation-triangle-fill"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
+      <!-- Profile Settings -->
+      <div class="settings-section" *ngIf="activeTab === 'profile'">
+        <h2>Profile Settings</h2>
 
-    <!-- Profile Settings -->
-    <div class="settings-section" *ngIf="activeTab === 'profile'">
-      <h2>Profile Settings</h2>
-
-      <div class="profile-header">
-        <div class="profile-picture-container">
-          <img
-            [src]="profile.profilePicture"
-            alt="Profile picture"
-            class="profile-picture"
-          />
-          <div class="profile-picture-overlay">
-            <label for="profile-picture-upload" class="upload-button">
-              <i class="bi bi-camera-fill"></i>
-              <span>Change</span>
-            </label>
-            <input
-              type="file"
-              id="profile-picture-upload"
-              accept="image/*"
-              (change)="uploadProfilePicture($event)"
-              style="display: none"
+        <div class="profile-header">
+          <div class="profile-picture-container">
+            <img
+              src="assets/profile_pic.png"
+              alt="Profile picture"
+              class="profile-picture"
             />
+            <div class="profile-picture-overlay">
+              <label for="profile-picture-upload" class="upload-button">
+                <i class="bi bi-camera-fill"></i>
+                <span>Change</span>
+              </label>
+              <input
+                type="file"
+                id="profile-picture-upload"
+                accept="image/*"
+                (change)="uploadProfilePicture($event)"
+                style="display: none"
+              />
+            </div>
+          </div>
+
+          <div class="profile-info">
+            <h3>{{ userData.fullName }}</h3>
+            <p class="role">admin</p>
           </div>
         </div>
 
-        <div class="profile-info">
-          <h3>{{ profile.fullName }}</h3>
-          <p class="role">{{ profile.role }}</p>
+        <div class="form-section">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              [(ngModel)]="userData.fullName"
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="userData.email"
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <div style="display: flex">
+              <select
+                class="country-code"
+                name="countryCode"
+                [(ngModel)]="userData.countryCode"
+                required
+              >
+                <option value="+1">🇺🇸 +1 (USA)</option>
+                <option value="+44">🇬🇧 +44 (UK)</option>
+                <option value="+91">🇮🇳 +91 (India)</option>
+                <option value="+33">🇫🇷 +33 (France)</option>
+                <option value="+49">🇩🇪 +49 (Germany)</option>
+                <option value="+972">🇮🇱 +972 (Israel)</option>
+              </select>
+              <input
+                type="tel"
+                id="phone"
+                [(ngModel)]="userData.phoneNumber"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <button class="save-button" (click)="saveProfile()">
+            <i class="bi bi-check2"></i>
+            Save Changes
+          </button>
         </div>
       </div>
 
-      <div class="form-section">
-        <div class="form-group">
-          <label for="fullName">Full Name</label>
-          <input
-            type="text"
-            id="fullName"
-            [(ngModel)]="profile.fullName"
-            class="form-control"
-          />
+      <!-- Appearance Settings -->
+      <div class="settings-section" *ngIf="activeTab === 'appearance'">
+        <h2>Appearance Settings</h2>
+
+        <div class="theme-section">
+          <h3>Theme</h3>
+          <div class="theme-options">
+            <div
+              *ngFor="let theme of availableThemes"
+              class="theme-card"
+              [class.selected]="selectedTheme === theme.id"
+              (click)="applyTheme(theme.id)"
+            >
+              <div
+                class="theme-preview"
+                [style.background-color]="theme.primaryColor"
+              >
+                <div
+                  class="theme-accent"
+                  [style.background-color]="theme.accentColor"
+                ></div>
+              </div>
+              <div class="theme-name">{{ theme.name }}</div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            [(ngModel)]="profile.email"
-            class="form-control"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input
-            type="tel"
-            id="phone"
-            [(ngModel)]="profile.phone"
-            class="form-control"
-          />
-        </div>
-
-        <button class="save-button" (click)="saveProfile()">
+        <button class="save-button" (click)="saveAppearanceSettings()">
           <i class="bi bi-check2"></i>
           Save Changes
         </button>
       </div>
-    </div>
 
-    <!-- Appearance Settings -->
-    <div class="settings-section" *ngIf="activeTab === 'appearance'">
-      <h2>Appearance Settings</h2>
+      <!-- Account Settings -->
+      <div class="settings-section" *ngIf="activeTab === 'account'">
+        <h2>Account Settings</h2>
 
-      <div class="theme-section">
-        <h3>Theme</h3>
-        <div class="theme-options">
-          <div
-            *ngFor="let theme of availableThemes"
-            class="theme-card"
-            [class.selected]="selectedTheme === theme.id"
-            (click)="applyTheme(theme.id)"
-          >
-            <div
-              class="theme-preview"
-              [style.background-color]="theme.primaryColor"
-            >
-              <div
-                class="theme-accent"
-                [style.background-color]="theme.accentColor"
-              ></div>
+        <div class="account-info">
+          <div class="info-row">
+            <div class="info-label">Account Created</div>
+            <div class="info-value">
+              {{ "aa" | date : "mediumDate" }}
             </div>
-            <div class="theme-name">{{ theme.name }}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Last Login</div>
+            <div class="info-value">
+              {{ "aa" | date : "medium" }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="font-size-section">
-        <h3>Font Size</h3>
-        <div class="font-size-options">
-          <label>
-            <input
-              type="radio"
-              name="fontSize"
-              value="small"
-              [(ngModel)]="fontSize"
-            />
-            <span>Small</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="fontSize"
-              value="medium"
-              [(ngModel)]="fontSize"
-            />
-            <span>Medium</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="fontSize"
-              value="large"
-              [(ngModel)]="fontSize"
-            />
-            <span>Large</span>
-          </label>
-        </div>
-      </div>
+        <!-- System Preferences Section (Added as replacement for deactivation) -->
+        <div class="system-preferences-section">
+          <h3>System Preferences</h3>
 
-      <div class="language-section">
-        <h3>Language</h3>
-        <select [(ngModel)]="selectedLanguage" class="language-select">
-          <option *ngFor="let lang of availableLanguages" [value]="lang.code">
-            {{ lang.name }}
-          </option>
-        </select>
-      </div>
-
-      <button class="save-button" (click)="saveAppearanceSettings()">
-        <i class="bi bi-check2"></i>
-        Save Changes
-      </button>
-    </div>
-
-    <!-- Account Settings -->
-    <div class="settings-section" *ngIf="activeTab === 'account'">
-      <h2>Account Settings</h2>
-
-      <div class="account-info">
-        <div class="info-row">
-          <div class="info-label">Account Created</div>
-          <div class="info-value">
-            {{ accountSettings.creationDate | date : "mediumDate" }}
+          <div class="form-group">
+            <label for="date-format">Date Format</label>
+            <select id="date-format" class="form-control">
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            </select>
           </div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Last Login</div>
-          <div class="info-value">
-            {{ accountSettings.lastLogin | date : "medium" }}
+
+          <div class="form-group">
+            <label for="time-format">Time Format</label>
+            <select id="time-format" class="form-control">
+              <option value="12h">12-hour (AM/PM)</option>
+              <option value="24h">24-hour</option>
+            </select>
           </div>
+
+          <div class="form-group">
+            <label for="timezone">Timezone</label>
+            <select id="timezone" class="form-control">
+              <option value="UTC">UTC</option>
+              <option value="EST">Eastern Time (EST)</option>
+              <option value="CST">Central Time (CST)</option>
+              <option value="MST">Mountain Time (MST)</option>
+              <option value="PST">Pacific Time (PST)</option>
+              <option value="IST">Israel Standard Time (IST)</option>
+            </select>
+          </div>
+
+          <button class="save-button" (click)="saveSystemPreferences()">
+            <i class="bi bi-check2"></i>
+            Save Preferences
+          </button>
         </div>
-      </div>
-
-      <div class="two-factor-section">
-        <h3>Two-Factor Authentication</h3>
-        <div class="two-factor-toggle">
-          <p>Add an extra layer of security to your account</p>
-          <label class="toggle-switch">
-            <input
-              type="checkbox"
-              [(ngModel)]="accountSettings.twoFactorEnabled"
-              (change)="toggleTwoFactor()"
-            />
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- System Preferences Section (Added as replacement for deactivation) -->
-      <div class="system-preferences-section">
-        <h3>System Preferences</h3>
-
-        <div class="form-group">
-          <label for="date-format">Date Format</label>
-          <select id="date-format" class="form-control">
-            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="time-format">Time Format</label>
-          <select id="time-format" class="form-control">
-            <option value="12h">12-hour (AM/PM)</option>
-            <option value="24h">24-hour</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="timezone">Timezone</label>
-          <select id="timezone" class="form-control">
-            <option value="UTC">UTC</option>
-            <option value="EST">Eastern Time (EST)</option>
-            <option value="CST">Central Time (CST)</option>
-            <option value="MST">Mountain Time (MST)</option>
-            <option value="PST">Pacific Time (PST)</option>
-            <option value="IST">Israel Standard Time (IST)</option>
-          </select>
-        </div>
-
-        <button class="save-button" (click)="saveSystemPreferences()">
-          <i class="bi bi-check2"></i>
-          Save Preferences
-        </button>
       </div>
     </div>
   </div>

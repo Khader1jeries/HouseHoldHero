@@ -2,13 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
-interface NotificationSetting {
-  id: string;
-  name: string;
-  description: string;
-  enabled: boolean;
-}
+import { UserService } from '../../services/user.service';
 
 interface ThemeSetting {
   id: string;
@@ -25,130 +19,36 @@ interface ThemeSetting {
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent implements OnInit {
+  saveSystemPreferences() {
+    throw new Error('Method not implemented.');
+  }
+  userData: any = null;
+
   // Active settings tab
   activeTab: 'profile' | 'appearance' | 'account' = 'profile';
-
+  selectedTheme: string = 'default';
+  availableThemes: ThemeSetting[] = [];
   // Success/error messages
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  // Profile settings
-  profile = {
-    fullName: 'John Doe',
-    email: 'john@example.com',
-    phone: '+972 55-555-5555',
-    profilePicture: 'assets/profile_pic.png',
-    role: 'Family Admin',
-  };
-
-  // Notification settings
-  notificationSettings: NotificationSetting[] = [
-    {
-      id: 'task-assigned',
-      name: 'Task Assignments',
-      description: 'Receive notifications when new tasks are assigned to you',
-      enabled: true,
-    },
-    {
-      id: 'task-completed',
-      name: 'Task Completions',
-      description: 'Receive notifications when family members complete tasks',
-      enabled: true,
-    },
-    {
-      id: 'points-earned',
-      name: 'Points Earned',
-      description: 'Receive notifications when you earn points',
-      enabled: true,
-    },
-    {
-      id: 'leaderboard-updates',
-      name: 'Leaderboard Updates',
-      description:
-        'Receive notifications about changes in the leaderboard standings',
-      enabled: false,
-    },
-    {
-      id: 'task-reminders',
-      name: 'Task Reminders',
-      description: 'Receive reminders about upcoming task deadlines',
-      enabled: true,
-    },
-    {
-      id: 'system-announcements',
-      name: 'System Announcements',
-      description: 'Receive important announcements about the system',
-      enabled: true,
-    },
-  ];
-
-  // Notification channels
-  notificationChannels = {
-    email: true,
-    push: true,
-    inApp: true,
-  };
-
-  // Appearance settings
-  selectedTheme: string = 'default';
-  availableThemes: ThemeSetting[] = [
-    {
-      id: 'default',
-      name: 'Ocean Teal',
-      primaryColor: '#2a9d8f',
-      accentColor: '#ff0055',
-    },
-    {
-      id: 'dark',
-      name: 'Dark Mode',
-      primaryColor: '#121212',
-      accentColor: '#bb86fc',
-    },
-    {
-      id: 'light',
-      name: 'Light Mode',
-      primaryColor: '#f5f5f5',
-      accentColor: '#0066cc',
-    },
-    {
-      id: 'nature',
-      name: 'Nature Green',
-      primaryColor: '#2e7d32',
-      accentColor: '#ffc107',
-    },
-  ];
-
-  // Font size
-  fontSize: 'small' | 'medium' | 'large' = 'medium';
-
-  // Account settings
-  accountSettings = {
-    creationDate: new Date('2023-01-15'),
-    lastLogin: new Date('2025-04-28'),
-    twoFactorEnabled: false,
-  };
-
-  // Deactivation reason
-  deactivationReason: string = '';
-  deactivationConfirmation: string = '';
-
-  // Language selection
-  selectedLanguage: string = 'en';
-  availableLanguages = [
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'he', name: 'עברית' },
-    { code: 'ar', name: 'العربية' },
-  ];
-
-  constructor(private router: Router) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
-    // Init logic if needed
+    this.loadCurrentUser();
   }
+  private loadCurrentUser(): void {
+    const email = sessionStorage.getItem('adminEmail');
+    if (!email) {
+      console.error('No adminEmail in sessionStorage');
+      return;
+    }
 
+    this.userService.getCurrentUser(email).subscribe({
+      next: (user) => (this.userData = user),
+      error: (err) => console.error('Failed to load user:', err),
+    });
+  }
   // Switch between settings tabs
   setActiveTab(tab: 'profile' | 'appearance' | 'account'): void {
     this.activeTab = tab;
@@ -167,7 +67,7 @@ export class SettingsComponent implements OnInit {
       // Mock success after a delay
       setTimeout(() => {
         // Mock a new profile picture URL
-        this.profile.profilePicture = 'assets/profile_pic.png'; // In a real app, this would be the new URL
+        //this.profile.profilePicture = 'assets/profile_pic.png'; // In a real app, this would be the new URL
         this.showSuccess('Profile picture updated successfully');
       }, 1500);
     }
@@ -175,26 +75,9 @@ export class SettingsComponent implements OnInit {
 
   // Save profile settings
   saveProfile(): void {
-    // In a real app, this would call an API
-    console.log('Saving profile:', this.profile);
-
     // Mock success after a delay
     setTimeout(() => {
       this.showSuccess('Profile information updated successfully');
-    }, 1000);
-  }
-
-  // Save notification settings
-  saveNotificationSettings(): void {
-    // In a real app, this would call an API
-    console.log('Saving notification settings:', {
-      settings: this.notificationSettings,
-      channels: this.notificationChannels,
-    });
-
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('Notification settings updated successfully');
     }, 1000);
   }
 
@@ -216,58 +99,12 @@ export class SettingsComponent implements OnInit {
     // In a real app, this would call an API
     console.log('Saving appearance settings:', {
       theme: this.selectedTheme,
-      fontSize: this.fontSize,
-      language: this.selectedLanguage,
     });
 
     // Mock success after a delay
     setTimeout(() => {
       this.showSuccess('Appearance settings updated successfully');
     }, 1000);
-  }
-
-  // Toggle two-factor authentication
-  toggleTwoFactor(): void {
-    this.accountSettings.twoFactorEnabled =
-      !this.accountSettings.twoFactorEnabled;
-
-    // In a real app, this would call an API to enable/disable 2FA
-    console.log(
-      'Two-factor authentication:',
-      this.accountSettings.twoFactorEnabled ? 'enabled' : 'disabled'
-    );
-
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess(
-        `Two-factor authentication ${
-          this.accountSettings.twoFactorEnabled ? 'enabled' : 'disabled'
-        }`
-      );
-    }, 1000);
-  }
-
-  // Deactivate account
-  deactivateAccount(): void {
-    // Check confirmation
-    if (this.deactivationConfirmation !== 'DEACTIVATE') {
-      this.errorMessage =
-        'Please type DEACTIVATE to confirm account deactivation';
-      return;
-    }
-
-    // In a real app, this would call an API to deactivate the account
-    console.log('Deactivating account with reason:', this.deactivationReason);
-
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('Account deactivation request submitted');
-
-      // In a real app, this would log the user out and redirect to the login page
-      setTimeout(() => {
-        this.router.navigate(['/guest/login']);
-      }, 2000);
-    }, 1500);
   }
 
   // Helper: Show success message
@@ -289,20 +126,7 @@ export class SettingsComponent implements OnInit {
 
   // Logout
   logout(): void {
-    // In a real app, this would call an API to log the user out
-    console.log('Logging out');
-
     // Navigate to login page
     this.router.navigate(['/guest/login']);
-  }
-  // Save system preferences
-  saveSystemPreferences(): void {
-    // In a real app, this would call an API
-    console.log('Saving system preferences');
-
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('System preferences updated successfully');
-    }, 1000);
   }
 }

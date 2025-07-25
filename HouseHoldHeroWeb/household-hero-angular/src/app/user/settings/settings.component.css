@@ -117,7 +117,14 @@
 .status-message i {
   font-size: 1.5rem;
 }
-
+.country-code {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+}
 /* Profile Section */
 .profile-header {
   display: flex;
