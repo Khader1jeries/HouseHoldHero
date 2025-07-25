@@ -38,8 +38,8 @@ export class MemberService {
   }
   getMonthlyLeaderboard(adminEmail: string): Observable<any[]> {
     return this.http
-      .get<any>(`${this.apiUrl}/members/monthly-leaderboard/${adminEmail}`)
-      .pipe(map((res) => Object.values(res.data || {}))); // ✅ extract and convert to array
+      .get<any>(`${this.apiUrl}/monthly-leaderboard/${adminEmail}`)
+      .pipe(map((res) => Object.values(res.data || {})));
   }
   deleteMember(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${email}`);

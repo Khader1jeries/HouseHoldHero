@@ -85,8 +85,15 @@ async function getMonthlyLeaderboard(adminEmail) {
       delete memberData.completed;
       delete memberData.uncompleted;
     }
-    console.log("Filtered leaderboard data:", leaderboard);
-    return leaderboard;
+
+    const sortedLeaderboard = Object.entries(leaderboard)
+      .map(([memberId, data]) => ({
+        ...data,
+        memberId, // Add ID to each object
+      }))
+      .sort((a, b) => b.score - a.score); // Sort descending by score
+
+    return sortedLeaderboard;
   } catch (error) {
     console.error("Error building leaderboard:", error);
     throw error;
