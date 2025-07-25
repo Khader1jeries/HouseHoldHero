@@ -2,7 +2,7 @@
   background-color: #2a9d8f;
   color: white;
   min-height: 100vh;
-  padding: 12vh 2rem 2rem 2rem; /* Top padding accounts for navbar */
+  padding: 12vh 2rem 2rem 2rem;
   font-family: "Allerta", sans-serif;
 }
 
@@ -59,36 +59,51 @@
   display: block;
   margin-bottom: 0.5rem;
   font-size: 1rem;
+  font-weight: 600;
 }
 
 /* Recipients selector */
 .recipients-selector {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
   padding: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .recipient-option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.recipient-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .recipient-option input[type="checkbox"] {
   width: 1.2rem;
   height: 1.2rem;
+  cursor: pointer;
   accent-color: #ff0055;
+  flex-shrink: 0;
 }
 
 .recipient-option label {
   margin-bottom: 0;
   cursor: pointer;
+  font-size: 0.95rem;
+  flex-grow: 1;
+  user-select: none;
 }
 
-input,
+input[type="text"],
 textarea {
   width: 100%;
   padding: 1rem;
@@ -107,12 +122,14 @@ textarea::placeholder {
 
 textarea {
   resize: vertical;
+  min-height: 120px;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .cancel-btn,
@@ -123,6 +140,7 @@ textarea {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
+  font-weight: 600;
 }
 
 .cancel-btn {
@@ -143,24 +161,63 @@ textarea {
   background-color: #d9004a;
 }
 
+.send-btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+/* Reply Form Specific Styles */
+.reply-form {
+  background-color: #1a4842;
+  border: 2px solid #ff0055;
+}
+
+.original-message {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #ff0055;
+}
+
+.original-header,
+.original-subject {
+  margin-bottom: 0.5rem;
+  color: #e0e0e0;
+}
+
+.original-content {
+  margin-top: 1rem;
+  color: #d4d4d4;
+}
+
+.original-content p {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.25rem;
+  white-space: pre-wrap;
+}
+
 /* Alert Messages */
 .alert {
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
   font-size: 1rem;
+  text-align: center;
 }
 
-.success {
-  background-color: rgba(0, 255, 0, 0.1);
-  color: #b3ffb3;
-  border: 1px solid rgba(0, 255, 0, 0.3);
+.alert.success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #a5d6a7;
+  border: 1px solid rgba(76, 175, 80, 0.4);
 }
 
-.error {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ffb3b3;
-  border: 1px solid rgba(255, 0, 0, 0.3);
+.alert.error {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #ef9a9a;
+  border: 1px solid rgba(244, 67, 54, 0.4);
 }
 
 /* Messages List */
@@ -173,7 +230,7 @@ textarea {
 
 .message-item {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
+  padding: 1.5rem;
   transition: background-color 0.3s;
 }
 
@@ -186,7 +243,7 @@ textarea {
 }
 
 .message-item.unread {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .message-item.unread .message-header {
@@ -195,7 +252,7 @@ textarea {
 
 .message-header {
   display: grid;
-  grid-template-columns: 2fr 4fr 3fr 2fr;
+  grid-template-columns: 2fr 3fr 2fr auto;
   align-items: center;
   gap: 1rem;
   cursor: pointer;
@@ -205,10 +262,17 @@ textarea {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #e0e0e0;
 }
 
 .message-sender i {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  color: #ff0055;
+}
+
+.message-subject {
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .message-time {
@@ -227,7 +291,9 @@ textarea {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  transition: color 0.3s;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.3s;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
@@ -236,6 +302,7 @@ textarea {
 }
 
 .reply-btn:hover {
+  background-color: rgba(42, 157, 143, 0.2);
   color: #2a9d8f;
 }
 
@@ -244,12 +311,14 @@ textarea {
 }
 
 .delete-btn:hover {
+  background-color: rgba(255, 0, 85, 0.1);
   color: #ff4d84;
 }
 
 .message-content {
   padding: 1rem 0 0 0;
   color: #d4d4d4;
+  line-height: 1.6;
 }
 
 .message-content p {
@@ -268,27 +337,68 @@ textarea {
 }
 
 .empty-state i {
-  font-size: 6vh;
-  margin-bottom: 2vh;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .empty-state p {
-  margin: 0.5vh 0;
-  font-size: 2vh;
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
 }
 
-.empty-state .compose-btn {
-  margin-top: 3vh;
+.empty-state p:first-of-type {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Scrollbar styling for recipients selector */
+.recipients-selector::-webkit-scrollbar {
+  width: 8px;
+}
+
+.recipients-selector::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.recipients-selector::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.recipients-selector::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 /* Media queries for responsiveness */
 @media (max-width: 1024px) {
   .message-header {
-    grid-template-columns: 1fr 2fr 1fr 2fr;
+    grid-template-columns: 1fr 2fr 1fr auto;
+  }
+
+  .recipients-selector {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
+  .support-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .support-header h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .compose-btn {
+    justify-content: center;
+  }
+
   .message-header {
     grid-template-columns: 1fr;
     gap: 0.5rem;
@@ -301,14 +411,8 @@ textarea {
   }
 
   .message-actions {
-    position: relative;
     margin-top: 0.5rem;
     justify-content: flex-start;
-  }
-
-  .message-item {
-    position: relative;
-    padding: 1rem;
   }
 
   .form-actions {
@@ -322,5 +426,10 @@ textarea {
 
   .recipients-selector {
     grid-template-columns: 1fr;
+    max-height: 150px;
+  }
+
+  .compose-form {
+    padding: 1.5rem;
   }
 }

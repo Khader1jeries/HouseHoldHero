@@ -17,6 +17,7 @@ import { Message } from '../../services/interfaces/support.interface';
 })
 export class SupportComponent implements OnInit {
   messages: Message[] = [];
+  memberMessages: Message[] = []; // Messages from members only
   members: Member[] = [];
   newMessage = {
     subject: '',
@@ -26,10 +27,16 @@ export class SupportComponent implements OnInit {
   errorMessage = '';
   adminEmail: string = '';
   showComposeForm = false;
+  showReplyForm = false;
+  replyingToMessage: any = null;
+  replyContent = '';
+  selectedRecipients = new Set<string>();
+
   constructor(
     private supportService: SupportService,
     private membersService: MemberService
   ) {}
+
   ngOnInit(): void {
     const email = sessionStorage.getItem('adminEmail');
     if (!email) {
@@ -39,6 +46,7 @@ export class SupportComponent implements OnInit {
     this.adminEmail = email;
     this.fetchMessages();
   }
+
   fetchMessages(): void {
     const adminEmail = this.adminEmail;
 
@@ -60,11 +68,27 @@ export class SupportComponent implements OnInit {
           createdAt: m.createdAt,
           profileImage: m.profileImage || '',
           status: m.status || 'active',
-          score: m.score || 0, // if used
+          score: m.score || 0,
           firstName: m.firstName || '',
           lastName: m.lastName || '',
           DOB: m.DOB || '',
         }));
+
+        // Filter messages to show only those from members
+        this.memberMessages = messages
+          .filter((msg: any) => {
+            return this.members.some((member) => member.email === msg.from);
+          })
+          .map((msg: any) => ({
+            ...msg,
+            sender:
+              this.members.find((m) => m.email === msg.from)?.fullName ||
+              msg.from,
+            timestamp: msg.createdAt?.toDate
+              ? msg.createdAt.toDate()
+              : new Date(msg.createdAt),
+            read: msg.read || false,
+          }));
       },
       error: (err) => {
         console.error('Failed to fetch messages or members:', err);
@@ -72,27 +96,131 @@ export class SupportComponent implements OnInit {
       },
     });
   }
-  selectedRecipients = new Set<string>();
+
   toggleComposeForm(): void {
     this.showComposeForm = !this.showComposeForm;
 
     if (this.showComposeForm) {
       // reset form fields
       this.newMessage = { subject: '', content: '' };
-
       // clear previous selections
       this.selectedRecipients.clear();
-
       this.successMessage = '';
       this.errorMessage = '';
     }
   }
+
   onToggleRecipient(email: string, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    if (checked) {
+    const target = event.target as HTMLInputElement;
+    if (target.checked) {
       this.selectedRecipients.add(email);
     } else {
       this.selectedRecipients.delete(email);
+    }
+
+    // Debug log to verify it's working
+    console.log('Selected recipients:', Array.from(this.selectedRecipients));
+  }
+
+  sendMessage(): void {
+    // Validate form
+    if (!this.newMessage.subject.trim() || !this.newMessage.content.trim()) {
+      this.errorMessage = 'Please fill in all fields.';
+      return;
+    }
+
+    if (this.selectedRecipients.size === 0) {
+      this.errorMessage = 'Please select at least one recipient.';
+      return;
+    }
+
+    // Send message to each selected recipient
+    const sendPromises = Array.from(this.selectedRecipients).map(
+      (recipientEmail) => {
+        const message: Message = {
+          to: recipientEmail,
+          from: this.adminEmail,
+          subject: this.newMessage.subject,
+          message: this.newMessage.content, // Note: backend expects 'message' not 'content'
+          reply: null,
+          createdAt: new Date(),
+        };
+
+        return this.supportService.sendMessage(message).toPromise();
+      }
+    );
+
+    Promise.all(sendPromises)
+      .then(() => {
+        this.successMessage = 'Message sent successfully!';
+        this.toggleComposeForm();
+        // Refresh messages after sending
+        this.fetchMessages();
+      })
+      .catch((error) => {
+        console.error('Error sending messages:', error);
+        this.errorMessage = 'Failed to send message. Please try again.';
+      });
+  }
+
+  markAsRead(messageId: string): void {
+    // In a real implementation, you would call a service to mark the message as read
+    console.log('Marking message as read:', messageId);
+    // Find the message and mark it as read locally
+    const message = this.memberMessages.find((msg) => msg.id === messageId);
+    if (message) {
+      message.read = true;
+    }
+  }
+
+  replyToMessage(message: any): void {
+    // Show reply form instead of compose form
+    this.showComposeForm = false;
+    this.showReplyForm = true;
+    this.replyingToMessage = message;
+    this.replyContent = '';
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+
+  cancelReply(): void {
+    this.showReplyForm = false;
+    this.replyingToMessage = null;
+    this.replyContent = '';
+  }
+
+  sendReply(): void {
+    if (!this.replyContent.trim()) {
+      this.errorMessage = 'Please enter a reply message.';
+      return;
+    }
+
+    // Call the backend to update the message with reply
+    this.supportService
+      .replyToMessage(this.replyingToMessage.id, this.replyContent)
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Reply sent successfully!';
+          this.cancelReply();
+          // Refresh messages to remove the replied message
+          this.fetchMessages();
+        },
+        error: (error) => {
+          console.error('Error sending reply:', error);
+          this.errorMessage = 'Failed to send reply. Please try again.';
+        },
+      });
+  }
+
+  deleteMessage(messageId: string): void {
+    if (confirm('Are you sure you want to delete this message?')) {
+      // In a real implementation, you would call a service to delete the message
+      console.log('Deleting message:', messageId);
+      // For now, just remove it from the local array
+      this.memberMessages = this.memberMessages.filter(
+        (msg) => msg.id !== messageId
+      );
+      this.messages = this.messages.filter((msg) => msg.id !== messageId);
     }
   }
 }

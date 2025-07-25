@@ -21,11 +21,9 @@
           <input
             type="checkbox"
             [id]="'member-' + member.email"
-            [name]="'member-' + member.email"
             [checked]="selectedRecipients.has(member.email)"
-            (change)="onToggleRecipient(member.email, $event.target.checked)"
+            (change)="onToggleRecipient(member.email, $event)"
           />
-
           <label [for]="'member-' + member.email">{{ member.fullName }}</label>
         </div>
       </div>
@@ -59,14 +57,56 @@
     </div>
   </div>
 
+  <!-- Reply Form -->
+  <div
+    class="compose-form reply-form"
+    *ngIf="showReplyForm && replyingToMessage"
+  >
+    <h2>Reply to Message</h2>
+
+    <!-- Success/Error Messages -->
+    <div class="alert success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <!-- Original Message Info -->
+    <div class="original-message">
+      <div class="original-header">
+        <strong>From:</strong> {{ replyingToMessage.sender }}
+      </div>
+      <div class="original-subject">
+        <strong>Subject:</strong> {{ replyingToMessage.subject }}
+      </div>
+      <div class="original-content">
+        <strong>Message:</strong>
+        <p>{{ replyingToMessage.message || replyingToMessage.content }}</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="replyContent">Your Reply:</label>
+      <textarea
+        id="replyContent"
+        [(ngModel)]="replyContent"
+        placeholder="Type your reply here..."
+        rows="5"
+        required
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="cancel-btn" (click)="cancelReply()">Cancel</button>
+      <button class="send-btn" (click)="sendReply()">Send Reply</button>
+    </div>
+  </div>
+
   <!-- Messages List - Only showing messages from members -->
   <div class="messages-container">
     <div
       class="message-item"
-      *ngFor="let message of messages"
+      *ngFor="let message of memberMessages"
       [class.unread]="!message.read"
     >
-      <div class="message-header" (click)="markAsRead(message.id)">
+      <div class="message-header" (click)="markAsRead(message.id!)">
         <div class="message-sender">
           <i class="bi bi-person-circle"></i>
           <span>{{ message.sender }}</span>
@@ -84,14 +124,14 @@
           </button>
           <button
             class="delete-btn"
-            (click)="deleteMessage(message.id); $event.stopPropagation()"
+            (click)="deleteMessage(message.id!); $event.stopPropagation()"
           >
             <i class="bi bi-trash"></i>
           </button>
         </div>
       </div>
       <div class="message-content">
-        <p>{{ message.content }}</p>
+        <p>{{ message.message || message.content }}</p>
       </div>
     </div>
 
