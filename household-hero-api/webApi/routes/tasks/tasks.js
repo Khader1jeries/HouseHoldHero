@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
     }
     const status = false;
     task.status = status;
-
+    task.scoreGained = 0;
     console.log("📤 Adding task to Firestore...");
     const docRef = await db.collection("tasks").add(task);
     console.log("✅ Task added with ID:", docRef.id);

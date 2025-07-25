@@ -46,19 +46,22 @@ export class LeaderboardComponent implements OnInit {
       return;
     }
 
-    this.memberService.getLeaderboard(adminEmail).subscribe({
+    this.memberService.getMonthlyLeaderboard(adminEmail).subscribe({
       next: (data) => {
-        // Optional: transform to LeaderboardMember[] if needed
-        this.leaderboardData = data.map((member, index) => ({
-          id: member.email,
-          name: `${member.firstName} ${member.lastName}`,
-          position: index + 1,
-          score: member.score || 0,
-          profileImage: 'assets/profile_pic.png', // Default image, replace if dynamic
-          tasks: member.completedTasks || 0,
-          completedTasks: member.completedTasks || 0,
-          totalTasks: member.totalTasks || 0,
-        }));
+        this.leaderboardData = Object.values(data).map(
+          (member: any, index: number) => ({
+            id: member.email,
+            name: member.fullName || '',
+            position: index + 1,
+            score: member.score || 0,
+            profileImage: 'assets/profile_pic.png',
+            tasks: member.totalTasks || 0,
+            completedTasks: Math.round(
+              (member.completionRate || 0) * (member.totalTasks || 0)
+            ),
+            totalTasks: member.totalTasks || 0,
+          })
+        );
 
         this.isLoading = false;
       },
@@ -69,6 +72,7 @@ export class LeaderboardComponent implements OnInit {
       },
     });
   }
+
   getCompletionRate(totalTasks: number, completedTasks: number): number {
     if (totalTasks === 0) {
       return 0; // Avoid division by zero

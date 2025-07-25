@@ -4,6 +4,9 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const { activeTasks } = require("../controllers/memberController");
+const {
+  getMonthlyLeaderboard,
+} = require("../controllers/leaderboardController");
 const crypto = require("crypto");
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -151,6 +154,23 @@ router.get("/getTwo/:adminEmail", async (req, res) => {
   } catch (error) {
     console.error("Error fetching two members:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+router.get("/monthly-leaderboard/:adminEmail", async (req, res) => {
+  try {
+    const adminEmail = req.params.adminEmail;
+
+    if (!adminEmail) {
+      return res
+        .status(400)
+        .json({ error: "adminEmail is required in the URL" });
+    }
+
+    const leaderboard = await getMonthlyLeaderboard(adminEmail);
+    res.status(200).json({ success: true, data: leaderboard });
+  } catch (error) {
+    console.error("Route error:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
 // Get leaderboard data with REQUIRED family filtering

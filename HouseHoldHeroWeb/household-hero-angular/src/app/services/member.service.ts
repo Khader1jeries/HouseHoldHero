@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { isPlatformBrowser } from '@angular/common';
 import { UserService } from './user.service';
@@ -36,8 +36,10 @@ export class MemberService {
     const params = new HttpParams().set('adminEmail', adminEmail);
     return this.http.get<Member>(`${this.apiUrl}/${memberEmail}`, { params });
   }
-  getLeaderboard(adminEmail: string): Observable<Member[]> {
-    return this.http.get<Member[]>(`${this.apiUrl}/leaderboard/${adminEmail}`);
+  getMonthlyLeaderboard(adminEmail: string): Observable<any[]> {
+    return this.http
+      .get<any>(`${this.apiUrl}/members/monthly-leaderboard/${adminEmail}`)
+      .pipe(map((res) => Object.values(res.data || {}))); // ✅ extract and convert to array
   }
   deleteMember(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${email}`);
