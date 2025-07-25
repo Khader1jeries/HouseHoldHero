@@ -174,6 +174,8 @@ export class SupportComponent implements OnInit {
   }
 
   replyToMessage(message: any): void {
+    console.log('Reply button clicked for message:', message);
+
     // Show reply form instead of compose form
     this.showComposeForm = false;
     this.showReplyForm = true;
@@ -181,6 +183,11 @@ export class SupportComponent implements OnInit {
     this.replyContent = '';
     this.successMessage = '';
     this.errorMessage = '';
+
+    console.log('Reply form state:', {
+      showReplyForm: this.showReplyForm,
+      replyingToMessage: this.replyingToMessage,
+    });
   }
 
   cancelReply(): void {
@@ -212,15 +219,17 @@ export class SupportComponent implements OnInit {
       });
   }
 
-  deleteMessage(messageId: string): void {
-    if (confirm('Are you sure you want to delete this message?')) {
-      // In a real implementation, you would call a service to delete the message
-      console.log('Deleting message:', messageId);
-      // For now, just remove it from the local array
-      this.memberMessages = this.memberMessages.filter(
-        (msg) => msg.id !== messageId
-      );
-      this.messages = this.messages.filter((msg) => msg.id !== messageId);
-    }
+  deleteMessage(id: string): void {
+    // Call the backend
+    this.supportService.deleteMessage(id).subscribe({
+      next: () => {
+        // On success: remove locally and refresh any filtered lists
+        this.messages = this.messages.filter((msg) => msg.id !== id);
+      },
+      error: (err) => {
+        console.error('Failed to delete message:', err);
+        this.errorMessage = 'Could not delete the message.';
+      },
+    });
   }
 }

@@ -112,6 +112,10 @@
           <span>{{ message.sender }}</span>
         </div>
         <div class="message-subject">{{ message.subject }}</div>
+        <div class="message-subject">
+          <p>{{ message.message || message.content }}</p>
+        </div>
+
         <div class="message-time">
           {{ message.timestamp | date : "medium" }}
         </div>
@@ -119,19 +123,20 @@
           <button
             class="reply-btn"
             (click)="replyToMessage(message); $event.stopPropagation()"
+            title="Reply to this message"
           >
             <i class="bi bi-reply"></i> Reply
           </button>
           <button
             class="delete-btn"
-            (click)="deleteMessage(message.id!); $event.stopPropagation()"
+            (click)="deleteMessage(message.id); $event.stopPropagation()"
+            title="Delete this message"
+            [disabled]="!message.id"
           >
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash"></i> Delete
           </button>
         </div>
-      </div>
-      <div class="message-content">
-        <p>{{ message.message || message.content }}</p>
+        <div class="message-content">{{ message.reply }}</div>
       </div>
     </div>
 

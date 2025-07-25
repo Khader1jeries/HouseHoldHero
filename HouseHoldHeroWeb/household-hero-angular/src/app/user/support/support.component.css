@@ -252,7 +252,7 @@ textarea {
 
 .message-header {
   display: grid;
-  grid-template-columns: 2fr 3fr 2fr auto;
+  grid-template-columns: 2fr 3fr 2fr 2fr 1fr;
   align-items: center;
   gap: 1rem;
   cursor: pointer;
@@ -289,9 +289,9 @@ textarea {
 .reply-btn,
 .delete-btn {
   background-color: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 0.25rem;
   transition: all 0.3s;
   font-size: 0.9rem;
@@ -301,9 +301,16 @@ textarea {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.reply-btn {
+  background-color: rgba(42, 157, 143, 0.1);
+  border-color: rgba(42, 157, 143, 0.3);
+}
+
 .reply-btn:hover {
-  background-color: rgba(42, 157, 143, 0.2);
-  color: #2a9d8f;
+  background-color: rgba(42, 157, 143, 0.3);
+  color: #ffffff;
+  border-color: #2a9d8f;
+  transform: translateY(-1px);
 }
 
 .delete-btn {
@@ -313,6 +320,7 @@ textarea {
 .delete-btn:hover {
   background-color: rgba(255, 0, 85, 0.1);
   color: #ff4d84;
+  border-color: rgba(255, 0, 85, 0.3);
 }
 
 .message-content {

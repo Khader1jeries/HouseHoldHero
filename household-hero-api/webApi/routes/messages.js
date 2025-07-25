@@ -63,12 +63,6 @@ router.get("/:adminEmail", async (req, res) => {
     for (const doc of snapshot.docs) {
       const data = doc.data();
 
-      // Skip messages that have been replied to
-      if (data.reply && data.reply.trim() !== "") {
-        await db.collection("messages").doc(doc.id).delete();
-        continue;
-      }
-
       messages.push({
         id: doc.id,
         ...data,
@@ -136,7 +130,7 @@ router.delete("/:messageId", async (req, res) => {
     const { messageId } = req.params;
 
     await db.collection("messages").doc(messageId).delete();
-
+    console.log("deleting");
     res.status(200).json({ success: true, message: "Message deleted" });
   } catch (error) {
     console.error("Error deleting message:", error);
