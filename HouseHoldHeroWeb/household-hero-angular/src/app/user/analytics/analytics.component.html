@@ -1,33 +1,8 @@
 <div class="analytics-container">
   <div class="analytics-header">
     <h1>Family Analytics</h1>
-    <div class="period-selector">
-      <button
-        [class.active]="selectedPeriod === 'week'"
-        (click)="changePeriod('week')"
-      >
-        Week
-      </button>
-      <button
-        [class.active]="selectedPeriod === 'month'"
-        (click)="changePeriod('month')"
-      >
-        Month
-      </button>
-      <button
-        [class.active]="selectedPeriod === 'quarter'"
-        (click)="changePeriod('quarter')"
-      >
-        Quarter
-      </button>
-      <button
-        [class.active]="selectedPeriod === 'year'"
-        (click)="changePeriod('year')"
-      >
-        Year
-      </button>
-    </div>
-    <button class="export-btn" (click)="navigateToReports()">
+
+    <button class="export-btn" (click)="generateReport()">
       <i class="bi bi-file-earmark-arrow-down"></i> Export Reports
     </button>
   </div>
@@ -86,44 +61,13 @@
                   class="legend-color"
                   [style.background-color]="
                     '#' +
-                    (item.name.charCodeAt(0).toString(16) + '7d8f').substring(
+                    (item.label.charCodeAt(0).toString(16) + '7d8f').substring(
                       0,
                       6
                     )
                   "
                 ></div>
-                <span>{{ item.name }}: {{ item.value }} points</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Task Completion by Category (Pie Chart) -->
-      <div
-        class="chart-card interactive-chart"
-        (click)="showChartDetails('tasks-by-category')"
-      >
-        <h3>Tasks by Category</h3>
-        <div class="chart-container">
-          <div class="pie-chart-placeholder">
-            <div class="chart-legend">
-              <div
-                *ngFor="let item of taskCompletionByCategory"
-                class="legend-item"
-                (click)="showItemDetails(item, 'tasks-by-category', $event)"
-              >
-                <div
-                  class="legend-color"
-                  [style.background-color]="
-                    '#' +
-                    (item.name.charCodeAt(0).toString(16) + 'a5c7').substring(
-                      0,
-                      6
-                    )
-                  "
-                ></div>
-                <span>{{ item.name }}: {{ item.value }}</span>
+                <span>{{ item.label }}: {{ item.value }} points</span>
               </div>
             </div>
           </div>
@@ -148,13 +92,13 @@
                   class="legend-color"
                   [style.background-color]="
                     '#' +
-                    (item.name.charCodeAt(0).toString(16) + 'b3e1').substring(
+                    (item.label.charCodeAt(0).toString(16) + 'b3e1').substring(
                       0,
                       6
                     )
                   "
                 ></div>
-                <span>{{ item.name }}: {{ item.value }}</span>
+                <span>{{ item.label }}: {{ item.value }}</span>
               </div>
             </div>
           </div>
@@ -180,7 +124,7 @@
                   [style.height.%]="(data.value / 3000) * 100"
                   (click)="showItemDetails(data, 'points-over-time', $event)"
                 ></div>
-                <div class="data-label">{{ data.name }}</div>
+                <div class="data-label">{{ formatMonthYear(data.label) }}</div>
               </div>
             </div>
           </div>
@@ -203,7 +147,7 @@
                   [style.height.%]="(data.value / 30) * 100"
                   (click)="showItemDetails(data, 'tasks-created', $event)"
                 ></div>
-                <div class="data-label">{{ data.name }}</div>
+                <div class="data-label">{{ formatMonthYear(data.label) }}</div>
               </div>
             </div>
           </div>
@@ -224,11 +168,11 @@
           </div>
           <div
             class="table-row"
-            *ngFor="let member of taskCompletionByMember; let i = index"
+            *ngFor="let member of membersPerformance; let i = index"
           >
-            <div class="table-cell">{{ member.name }}</div>
-            <div class="table-cell">{{ member.value }}</div>
-            <div class="table-cell">{{ pointsByMember[i].value || 0 }}</div>
+            <div class="table-cell">{{ member.fullName }}</div>
+            <div class="table-cell">{{ member.completedTasks }}</div>
+            <div class="table-cell">{{ member.score }}</div>
             <div class="table-cell">
               {{ 85 + i * 5 }}%
               <div class="progress-bar">
@@ -292,11 +236,8 @@
               selectedChart === 'tasks-created'
             "
           >
-            Month: <strong>{{ selectedItem.name }}</strong
+            Points: <strong>{{ selectedItem.value }}</strong
             ><br />
-            Value: <strong>{{ selectedItem.value }}</strong
-            ><br />
-            Date: <strong>{{ formatDate(selectedItem.date) }}</strong>
           </p>
         </div>
         <div *ngIf="selectedChartType === 'chart-overview'">
@@ -307,13 +248,7 @@
             ><br />
             Members Participating: <strong>{{ pointsByMember.length }}</strong>
           </p>
-          <p *ngIf="selectedChart === 'tasks-by-category'">
-            Total Tasks: <strong>{{ getTotalTasks() }}</strong
-            ><br />
-            Most Common Category: <strong>{{ getMostCommonCategory() }}</strong
-            ><br />
-            Categories: <strong>{{ taskCompletionByCategory.length }}</strong>
-          </p>
+
           <p *ngIf="selectedChart === 'tasks-by-status'">
             Total Tasks: <strong>{{ getTotalTasks() }}</strong
             ><br />

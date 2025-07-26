@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AnalyticsService } from '../../services/analytics.service';
 
 interface ChartData {
-  name: string;
+  label: string;
   value: number;
 }
 
 interface LineChartData {
-  name: string;
-  value: number;
-  date: Date;
+  label: string; // like "2025-07"
+  value: number; // score or count
 }
 
 @Component({
@@ -21,26 +21,18 @@ interface LineChartData {
   styleUrl: './analytics.component.css',
 })
 export class AnalyticsComponent implements OnInit {
-  // Task completion data
-  taskCompletionByMember: ChartData[] = [];
-  taskCompletionByCategory: ChartData[] = [];
-
-  // Points data
-  pointsByMember: ChartData[] = [];
-  pointsOverTime: LineChartData[] = [];
-
-  // Tasks data
-  tasksByDifficulty: ChartData[] = [];
+  onTimeCompletionRate: number = 0;
+  taskDistributionBalance: number = 0;
   tasksByStatus: ChartData[] = [];
   taskCreationOverTime: LineChartData[] = [];
-
-  // Performance metrics
-  averageCompletionTime: number = 0;
-  onTimeCompletionRate: number = 0;
-  taskDistributionBalance: number = 0; // 0-100%, where 100% means perfectly balanced
-
-  // Time period selector
-  selectedPeriod: 'week' | 'month' | 'quarter' | 'year' = 'month';
+  pointsByMember: ChartData[] = [];
+  pointsOverTime: LineChartData[] = [];
+  membersPerformance: {
+    fullName: string;
+    completedTasks: number;
+    score: number;
+    completionRate: number;
+  }[] = [];
 
   // Modal properties
   showModal: boolean = false;
@@ -48,98 +40,111 @@ export class AnalyticsComponent implements OnInit {
   selectedChart: string = '';
   selectedChartType: 'item-details' | 'chart-overview' = 'chart-overview';
   selectedItem: any = null;
+  averageCompletionTime: number = -1;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private analyticsService: AnalyticsService
+  ) {}
 
   ngOnInit(): void {
-    // In a real application, this data would come from a service
-    // Here we're using mock data for demonstration
-    this.generateMockData();
-    this.calculatePerformanceMetrics();
+    this.loadAnalyticsData();
   }
+  loadAnalyticsData(): void {
+    const adminEmail = sessionStorage.getItem('adminEmail');
+    if (!adminEmail) {
+      console.error('Admin email not found');
+      return;
+    }
 
-  generateMockData(): void {
-    // Task completion by member
-    this.taskCompletionByMember = [
-      { name: 'John', value: 15 },
-      { name: 'Kavin', value: 22 },
-      { name: 'Sarah', value: 18 },
-    ];
-
-    // Task completion by category
-    this.taskCompletionByCategory = [
-      { name: 'Cleaning', value: 28 },
-      { name: 'Cooking', value: 12 },
-      { name: 'Maintenance', value: 8 },
-      { name: 'Shopping', value: 7 },
-    ];
-
-    // Points by member
-    this.pointsByMember = [
-      { name: 'John', value: 1500 },
-      { name: 'Kavin', value: 2200 },
-      { name: 'Sarah', value: 1800 },
-    ];
-
-    // Points over time (last 6 months)
-    const today = new Date();
-    this.pointsOverTime = Array.from({ length: 6 }, (_, i) => {
-      const date = new Date(today);
-      date.setMonth(today.getMonth() - 5 + i);
-      return {
-        name: date.toLocaleString('default', { month: 'short' }),
-        value: 1000 + Math.floor(Math.random() * 1500),
-        date: date,
-      };
+    // 1. On-time completion %
+    this.analyticsService.getOnTimeCompletion(adminEmail).subscribe({
+      next: (rate) => (this.onTimeCompletionRate = rate),
+      error: (err) => console.error('❌ On-time completion error:', err),
     });
 
-    // Tasks by difficulty
-    this.tasksByDifficulty = [
-      { name: 'Easy', value: 35 },
-      { name: 'Medium', value: 25 },
-      { name: 'Hard', value: 10 },
-    ];
+    // 2. Task distribution balance %
+    this.analyticsService.getTaskDistribution(adminEmail).subscribe({
+      next: (balance) => (this.taskDistributionBalance = balance),
+      error: (err) => console.error('❌ Task distribution error:', err),
+    });
 
-    // Tasks by status
-    this.tasksByStatus = [
-      { name: 'Completed', value: 55 },
-      { name: 'In Progress', value: 20 },
-      { name: 'Overdue', value: 8 },
-      { name: 'Upcoming', value: 12 },
-    ];
+    // 3. Tasks by status (bar or pie chart)
+    this.analyticsService.getTasksByStatus(adminEmail).subscribe({
+      next: (statusData) => {
+        this.tasksByStatus = [
+          { label: 'Completed', value: statusData.completed },
+          { label: 'In Progress', value: statusData.inProgress },
+          { label: 'Overdue', value: statusData.overDue },
+          { label: 'Upcoming', value: statusData.upcoming },
+        ];
+      },
+      error: (err) => console.error('❌ Tasks by status error:', err),
+    });
 
-    // Task creation over time (last 6 months)
-    this.taskCreationOverTime = Array.from({ length: 6 }, (_, i) => {
-      const date = new Date(today);
-      date.setMonth(today.getMonth() - 5 + i);
-      return {
-        name: date.toLocaleString('default', { month: 'short' }),
-        value: 10 + Math.floor(Math.random() * 20),
-        date: date,
-      };
+    // 4. Points by member (bar chart)
+    this.analyticsService.getPointsByMember(adminEmail).subscribe({
+      next: (points) => {
+        this.pointsByMember = Object.entries(points).map(([label, value]) => ({
+          label,
+          value,
+        }));
+      },
+      error: (err) => console.error('❌ Points by member error:', err),
+    });
+
+    // 5. Points earned over time (line chart)
+    this.analyticsService.getPointsEarnedOverTime(adminEmail).subscribe({
+      next: (points) => {
+        this.pointsOverTime = Object.entries(points).map(([label, value]) => ({
+          label,
+          value,
+        }));
+      },
+      error: (err) => console.error('❌ Points over time error:', err),
+    });
+
+    // 6. Tasks created over time (line chart)
+    this.analyticsService.getCreatedOverTime(adminEmail).subscribe({
+      next: (counts) => {
+        this.taskCreationOverTime = Object.entries(counts).map(
+          ([label, value]) => ({
+            label,
+            value,
+          })
+        );
+      },
+      error: (err) => console.error('❌ Created over time error:', err),
+    });
+
+    // 7. Member performance
+    this.analyticsService.getMemberPerformance(adminEmail).subscribe({
+      next: (data) => (this.membersPerformance = data),
+      error: (err) => console.error('❌ Member performance error:', err),
     });
   }
 
-  calculatePerformanceMetrics(): void {
-    // Average completion time (in hours)
-    this.averageCompletionTime = 12.5;
+  generateReport(): void {
+    const adminEmail = sessionStorage.getItem('adminEmail');
 
-    // On-time completion rate (percentage)
-    this.onTimeCompletionRate = 87.3;
+    if (!adminEmail) {
+      console.error('Admin email not found in local storage');
+      return;
+    }
 
-    // Task distribution balance (percentage)
-    this.taskDistributionBalance = 81.2;
-  }
-
-  changePeriod(period: 'week' | 'month' | 'quarter' | 'year'): void {
-    this.selectedPeriod = period;
-    // In a real app, you would refresh the data based on the selected period
-    this.generateMockData();
-    this.calculatePerformanceMetrics();
-  }
-
-  navigateToReports(): void {
-    this.router.navigate(['/user/reports']);
+    this.analyticsService.downloadPdfReport(adminEmail).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics_report_${adminEmail}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Failed to generate or download report:', err);
+      },
+    });
   }
 
   // Interactive chart methods
@@ -178,17 +183,17 @@ export class AnalyticsComponent implements OnInit {
 
     switch (chartType) {
       case 'points-by-member':
-        this.modalTitle = `Member Details: ${item.name}`;
+        this.modalTitle = `Member Details: ${item.label}`;
         break;
       case 'tasks-by-category':
-        this.modalTitle = `Category Details: ${item.name}`;
+        this.modalTitle = `Category Details: ${item.label}`;
         break;
       case 'tasks-by-status':
-        this.modalTitle = `Status Details: ${item.name}`;
+        this.modalTitle = `Status Details: ${item.label}`;
         break;
       case 'points-over-time':
       case 'tasks-created':
-        this.modalTitle = `${item.name} Details`;
+        this.modalTitle = `${item.label} Details`;
         break;
     }
 
@@ -226,26 +231,19 @@ export class AnalyticsComponent implements OnInit {
 
   getTopPerformer(): string {
     const sorted = [...this.pointsByMember].sort((a, b) => b.value - a.value);
-    return sorted.length > 0 ? sorted[0].name : 'None';
-  }
-
-  getMostCommonCategory(): string {
-    const sorted = [...this.taskCompletionByCategory].sort(
-      (a, b) => b.value - a.value
-    );
-    return sorted.length > 0 ? sorted[0].name : 'None';
+    return sorted.length > 0 ? sorted[0].label : 'None';
   }
 
   getCompletionRate(): number {
     const completedTasks =
-      this.tasksByStatus.find((item) => item.name === 'Completed')?.value || 0;
+      this.tasksByStatus.find((item) => item.label === 'Completed')?.value || 0;
     const totalTasks = this.getTotalTasks();
-    return Math.round((completedTasks / totalTasks) * 100);
+    return totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   }
 
   getOverdueTasks(): number {
     return (
-      this.tasksByStatus.find((item) => item.name === 'Overdue')?.value || 0
+      this.tasksByStatus.find((item) => item.label === 'Overdue')?.value || 0
     );
   }
 
@@ -264,8 +262,8 @@ export class AnalyticsComponent implements OnInit {
     const first = this.pointsOverTime[0].value;
     const last = this.pointsOverTime[this.pointsOverTime.length - 1].value;
 
-    if (last > first * 1.1) return 'Increasing';
-    if (last < first * 0.9) return 'Decreasing';
+    if (last > first * 1.1) return 'Decreasing';
+    if (last < first * 0.9) return 'Increasing';
     return 'Stable';
   }
 
@@ -285,8 +283,8 @@ export class AnalyticsComponent implements OnInit {
     const last =
       this.taskCreationOverTime[this.taskCreationOverTime.length - 1].value;
 
-    if (last > first * 1.1) return 'Increasing';
-    if (last < first * 0.9) return 'Decreasing';
+    if (last > first * 1.1) return 'Decreasing';
+    if (last < first * 0.9) return 'Increasing';
     return 'Stable';
   }
 
@@ -307,5 +305,16 @@ export class AnalyticsComponent implements OnInit {
       default:
         return basePoints;
     }
+  }
+  formatMonthYear(dateStr: string): string {
+    const [year, month] = dateStr.split('-').map(Number);
+
+    const date = new Date(year, month - 1); // JS months are 0-based
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+    });
+
+    return formatter.format(date); // e.g. "July 2025"
   }
 }
