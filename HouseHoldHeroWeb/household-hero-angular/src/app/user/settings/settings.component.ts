@@ -26,8 +26,21 @@ export class SettingsComponent implements OnInit {
 
   // Active settings tab
   activeTab: 'profile' | 'appearance' | 'account' = 'profile';
-  selectedTheme: string = 'default';
-  availableThemes: ThemeSetting[] = [];
+  selectedTheme: string = 'light';
+  availableThemes = [
+    {
+      id: 'light',
+      name: 'Light Mode',
+      primaryColor: '#ffffff',
+      accentColor: '#cccccc',
+    },
+    {
+      id: 'dark',
+      name: 'Dark Mode',
+      primaryColor: '#1e1e1e',
+      accentColor: '#4f4f4f',
+    },
+  ];
   // Success/error messages
   successMessage: string | null = null;
   errorMessage: string | null = null;
@@ -35,6 +48,15 @@ export class SettingsComponent implements OnInit {
   constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
+    const savedTheme = sessionStorage.getItem('app-theme') || 'light';
+
+    this.selectedTheme = savedTheme;
+
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
     this.loadCurrentUser();
   }
   private loadCurrentUser(): void {
@@ -57,51 +79,48 @@ export class SettingsComponent implements OnInit {
     this.errorMessage = null;
   }
 
-  // Upload profile picture (mock function)
-  uploadProfilePicture(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // In a real app, this would upload the file to a server
-      console.log('Uploading file:', file.name);
-
-      // Mock success after a delay
-      setTimeout(() => {
-        // Mock a new profile picture URL
-        //this.profile.profilePicture = 'assets/profile_pic.png'; // In a real app, this would be the new URL
-        this.showSuccess('Profile picture updated successfully');
-      }, 1500);
-    }
-  }
-
   // Save profile settings
   saveProfile(): void {
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('Profile information updated successfully');
-    }, 1000);
+    if (!this.userData || !this.userData.email) {
+      console.error('User data or email is missing');
+      return;
+    }
+
+    this.userService.updateUserProfile(this.userData).subscribe({
+      next: (res) => {
+        console.log('Profile updated successfully', res);
+        // Optionally show a success message
+      },
+      error: (err) => {
+        console.error('Error updating profile:', err);
+        // Optionally show an error message
+      },
+    });
   }
 
   // Apply theme
   applyTheme(themeId: string): void {
     this.selectedTheme = themeId;
 
-    // In a real app, this would update the application theme
-    console.log('Applying theme:', themeId);
+    if (themeId === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
 
-    // Mock success after a delay
-    setTimeout(() => {
-      this.showSuccess('Theme applied successfully');
-    }, 500);
+    sessionStorage.setItem('app-theme', themeId); // save preference in session
   }
 
   // Save appearance settings
   saveAppearanceSettings(): void {
-    // In a real app, this would call an API
     console.log('Saving appearance settings:', {
       theme: this.selectedTheme,
     });
 
-    // Mock success after a delay
+    // Save theme in sessionStorage
+    sessionStorage.setItem('app-theme', this.selectedTheme);
+
+    // Simulate save success
     setTimeout(() => {
       this.showSuccess('Appearance settings updated successfully');
     }, 1000);
@@ -123,10 +142,52 @@ export class SettingsComponent implements OnInit {
     this.errorMessage = message;
     this.successMessage = null;
   }
+  formatDateReadable(dateString: string): string {
+    const date = new Date(dateString);
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short', // e.g. Mon
+      year: 'numeric',
+      month: 'long', // e.g. June
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // 24-hour format; change to true for AM/PM
+    };
+
+    return date.toLocaleString('en-US', options);
+  }
 
   // Logout
   logout(): void {
-    // Navigate to login page
+    this.userService.logoutUser();
     this.router.navigate(['/guest/login']);
+  }
+  deleteAccount(): void {
+    const email = this.userData?.email || localStorage.getItem('adminEmail');
+
+    if (!email) {
+      console.error('User email not found');
+      return;
+    }
+
+    const input = prompt('Type "delete" to confirm account deletion:');
+
+    if (input?.trim().toLowerCase() === 'delete') {
+      this.userService.deleteUser(email).subscribe({
+        next: (res) => {
+          console.log(res.message);
+          alert('Your account has been deleted.');
+          // Optional: redirect to login or home
+        },
+        error: (err) => {
+          console.error('Error deleting account:', err);
+          alert('An error occurred while deleting your account.');
+        },
+      });
+    } else {
+      alert('Account deletion cancelled or incorrect confirmation.');
+    }
   }
 }

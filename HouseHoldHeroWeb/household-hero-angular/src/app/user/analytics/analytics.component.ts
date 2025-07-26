@@ -131,6 +131,7 @@ export class AnalyticsComponent implements OnInit {
       console.error('Admin email not found in local storage');
       return;
     }
+    console.log('Generating report for:', adminEmail);
 
     this.analyticsService.downloadPdfReport(adminEmail).subscribe({
       next: (blob) => {

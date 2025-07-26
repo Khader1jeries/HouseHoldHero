@@ -13,7 +13,7 @@ import { TasksComponent } from './user/tasks/tasks.component';
 import { AddTaskComponent } from './user/tasks/add-task/add-task.component';
 import { SupportComponent } from './user/support/support.component';
 import { AnalyticsComponent } from './user/analytics/analytics.component';
-import { ReportsComponent } from './user/reports/reports.component';
+
 import { SettingsComponent } from './user/settings/settings.component';
 import { PrivacyPolicyComponent } from './guest/privacy-policy/privacy-policy.component';
 import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service.component';
@@ -63,7 +63,7 @@ export const routes: Routes = [
 
       { path: 'support', component: SupportComponent },
       { path: 'analytics', component: AnalyticsComponent },
-      { path: 'reports', component: ReportsComponent },
+
       { path: 'settings', component: SettingsComponent },
     ],
   },

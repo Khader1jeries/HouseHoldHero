@@ -8,3 +8,7 @@ body {
   caret-color: transparent !important;
   user-select: none !important;
 }
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}

@@ -66,6 +66,16 @@ export class UserService {
   }
 
   updateUserProfile(user: Partial<User>): Observable<any> {
-    return of({});
+    const email = user.email;
+    if (!email) throw new Error('User email is required');
+
+    // Clone and remove email before sending body
+    const body = { ...user };
+    delete body.email;
+
+    return this.http.put(`${this.apiUrl}/${email}`, body);
+  }
+  deleteUser(email: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete-user/${email}`);
   }
 }

@@ -34,17 +34,6 @@
         [disabled]="isSubmitting"
       />
 
-      <div class="remember-me">
-        <input
-          type="checkbox"
-          id="remember"
-          [(ngModel)]="loginData.rememberMe"
-          name="rememberMe"
-          [disabled]="isSubmitting"
-        />
-        <label for="remember">Remember me</label>
-      </div>
-
       <button type="submit" class="login-btn" [disabled]="isSubmitting">
         {{ isSubmitting ? "Logging in..." : "Login" }}
       </button>

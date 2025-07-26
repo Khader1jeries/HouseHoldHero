@@ -384,52 +384,51 @@ input:checked + .slider:before {
   font-size: 0.9rem;
 }
 
-/* Theme Options */
-.theme-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.theme-card {
-  width: 120px;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
 .theme-card:hover {
   transform: translateY(-5px);
 }
+.theme-section {
+  margin: 20px 0;
+}
+
+.theme-options {
+  display: flex;
+  gap: 16px;
+}
+
+.theme-card {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 120px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
 
 .theme-card.selected {
-  border: 2px solid #ff0055;
-  border-radius: 0.5rem;
-  transform: scale(1.05);
+  border-color: #3e4eb8;
 }
 
 .theme-preview {
-  height: 80px;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 0.5rem;
+  height: 60px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .theme-accent {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 30px;
-  width: 30px;
-  border-radius: 0.5rem 0 0 0;
+  width: 80%;
+  height: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
 }
 
 .theme-name {
-  text-align: center;
-  font-size: 0.9rem;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: bold;
 }
-
 /* Font Size Options */
 .font-size-options {
   display: flex;
@@ -482,7 +481,20 @@ input:checked + .slider:before {
 .info-label {
   color: rgba(255, 255, 255, 0.7);
 }
+.delete-account-btn {
+  background-color: #e53935; /* Red */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
 
+.delete-account-btn:hover {
+  background-color: #c62828; /* Darker red on hover */
+}
 /* Two-Factor Section */
 .two-factor-toggle {
   display: flex;
@@ -561,10 +573,6 @@ input:checked + .slider:before {
   .nav-item.logout {
     margin-top: 0;
     margin-left: auto;
-  }
-
-  .theme-options {
-    gap: 1rem;
   }
 
   .theme-card {

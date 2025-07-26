@@ -15,7 +15,6 @@ export class LoginComponent {
   loginData = {
     email: '',
     password: '',
-    rememberMe: false,
   };
 
   errorMessage: string = '';

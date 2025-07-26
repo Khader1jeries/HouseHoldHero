@@ -18,7 +18,7 @@ export class IndexComponent implements OnInit {
   twoMembers: Member[] = [];
   twoVotes: Task[] = [];
   twoActiveTasks: Task[] = [];
-
+  currentDateTime: string = '';
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -29,6 +29,7 @@ export class IndexComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.updateDateTime();
     this.loadData();
   }
 
@@ -101,5 +102,20 @@ export class IndexComponent implements OnInit {
 
   goToAnalytics(): void {
     this.router.navigate(['/user/analytics']);
+  }
+  updateDateTime(): void {
+    const now = new Date();
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short', // e.g. Mon
+      day: '2-digit', // e.g. 22
+      month: 'short', // e.g. Jul
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    };
+
+    this.currentDateTime = now.toLocaleString('en-US', options);
   }
 }

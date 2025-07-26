@@ -282,4 +282,6 @@ module.exports = {
   getPointsEarnedOverTime,
   getCreatedOverTime,
   getMemberPerformance,
+  getTasks,
+  getMembers,
 };

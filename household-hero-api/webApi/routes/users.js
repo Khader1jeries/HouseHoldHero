@@ -86,6 +86,12 @@ router.post("/login", async (req, res) => {
       const userData = userDoc.data();
       const storedPassword = userData.password;
       if (hashedPassword == storedPassword) {
+        const previousLogin = userData.lastLogin || null;
+
+        await userRef.update({
+          previousLogin: previousLogin,
+          lastLogin: new Date().toISOString(),
+        });
         return res.status(200).json({
           success: true,
           message: "Log in successfully",

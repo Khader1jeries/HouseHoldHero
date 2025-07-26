@@ -91,8 +91,6 @@ export class NavbarComponent implements OnInit {
       this.currentPageTitle = 'Support';
     } else if (url.includes('/user/analytics')) {
       this.currentPageTitle = 'Analytics';
-    } else if (url.includes('/user/reports')) {
-      this.currentPageTitle = 'Reports';
     } else if (url.includes('/user/settings')) {
       this.currentPageTitle = 'Settings';
     } else {
