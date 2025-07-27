@@ -1,6 +1,7 @@
 .votes-container {
   padding: 2rem;
-  background-color: #143a36;
+  background-color: #dddddd;
+  color: #222222;
   border-radius: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -11,14 +12,15 @@
   gap: 0.5rem;
   margin-bottom: 2rem;
   padding: 0.5rem 1rem;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #222222;
   border-radius: 2rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .back-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .back-button i {
@@ -46,7 +48,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #222222;
 }
 
 .task-description {
@@ -257,7 +259,7 @@
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   font-weight: bold;
-  color: rgba(255, 255, 255, 0.7);
+  color: #222222;
 }
 
 .vote-row {
@@ -306,7 +308,7 @@
   font-style: italic;
 }
 .cell-time {
-  color: rgba(255, 255, 255, 0.7);
+  color: #222222;
 }
 
 .cell-comment {
@@ -340,7 +342,7 @@
 
 .no-task-message p {
   margin-bottom: 2rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #222222;
 }
 
 .no-task-message .back-button {

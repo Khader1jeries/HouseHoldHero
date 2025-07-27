@@ -16,14 +16,7 @@
         <i class="bi bi-person-circle"></i>
         <span>Profile</span>
       </div>
-      <div
-        class="nav-item"
-        [class.active]="activeTab === 'appearance'"
-        (click)="setActiveTab('appearance')"
-      >
-        <i class="bi bi-palette-fill"></i>
-        <span>Appearance</span>
-      </div>
+
       <div
         class="nav-item"
         [class.active]="activeTab === 'account'"
@@ -119,39 +112,6 @@
             Save Changes
           </button>
         </div>
-      </div>
-
-      <!-- Appearance Settings -->
-      <div class="settings-section" *ngIf="activeTab === 'appearance'">
-        <h2>Appearance Settings</h2>
-
-        <div class="theme-section">
-          <h3>Theme</h3>
-          <div class="theme-options">
-            <div
-              *ngFor="let theme of availableThemes"
-              class="theme-card"
-              [class.selected]="selectedTheme === theme.id"
-              (click)="applyTheme(theme.id)"
-            >
-              <div
-                class="theme-preview"
-                [style.background-color]="theme.primaryColor"
-              >
-                <div
-                  class="theme-accent"
-                  [style.background-color]="theme.accentColor"
-                ></div>
-              </div>
-              <div class="theme-name">{{ theme.name }}</div>
-            </div>
-          </div>
-        </div>
-
-        <button class="save-button" (click)="saveAppearanceSettings()">
-          <i class="bi bi-check2"></i>
-          Save Changes
-        </button>
       </div>
 
       <!-- Account Settings -->

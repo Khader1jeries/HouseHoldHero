@@ -2,16 +2,15 @@
 .navbar {
   width: 100%;
   height: 7vh;
-  /*background: #246c62;*/
   position: fixed;
-  background: linear-gradient(80deg, #ffffff, #dceeea);
+  background: linear-gradient(80deg, #ffffff 70%, #cccccc 100%);
 
   position: fixed;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 1000;
-  top:0;
+  top: 0;
 }
 
 /* Left logo */
@@ -71,7 +70,7 @@
   width: 25vh;
   height: 7vh;
   flex-shrink: 0;
-  background: #44a195;
+  background: #666666;
   color: #ffffff;
   font-family: Inter, sans-serif;
   font-size: 3vh;
@@ -86,10 +85,10 @@
 }
 
 .nav-button:hover {
-  background: hsla(173, 43%, 27%, 0.452);
+  background: hsla(0, 0%, 30%, 0.45);
 }
 .nav-link:hover {
-  background: hsla(172, 43%, 27%, 0.685);
+  background: hsla(0, 0%, 30%, 0.68);
 }
 .navbar-middle img {
   height: 7vh;

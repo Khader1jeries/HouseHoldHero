@@ -1,6 +1,7 @@
 .members-container {
-  background-color: #2a9d8f;
-  color: white;
+  background-color: #f0f0f0;
+  color: #222222;
+
   min-height: 100vh;
   padding: 12vh 2rem 2rem 2rem; /* Top padding accounts for navbar */
   font-family: "Allerta", sans-serif;
@@ -19,7 +20,7 @@
 }
 
 .add-member-btn {
-  background-color: #ff0055;
+  background-color: #666666;
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -33,11 +34,11 @@
 }
 
 .add-member-btn:hover {
-  background-color: #d9004a;
+  background-color: #444444;
 }
 
 .members-list {
-  background-color: #143a36;
+  background-color: #dddddd;
   border-radius: 1.5rem;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -48,8 +49,8 @@
   display: grid;
   grid-template-columns: 3fr 4fr 3fr 1fr 2fr 2fr 2fr;
   padding: 1vh 1vw;
-  border-bottom: 1px solid #2a9d8f;
-  color: #c8c8c8;
+  color: #555555;
+  border-bottom: 1px solid #bbbbbb;
   font-size: 0.9rem;
 }
 
@@ -59,14 +60,14 @@
   align-items: center;
   padding: 1.5vh 1vw;
   margin: 1vh 0;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.03);
   border-radius: 0.8rem;
   transition: transform 0.2s, background-color 0.2s;
   cursor: pointer;
 }
 
 .member-item:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
 
@@ -89,7 +90,9 @@
 }
 
 .score-pill {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #222222;
+
   padding: 0.4vh 1vh;
   border-radius: 999px;
   font-weight: bold;
@@ -102,7 +105,6 @@
   justify-content: center;
 }
 
-.edit-btn,
 .delete-btn {
   width: 3.5vh;
   height: 3.5vh;
@@ -115,22 +117,13 @@
   transition: background-color 0.3s;
 }
 
-.edit-btn {
-  background-color: #2a9d8f;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #208579;
-}
-
 .delete-btn {
-  background-color: #ff0055;
+  background-color: #666666;
   color: white;
 }
 
 .delete-btn:hover {
-  background-color: #d9004a;
+  background-color: #444444;
 }
 
 /* Empty state styling */
@@ -140,7 +133,7 @@
   align-items: center;
   justify-content: center;
   padding: 5vh 2vh;
-  color: #a0a0a0;
+  color: #999999;
   text-align: center;
 }
 
@@ -160,7 +153,7 @@
 
 /* Leaderboard section */
 .leaderboard-section {
-  background-color: #143a36;
+  background-color: #dddddd;
   border-radius: 1.5rem;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -182,7 +175,7 @@
 .view-all-btn {
   background: none;
   border: none;
-  color: #ff0055;
+  color: #666666;
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -192,7 +185,7 @@
 }
 
 .view-all-btn:hover {
-  color: #d9004a;
+  color: #444444;
   text-decoration: underline;
 }
 
@@ -249,21 +242,21 @@
 .first-place {
   padding-top: 3vh;
   z-index: 3;
-  background-color: rgba(255, 215, 0, 0.2);
+  background-color: rgba(255, 215, 0, 0.15);
   border: 2px solid gold;
 }
 
 .second-place {
   margin-top: 2vh;
   z-index: 2;
-  background-color: rgba(192, 192, 192, 0.2);
+  background-color: rgba(192, 192, 192, 0.15);
   border: 2px solid silver;
 }
 
 .third-place {
   margin-top: 4vh;
   z-index: 1;
-  background-color: rgba(205, 127, 50, 0.2);
+  background-color: rgba(205, 127, 50, 0.15);
   border: 2px solid #cd7f32;
 }
 
@@ -272,7 +265,7 @@
   top: -15px;
   width: 30px;
   height: 30px;
-  background-color: #ff0055;
+  background-color: #666666;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -337,7 +330,7 @@
 }
 
 .stat-card {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.03);
   border-radius: 1rem;
   padding: 1.5vh;
   text-align: center;
@@ -346,18 +339,19 @@
 
 .stat-card:hover {
   transform: translateY(-2px);
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 .stat-title {
   font-size: 1rem;
-  color: #c8c8c8;
+  color: #666666;
   margin-bottom: 0.5vh;
 }
 
 .stat-value {
   font-size: 2rem;
   font-weight: bold;
+  color: #222222;
 }
 
 /* Collapsed leaderboard button */
@@ -368,7 +362,8 @@
 }
 
 .collapsed-leaderboard .toggle-btn {
-  background-color: #143a36;
+  background-color: #cccccc;
+  color: #222222;
   width: auto;
   border-radius: 1rem;
   padding: 1vh 2vh;
@@ -376,7 +371,7 @@
 }
 
 .collapsed-leaderboard .toggle-btn:hover {
-  background-color: #1e5751;
+  background-color: #bbbbbb;
 }
 
 /* Responsive adjustments */

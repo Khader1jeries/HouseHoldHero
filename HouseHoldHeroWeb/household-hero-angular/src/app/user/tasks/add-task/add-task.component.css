@@ -1,15 +1,16 @@
 .add-task-container {
-  background-color: #2a9d8f;
-  color: white;
+  background: linear-gradient(to bottom, #eeeeee 70%, #dddddd 100%);
+  color: #222222;
   min-height: 100vh;
-  padding: 12vh 2rem 2rem 2rem; /* Top padding for navbar */
+  padding: 12vh 2rem 2rem 2rem;
   font-family: "Allerta", sans-serif;
   display: flex;
   justify-content: center;
 }
 
 .add-task-box {
-  background-color: #1a504a; /* Darker, more visible background */
+  background-color: #f5f5f5;
+  color: #222222;
   border-radius: 1.5rem;
   padding: 2rem;
   width: 100%;
@@ -28,12 +29,12 @@ h3 {
   font-size: 1.3rem;
   margin: 2rem 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
   text-align: center;
-  color: #c8c8c8;
+  color: #555555;
   margin-bottom: 2rem;
 }
 
@@ -52,17 +53,17 @@ select,
 textarea {
   width: 100%;
   padding: 1rem;
-  border: 1px solid #1e5751;
-  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #999999;
+  background-color: #ffffff;
   border-radius: 0.5rem;
-  color: white;
+  color: #222222;
   font-size: 1rem;
   font-family: inherit;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: #999999;
 }
 
 textarea {
@@ -76,25 +77,23 @@ input[type="date"] {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: invert(0.3);
   cursor: pointer;
 }
 
 input[type="range"] {
-  -webkit-appearance: none;
   appearance: none;
   height: 0.5rem;
-  background: rgba(255, 255, 255, 0.2);
+  background: #cccccc;
   border-radius: 0.25rem;
   padding: 0;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
   appearance: none;
   width: 1.5rem;
   height: 1.5rem;
-  background: #ff0055;
+  background: #444444;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -120,7 +119,7 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="radio"] {
   width: 1.2rem;
   height: 1.2rem;
-  accent-color: #ff0055;
+  accent-color: #444444;
 }
 
 .form-actions {
@@ -142,26 +141,26 @@ input[type="radio"] {
 }
 
 .submit-btn {
-  background-color: #ff0055;
+  background-color: #666666;
   color: white;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background-color: #d9004a;
+  background-color: #444444;
 }
 
 .submit-btn:disabled {
-  background-color: #ff7ea1;
+  background-color: #bbbbbb;
   cursor: not-allowed;
 }
 
 .cancel-btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #222222;
 }
 
 .cancel-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Message boxes */
@@ -173,20 +172,20 @@ input[type="radio"] {
 }
 
 .error {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ffb3b3;
-  border: 1px solid rgba(255, 0, 0, 0.3);
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #cc6666;
+  border: 1px solid rgba(255, 0, 0, 0.2);
 }
 
 .success {
-  background-color: rgba(0, 255, 0, 0.1);
-  color: #b3ffb3;
-  border: 1px solid rgba(0, 255, 0, 0.3);
+  background-color: rgba(0, 128, 0, 0.08);
+  color: #66cc66;
+  border: 1px solid rgba(0, 128, 0, 0.2);
 }
 
 /* Sub-tasks styling */
 .form-section {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #eeeeee;
   border-radius: 1rem;
   padding: 1.5rem;
   margin-top: 2rem;
@@ -206,13 +205,13 @@ input[type="radio"] {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #f0f0f0;
   border-radius: 0.5rem;
   transition: background-color 0.3s;
 }
 
 .subtask-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #e0e0e0;
 }
 
 .subtask-info {
@@ -230,13 +229,13 @@ input[type="radio"] {
 }
 
 .remove-subtask-btn:hover {
-  color: #ff4d84;
+  color: #d9004a;
 }
 
 .empty-subtasks {
   text-align: center;
   padding: 1rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #999999;
   font-style: italic;
 }
 
@@ -250,7 +249,7 @@ input[type="radio"] {
 }
 
 .add-subtask-btn {
-  background-color: #2a9d8f;
+  background-color: #888888;
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -263,14 +262,14 @@ input[type="radio"] {
 }
 
 .add-subtask-btn:hover {
-  background-color: #208579;
+  background-color: #666666;
 }
 
 .add-subtask-btn i {
   font-size: 1.5rem;
 }
 
-/* Media queries for responsiveness */
+/* Media queries */
 @media (max-width: 768px) {
   .radio-group {
     flex-direction: column;

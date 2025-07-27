@@ -61,10 +61,7 @@
                   class="legend-color"
                   [style.background-color]="
                     '#' +
-                    (item.label.charCodeAt(0).toString(16) + '7d8f').substring(
-                      0,
-                      6
-                    )
+                    ('222222' + item.label.charCodeAt(0).toString(16)).slice(-6)
                   "
                 ></div>
                 <span>{{ item.label }}: {{ item.value }} points</span>
@@ -92,10 +89,7 @@
                   class="legend-color"
                   [style.background-color]="
                     '#' +
-                    (item.label.charCodeAt(0).toString(16) + 'b3e1').substring(
-                      0,
-                      6
-                    )
+                    ('222222' + item.label.charCodeAt(0).toString(16)).slice(-6)
                   "
                 ></div>
                 <span>{{ item.label }}: {{ item.value }}</span>

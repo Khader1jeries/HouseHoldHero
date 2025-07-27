@@ -7,15 +7,15 @@
   height: 100vh;
   background: linear-gradient(
     80deg,
-    #29524c,
-    #69aaa1
+    #f0f0f0 70%,
+    #888888 100%
   ); /* Outer background color */
   font-family: "Arial", sans-serif;
 }
 
 /* Login Box */
 .login-box {
-  background: #a9e1db; /* Inner box background */
+  background: #dddddd; /* Inner box background */
   padding: 3vh;
   border-radius: 10px;
   text-align: center;
@@ -95,7 +95,7 @@ form {
 .login-btn {
   width: 100%;
   padding: 1.5vh;
-  background-color: #ff0055; /* Red button */
+  background-color: #666666;
   color: white;
   font-size: 2vh;
   border: none;
@@ -105,18 +105,18 @@ form {
 }
 
 .login-btn:hover {
-  background-color: #d9004a; /* Darker red */
+  background-color: #444444;
 }
 
 .login-btn:disabled {
-  background-color: #ccc;
+  background-color: #bbbbbb;
   cursor: not-allowed;
 }
 
 /* Links Section */
 .links {
   margin-top: 2vh;
-  color: #c00058;
+  color: #222222;
   display: flex;
   justify-content: center;
   gap: 1vh;
@@ -126,7 +126,7 @@ form {
 
 .links a {
   text-decoration: none;
-  color: #c00058;
+  color: #222222;
   font-weight: bold;
 }
 

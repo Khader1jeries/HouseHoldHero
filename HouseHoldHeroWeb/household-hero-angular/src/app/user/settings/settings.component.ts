@@ -4,13 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
-interface ThemeSetting {
-  id: string;
-  name: string;
-  primaryColor: string;
-  accentColor: string;
-}
-
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -25,22 +18,9 @@ export class SettingsComponent implements OnInit {
   userData: any = null;
 
   // Active settings tab
-  activeTab: 'profile' | 'appearance' | 'account' = 'profile';
+  activeTab: 'profile' | 'account' = 'profile';
   selectedTheme: string = 'light';
-  availableThemes = [
-    {
-      id: 'light',
-      name: 'Light Mode',
-      primaryColor: '#ffffff',
-      accentColor: '#cccccc',
-    },
-    {
-      id: 'dark',
-      name: 'Dark Mode',
-      primaryColor: '#1e1e1e',
-      accentColor: '#4f4f4f',
-    },
-  ];
+
   // Success/error messages
   successMessage: string | null = null;
   errorMessage: string | null = null;
@@ -48,15 +28,6 @@ export class SettingsComponent implements OnInit {
   constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
-    const savedTheme = sessionStorage.getItem('app-theme') || 'light';
-
-    this.selectedTheme = savedTheme;
-
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
     this.loadCurrentUser();
   }
   private loadCurrentUser(): void {
@@ -72,7 +43,7 @@ export class SettingsComponent implements OnInit {
     });
   }
   // Switch between settings tabs
-  setActiveTab(tab: 'profile' | 'appearance' | 'account'): void {
+  setActiveTab(tab: 'profile' | 'account'): void {
     this.activeTab = tab;
     // Clear any messages when switching tabs
     this.successMessage = null;
@@ -96,34 +67,6 @@ export class SettingsComponent implements OnInit {
         // Optionally show an error message
       },
     });
-  }
-
-  // Apply theme
-  applyTheme(themeId: string): void {
-    this.selectedTheme = themeId;
-
-    if (themeId === 'dark') {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-
-    sessionStorage.setItem('app-theme', themeId); // save preference in session
-  }
-
-  // Save appearance settings
-  saveAppearanceSettings(): void {
-    console.log('Saving appearance settings:', {
-      theme: this.selectedTheme,
-    });
-
-    // Save theme in sessionStorage
-    sessionStorage.setItem('app-theme', this.selectedTheme);
-
-    // Simulate save success
-    setTimeout(() => {
-      this.showSuccess('Appearance settings updated successfully');
-    }, 1000);
   }
 
   // Helper: Show success message
