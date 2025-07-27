@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const { calculateScore } = require("../../controllers/scoreController");
 const {
   expired,
   addToAdmin,
@@ -284,9 +285,10 @@ router.post("/move/:id", async (req, res) => {
       startDate: additionalData.startDate,
       dueDate: additionalData.dueDate,
       assignedTo: additionalData.assignedTo,
-      score: additionalData.score,
+      score: 0,
     };
-
+    const score = await calculateScore(task.assignedTo);
+    task.score = score;
     // Subtask count and default setup
     let count = 0;
     if (task.subtasks && typeof task.subtasks === "object") {

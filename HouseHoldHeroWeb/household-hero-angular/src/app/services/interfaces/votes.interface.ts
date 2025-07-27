@@ -17,3 +17,9 @@ export interface VoteTask {
   };
   comment?: string;
 }
+export interface MoveTaskData {
+  createdAt: string;
+  startDate: string;
+  dueDate: string;
+  assignedTo: string;
+}

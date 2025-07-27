@@ -1,40 +1,220 @@
-<div class="move-task-container" *ngIf="!loading && task">
-  <h2>Move Task: {{ task.title }}</h2>
-
-  <div class="field">
-    <label>Description:</label>
-    <p>{{ task.description }}</p>
+<div class="move-task-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading task data...</p>
   </div>
 
-  <div class="field">
-    <label>Priority:</label>
-    <p>{{ task.priority }}</p>
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !loading" class="error-container">
+    <div class="error-message">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    <button class="back-button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      Go Back
+    </button>
   </div>
 
-  <div class="field">
-    <label>Subtasks:</label>
-
-    <ng-template #noSubtasks>
-      <p>No subtasks</p>
-    </ng-template>
+  <!-- Success State -->
+  <div *ngIf="successMessage" class="success-container">
+    <div class="success-message">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+    <div class="success-actions">
+      <button class="primary-button" (click)="goToTasksList()">
+        <i class="bi bi-list-task"></i>
+        View All Tasks
+      </button>
+    </div>
   </div>
 
-  <div class="field">
-    <label>Assign to Member:</label>
-    <select>
-      <option value="" disabled selected>Select a member</option>
-      <option *ngFor="let member of members" [value]="member.email">
-        {{ member.fullName }}
-      </option>
-    </select>
-  </div>
+  <!-- Main Content -->
+  <div
+    *ngIf="!loading && !errorMessage && !successMessage && task"
+    class="main-content"
+  >
+    <!-- Header -->
+    <div class="header">
+      <div class="back-navigation">
+        <button class="back-button" (click)="goBack()">
+          <i class="bi bi-arrow-left-circle"></i>
+          <span>Back to Voting</span>
+        </button>
+      </div>
+      <h2 class="page-title">
+        <i class="bi bi-arrows-move"></i>
+        Move Task to Active Tasks
+      </h2>
+    </div>
 
-  <div class="field">
-    <label>Recommended:</label>
-    <input type="text" placeholder="Enter recommendation" />
+    <!-- Task Information Display -->
+    <div class="task-info-section">
+      <h3>Task Details</h3>
+      <div class="task-info-card">
+        <div class="task-header">
+          <h4>{{ task.title }}</h4>
+          <span class="priority-badge" [class]="'priority-' + task.priority">
+            {{ task.priority }}
+          </span>
+        </div>
+
+        <div class="task-description">
+          <p>{{ task.description }}</p>
+        </div>
+
+        <!-- Voting Results Summary -->
+        <div class="voting-summary">
+          <h5>Voting Results:</h5>
+          <div class="vote-counts">
+            <div class="vote-item yes">
+              <i class="bi bi-hand-thumbs-up"></i>
+              <span>Yes: {{ task.yes?.length || 0 }}</span>
+            </div>
+            <div class="vote-item no">
+              <i class="bi bi-hand-thumbs-down"></i>
+              <span>No: {{ task.no?.length || 0 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtasks Display -->
+        <div
+          class="subtasks-section"
+          *ngIf="task.subtasks && getSubtaskKeys(task.subtasks).length > 0"
+        >
+          <h5>Subtasks:</h5>
+          <div class="subtasks-list">
+            <div
+              *ngFor="let key of getSubtaskKeys(task.subtasks)"
+              class="subtask-item"
+            >
+              <i class="bi bi-check2-square"></i>
+              <span>{{ key }}</span>
+              <span class="subtask-score"
+                >({{ task.subtasks![key].score }} points)</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Move Task Form -->
+    <div class="move-form-section">
+      <h3>Assignment Details</h3>
+      <form class="move-form" (ngSubmit)="onMoveTask()" #moveForm="ngForm">
+        <!-- Member Assignment -->
+        <div class="form-group">
+          <label for="assignedTo" class="required">
+            <i class="bi bi-person"></i>
+            Assign to Member
+          </label>
+          <select
+            id="assignedTo"
+            name="assignedTo"
+            [(ngModel)]="moveTaskData.assignedTo"
+            class="form-control"
+            required
+          >
+            <option value="" disabled>Select a member...</option>
+            <option *ngFor="let member of members" [value]="member.email">
+              {{ member.fullName || member.firstName }}
+              <span *ngIf="member.activeTasks"
+                >({{ member.activeTasks }} active tasks)</span
+              >
+            </option>
+          </select>
+          <small class="form-hint"
+            >Choose who will be responsible for this task</small
+          >
+        </div>
+
+        <!-- Start Date -->
+        <div class="form-group">
+          <label for="startDate" class="required">
+            <i class="bi bi-calendar-event"></i>
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            [(ngModel)]="moveTaskData.startDate"
+            class="form-control"
+            required
+          />
+          <small class="form-hint">When should this task begin?</small>
+        </div>
+
+        <!-- Due Date -->
+        <div class="form-group">
+          <label for="dueDate" class="required">
+            <i class="bi bi-calendar-check"></i>
+            Due Date
+          </label>
+          <input
+            type="date"
+            id="dueDate"
+            name="dueDate"
+            [(ngModel)]="moveTaskData.dueDate"
+            class="form-control"
+            [min]="moveTaskData.startDate"
+            required
+          />
+          <small class="form-hint">Task completion deadline</small>
+        </div>
+
+        <!-- Recommendation -->
+        <div class="form-group">
+          <label for="recommendation">
+            <i class="bi bi-lightbulb"></i>
+            Notes/Recommendations
+          </label>
+          <textarea></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="goBack()"
+            [disabled]="isSubmitting"
+          >
+            <i class="bi bi-x-circle"></i>
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+            [disabled]="!moveForm.valid || isSubmitting"
+          >
+            <div *ngIf="isSubmitting" class="button-spinner"></div>
+            <i *ngIf="!isSubmitting" class="bi bi-check-lg"></i>
+            <span>{{ isSubmitting ? "Moving Task..." : "Move Task" }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Assignment Preview -->
+    <div class="preview-section" *ngIf="moveTaskData.assignedTo">
+      <h3>Assignment Preview</h3>
+      <div class="preview-card">
+        <div class="preview-item"><strong>Task:</strong> {{ task.title }}</div>
+        <div class="preview-item">
+          <strong>Assigned to:</strong> {{ getSelectedMemberName() }}
+        </div>
+        <div class="preview-item">
+          <strong>Duration:</strong>
+          {{ moveTaskData.startDate | date : "mediumDate" }} -
+          {{ moveTaskData.dueDate | date : "mediumDate" }}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<!-- Optional loading and error UI -->
-<div *ngIf="loading">Loading...</div>
-<div *ngIf="errorMessage">{{ errorMessage }}</div>
