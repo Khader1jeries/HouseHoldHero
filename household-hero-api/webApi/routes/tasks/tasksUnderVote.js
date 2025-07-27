@@ -254,13 +254,7 @@ router.post("/move/:id", async (req, res) => {
     const additionalData = req.body;
 
     // Required fields from body
-    const requiredFields = [
-      "createdAt",
-      "startDate",
-      "dueDate",
-      "assignedTo",
-      "score",
-    ];
+    const requiredFields = ["createdAt", "startDate", "dueDate", "assignedTo"];
 
     for (const field of requiredFields) {
       if (!additionalData[field]) {

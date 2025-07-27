@@ -11,14 +11,24 @@ import { VotesService } from '../../../services/votes.service';
 import { MemberService } from '../../../services/member.service';
 import { Member } from '../../../services/interfaces/member.interface';
 import { forkJoin } from 'rxjs';
+import { LoadingComponent } from '../../../loading/loading.component';
 @Component({
   selector: 'app-votes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './votes.component.html',
   styleUrl: './votes.component.css',
 })
 export class VotesComponent implements OnInit {
+  navigateToMoveTask(): void {
+    const taskId = this.route.snapshot.params['id']; // current task ID from URL
+
+    if (taskId) {
+      this.router.navigate(['user/tasks/moveTask', taskId]); // navigate with ID
+    } else {
+      console.error('Task ID not found in URL');
+    }
+  }
   taskId: string = '';
   loading: boolean = true;
   task?: VoteTask;

@@ -24,12 +24,15 @@ interface ExtendedVote extends VoteTask {
   styleUrl: './tasks.component.css',
 })
 export class TasksComponent implements OnInit, OnDestroy {
+  handleExpiredAction(arg0: string | undefined, $event: MouseEvent) {
+    throw new Error('Method not implemented.');
+  }
   tasks: ExtendedTask[] = [];
   voteTasks: ExtendedVote[] = [];
   activeTasks: ExtendedTask[] = [];
   finishedTasks: ExtendedTask[] = [];
   futureTasks: ExtendedTask[] = [];
-
+  expiredTasks: ExtendedVote[] = [];
   activeTab: 'active' | 'finished' | 'future' | 'voting' = 'active';
   isLoading: boolean = true;
   error: string | null = null;
@@ -72,11 +75,21 @@ export class TasksComponent implements OnInit, OnDestroy {
         console.error('❌ Failed to load tasks:', err);
       },
     });
-    this.VotesService.getVoteByAdmin(adminEmail).subscribe({
+    this.VotesService.getActiveTasks(adminEmail).subscribe({
+      next: (votes) => {
+        console.log('✅ Active Tasks loaded:', votes);
+        // Save to a local variable (you must declare it first)
+        this.voteTasks = votes;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load tasks:', err);
+      },
+    });
+    this.VotesService.getExpiredTasks(adminEmail).subscribe({
       next: (votes) => {
         console.log('✅ Tasks loaded:', votes);
         // Save to a local variable (you must declare it first)
-        this.voteTasks = votes;
+        this.expiredTasks = votes;
       },
       error: (err) => {
         console.error('❌ Failed to load tasks:', err);
@@ -108,7 +121,9 @@ export class TasksComponent implements OnInit, OnDestroy {
     for (const voteTask of this.voteTasks) {
     }
   }
-
+  navigateToExpiredTask() {
+    throw new Error('Method not implemented.');
+  }
   navigateToAddTask(): void {
     this.router.navigate(['/user/tasks/add']);
   }

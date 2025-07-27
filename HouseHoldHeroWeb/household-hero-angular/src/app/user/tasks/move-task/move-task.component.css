@@ -1,0 +1,17 @@
+.move-task-container {
+  padding: 2rem;
+  background-color: #f2f2f2;
+  border-radius: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.3rem;
+}

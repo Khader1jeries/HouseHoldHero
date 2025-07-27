@@ -26,4 +26,12 @@ export class VotesService {
   getTwoVotes(adminEmail: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/getTwo/${adminEmail}`);
   }
+
+  getActiveTasks(adminEmail: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/active/${adminEmail}`);
+  }
+
+  getExpiredTasks(adminEmail: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/expired/${adminEmail}`);
+  }
 }

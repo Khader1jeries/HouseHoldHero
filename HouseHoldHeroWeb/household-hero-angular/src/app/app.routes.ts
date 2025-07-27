@@ -13,7 +13,7 @@ import { TasksComponent } from './user/tasks/tasks.component';
 import { AddTaskComponent } from './user/tasks/add-task/add-task.component';
 import { SupportComponent } from './user/support/support.component';
 import { AnalyticsComponent } from './user/analytics/analytics.component';
-
+import { MoveTaskComponent } from './user/tasks/move-task/move-task.component';
 import { SettingsComponent } from './user/settings/settings.component';
 import { PrivacyPolicyComponent } from './guest/privacy-policy/privacy-policy.component';
 import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service.component';
@@ -60,7 +60,7 @@ export const routes: Routes = [
       // New task routes
       { path: 'tasks/details/:id', component: TaskDetailsComponent },
       { path: 'tasks/votes/:id', component: VotesComponent },
-
+      { path: 'tasks/moveTask/:id', component: MoveTaskComponent },
       { path: 'support', component: SupportComponent },
       { path: 'analytics', component: AnalyticsComponent },
 

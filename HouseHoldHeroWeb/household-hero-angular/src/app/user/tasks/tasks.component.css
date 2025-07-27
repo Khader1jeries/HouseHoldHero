@@ -35,7 +35,24 @@
 .add-task-btn:hover {
   background-color: #444444;
 }
+.expired-task-btn {
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 1vh 2vh;
+  font-size: 1.8vh;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  transition: background-color 0.3s;
+  margin-left: auto;
+}
 
+.expired-task-btn:hover {
+  background-color: #444444;
+}
 /* Tabs styling */
 .tabs-container {
   display: flex;
@@ -269,9 +286,9 @@
   align-items: center;
   justify-content: center;
   padding: 5vh 2vh;
-  background-color: #143a36;
+  background-color: #dddddd;
   border-radius: 0 0 1.5rem 1.5rem;
-  color: #a0a0a0;
+  color: #222222;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }

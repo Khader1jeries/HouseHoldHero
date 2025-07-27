@@ -1,0 +1,40 @@
+<div class="move-task-container" *ngIf="!loading && task">
+  <h2>Move Task: {{ task.title }}</h2>
+
+  <div class="field">
+    <label>Description:</label>
+    <p>{{ task.description }}</p>
+  </div>
+
+  <div class="field">
+    <label>Priority:</label>
+    <p>{{ task.priority }}</p>
+  </div>
+
+  <div class="field">
+    <label>Subtasks:</label>
+
+    <ng-template #noSubtasks>
+      <p>No subtasks</p>
+    </ng-template>
+  </div>
+
+  <div class="field">
+    <label>Assign to Member:</label>
+    <select>
+      <option value="" disabled selected>Select a member</option>
+      <option *ngFor="let member of members" [value]="member.email">
+        {{ member.fullName }}
+      </option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Recommended:</label>
+    <input type="text" placeholder="Enter recommendation" />
+  </div>
+</div>
+
+<!-- Optional loading and error UI -->
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="errorMessage">{{ errorMessage }}</div>

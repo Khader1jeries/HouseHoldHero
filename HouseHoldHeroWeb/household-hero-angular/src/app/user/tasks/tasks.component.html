@@ -181,11 +181,12 @@
     </div>
   </div>
 
-  <!-- Tasks Under Voting Updated Section -->
+  <!-- Existing Active Voting Tasks -->
   <div
     class="tasks-list"
     *ngIf="activeTab === 'voting' && voteTasks.length > 0"
   >
+    <h1>Active tasks under vote</h1>
     <div class="tasks-list-header">
       <span>Task Info</span>
       <span>Due Date</span>
@@ -207,11 +208,46 @@
       <div class="task-votes">
         <div class="vote-count yes">
           <i class="bi bi-hand-thumbs-up"></i>
-          <!-- <span>{{ task.votesYes || 0 }}</span> -->
+          <span>{{ task.yes?.length || 0 }}</span>
         </div>
         <div class="vote-count no">
           <i class="bi bi-hand-thumbs-down"></i>
-          <!-- <span>{{ task.votesNo || 0 }}</span> -->
+          <span>{{ task.no?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="view-votes-btn" (click)="viewVotes(task.id, $event)">
+          <i class="bi bi-people"></i> View Votes
+        </button>
+      </div>
+    </div>
+    <h1>Expired tasks under vote</h1>
+    <div class="tasks-list-header">
+      <span>Task Info</span>
+      <span>Due Date</span>
+      <span>Votes (Yes/No)</span>
+      <span>Actions</span>
+    </div>
+
+    <div
+      class="task-item voting"
+      *ngFor="let task of expiredTasks"
+      (click)="navigateToVoteDetails(task.id)"
+    >
+      <div class="task-info">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+      </div>
+      <div class="task-due">{{ task.dueDate | date : "dd/MM/yyyy" }}</div>
+      <div class="task-points"></div>
+      <div class="task-votes">
+        <div class="vote-count yes">
+          <i class="bi bi-hand-thumbs-up"></i>
+          <span>{{ task.yes?.length || 0 }}</span>
+        </div>
+        <div class="vote-count no">
+          <i class="bi bi-hand-thumbs-down"></i>
+          <span>{{ task.no?.length || 0 }}</span>
         </div>
       </div>
       <div class="task-actions">
@@ -221,6 +257,8 @@
       </div>
     </div>
   </div>
+
+  <!-- New Expired Tasks List -->
 
   <!-- Empty States -->
   <div

@@ -1,21 +1,22 @@
-<div *ngIf="loading">
-  <p>Loading...</p>
-</div>
+<app-loading [isLoading]="loading" message="Fetching data..."></app-loading>
 <div *ngIf="!loading">
   <div class="votes-container" *ngIf="task">
-    <div class="back-button" (click)="goBack()">
-      <i class="bi bi-arrow-left-circle"></i>
-      <span>Back to Tasks</span>
+    <div class="task-header-buttons">
+      <div class="back-button" (click)="goBack()">
+        <i class="bi bi-arrow-left-circle"></i>
+        <span>Back to Tasks</span>
+      </div>
+
+      <button class="move-task-button" (click)="navigateToMoveTask()">
+        <i class="bi bi-arrows-move"></i>
+        Move Task
+      </button>
     </div>
 
     <div class="votes-header">
       <div class="task-info">
         <h2>{{ task.title }}</h2>
         <div class="task-meta">
-          <div class="task-meta-item">
-            <i class="bi bi-tag-fill"></i>
-            <!-- <span>{{ task.category }}</span> -->
-          </div>
           <div class="task-meta-item">
             <i class="bi bi-calendar-date"></i>
             <span>{{ task.dueDate | date : "mediumDate" }}</span>
