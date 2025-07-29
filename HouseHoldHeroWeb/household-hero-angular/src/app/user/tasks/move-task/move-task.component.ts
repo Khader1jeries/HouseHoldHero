@@ -10,6 +10,21 @@ import { forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enviroment';
 
+interface TaskRecommendation {
+  success: boolean;
+  taskId: string;
+  taskTitle: string;
+  recommendation: {
+    memberId: string;
+    memberName: string;
+    memberEmail: string;
+    calculatedScore: number;
+    activeTasks: number;
+    overallScore: number;
+    reason: string;
+  };
+}
+
 @Component({
   selector: 'app-move-task',
   templateUrl: './move-task.component.html',
@@ -37,6 +52,11 @@ export class MoveTaskComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
   isSubmitting: boolean = false;
+
+  // Recommendation data
+  recommendation: TaskRecommendation | null = null;
+  loadingRecommendation: boolean = false;
+  recommendationError: string = '';
 
   // Form data for moving the task
   moveTaskData = {
@@ -88,33 +108,46 @@ export class MoveTaskComponent implements OnInit {
       next: ({ task, members }) => {
         this.task = task;
         this.members = members;
-
-        // If task has a due date, use it as default
-        if (task.dueDate) {
-          const taskDueDate = new Date(task.dueDate);
-          this.moveTaskData.dueDate = taskDueDate.toISOString().split('T')[0];
-        }
-
-        console.log('✅ Task and members loaded:', { task, members });
         this.loading = false;
+        console.log('✅ Vote data loaded successfully');
+
+        // Load recommendation after data is loaded
+        this.loadRecommendation();
       },
-      error: (err) => {
-        console.error('❌ Failed to load vote data:', err);
-        this.errorMessage = 'Failed to load vote task or members.';
+      error: (error) => {
+        console.error('❌ Error loading vote data:', error);
+        this.errorMessage = 'Failed to load task or member data.';
         this.loading = false;
       },
     });
   }
 
-  getSubtaskKeys(subtasks: {
-    [key: string]: { score: number; status: boolean };
-  }): string[] {
-    return Object.keys(subtasks || {});
+  loadRecommendation(): void {
+    this.loadingRecommendation = true;
+    this.recommendationError = '';
+
+    this.http
+      .get<TaskRecommendation>(
+        `${environment.apiUrl}/tasksUnderVote/recommendation/${this.taskId}`
+      )
+      .subscribe({
+        next: (response) => {
+          this.recommendation = response;
+          this.loadingRecommendation = false;
+          console.log('✅ Recommendation loaded:', response);
+        },
+        error: (error) => {
+          console.error('❌ Error loading recommendation:', error);
+          this.recommendationError =
+            'Failed to load recommendation. Please try again.';
+          this.loadingRecommendation = false;
+        },
+      });
   }
 
   getSelectedMemberName(): string {
     const selectedMember = this.members.find(
-      (m) => m.email === this.moveTaskData.assignedTo
+      (member) => member.email === this.moveTaskData.assignedTo
     );
     return selectedMember
       ? selectedMember.fullName || selectedMember.firstName || 'Unknown'
@@ -122,7 +155,7 @@ export class MoveTaskComponent implements OnInit {
   }
 
   onMoveTask(): void {
-    // Validate required fields
+    // Validate form
     if (!this.moveTaskData.assignedTo) {
       this.errorMessage = 'Please select a member to assign the task to.';
       return;
@@ -188,5 +221,8 @@ export class MoveTaskComponent implements OnInit {
 
   goToTasksList(): void {
     this.router.navigate(['/user/tasks']);
+  }
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj || {});
   }
 }

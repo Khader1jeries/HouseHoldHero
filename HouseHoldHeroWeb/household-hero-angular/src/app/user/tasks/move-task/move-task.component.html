@@ -1,100 +1,67 @@
 <div class="move-task-container">
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
+  <div *ngIf="loading" class="loading-state">
     <div class="spinner"></div>
-    <p>Loading task data...</p>
+    <p>Loading task details...</p>
   </div>
 
   <!-- Error State -->
-  <div *ngIf="errorMessage && !loading" class="error-container">
-    <div class="error-message">
-      <i class="bi bi-exclamation-triangle"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
-    <button class="back-button" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i>
-      Go Back
-    </button>
+  <div *ngIf="errorMessage && !loading" class="error-message">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ errorMessage }}
+    <button class="retry-button" (click)="loadVoteData()">Try Again</button>
   </div>
 
   <!-- Success State -->
-  <div *ngIf="successMessage" class="success-container">
-    <div class="success-message">
-      <i class="bi bi-check-circle"></i>
-      <span>{{ successMessage }}</span>
-    </div>
-    <div class="success-actions">
-      <button class="primary-button" (click)="goToTasksList()">
-        <i class="bi bi-list-task"></i>
-        View All Tasks
-      </button>
-    </div>
+  <div *ngIf="successMessage" class="success-message">
+    <i class="bi bi-check-circle"></i>
+    {{ successMessage }}
   </div>
 
   <!-- Main Content -->
-  <div
-    *ngIf="!loading && !errorMessage && !successMessage && task"
-    class="main-content"
-  >
+  <div *ngIf="!loading && !errorMessage" class="move-task-content">
     <!-- Header -->
-    <div class="header">
-      <div class="back-navigation">
-        <button class="back-button" (click)="goBack()">
-          <i class="bi bi-arrow-left-circle"></i>
-          <span>Back to Voting</span>
-        </button>
-      </div>
-      <h2 class="page-title">
-        <i class="bi bi-arrows-move"></i>
-        Move Task to Active Tasks
-      </h2>
+    <div class="task-header">
+      <button class="back-button" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        Back to Voting
+      </button>
+      <h2>Move Task to Active Tasks</h2>
     </div>
 
-    <!-- Task Information Display -->
-    <div class="task-info-section">
-      <h3>Task Details</h3>
-      <div class="task-info-card">
-        <div class="task-header">
-          <h4>{{ task.title }}</h4>
-          <span class="priority-badge" [class]="'priority-' + task.priority">
-            {{ task.priority }}
-          </span>
-        </div>
-
-        <div class="task-description">
-          <p>{{ task.description }}</p>
-        </div>
-
-        <!-- Voting Results Summary -->
-        <div class="voting-summary">
-          <h5>Voting Results:</h5>
-          <div class="vote-counts">
-            <div class="vote-item yes">
+    <!-- Task Details -->
+    <div class="task-details-section">
+      <div class="task-card">
+        <div class="task-info">
+          <h3>{{ task.title }}</h3>
+          <p class="task-description">{{ task.description }}</p>
+          <div class="task-meta">
+            <span class="priority-badge" [class]="'priority-' + task.priority">
+              {{ task.priority | titlecase }}
+            </span>
+            <span class="vote-count">
               <i class="bi bi-hand-thumbs-up"></i>
-              <span>Yes: {{ task.yes?.length || 0 }}</span>
-            </div>
-            <div class="vote-item no">
+              {{ task.yes?.length || 0 }} Yes
+            </span>
+            <span class="vote-count">
               <i class="bi bi-hand-thumbs-down"></i>
-              <span>No: {{ task.no?.length || 0 }}</span>
-            </div>
+              {{ task.no?.length || 0 }} No
+            </span>
           </div>
         </div>
 
-        <!-- Subtasks Display -->
-        <div
-          class="subtasks-section"
-          *ngIf="task.subtasks && getSubtaskKeys(task.subtasks).length > 0"
-        >
-          <h5>Subtasks:</h5>
+        <!-- Subtasks Preview -->
+        <div class="subtasks-preview" *ngIf="task.subtasks">
+          <h4>Subtasks ({{ getObjectKeys(task.subtasks).length }})</h4>
           <div class="subtasks-list">
             <div
-              *ngFor="let key of getSubtaskKeys(task.subtasks)"
+              *ngFor="let key of getObjectKeys(task.subtasks)"
               class="subtask-item"
             >
-              <i class="bi bi-check2-square"></i>
-              <span>{{ key }}</span>
+              <i class="bi bi-check-circle-fill"></i>
+              <span class="subtask-name">{{ key }}</span>
               <span class="subtask-score"
-                >({{ task.subtasks![key].score }} points)</span
+                >({{ task.subtasks[key].score }} points)</span
               >
             </div>
           </div>
@@ -167,13 +134,73 @@
           <small class="form-hint">Task completion deadline</small>
         </div>
 
-        <!-- Recommendation -->
+        <!-- Recommendation Section (Replaces Notes/Recommendations) -->
         <div class="form-group">
-          <label for="recommendation">
+          <label>
             <i class="bi bi-lightbulb"></i>
-            Notes/Recommendations
+            System Recommendation
           </label>
-          <textarea></textarea>
+
+          <!-- Loading state for recommendation -->
+          <div *ngIf="loadingRecommendation" class="recommendation-loading">
+            <div class="small-spinner"></div>
+            <span>Calculating best member for this task...</span>
+          </div>
+
+          <!-- Recommendation error -->
+          <div
+            *ngIf="recommendationError && !loadingRecommendation"
+            class="recommendation-error"
+          >
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ recommendationError }}
+            <button
+              type="button"
+              class="retry-btn"
+              (click)="loadRecommendation()"
+            >
+              <i class="bi bi-arrow-clockwise"></i>
+              Retry
+            </button>
+          </div>
+
+          <!-- Recommendation content -->
+          <div
+            *ngIf="
+              recommendation && !loadingRecommendation && !recommendationError
+            "
+            class="recommendation-content"
+          >
+            <div class="recommended-member">
+              <div class="member-info">
+                <div class="member-name">
+                  <i class="bi bi-star-fill"></i>
+                  <strong>{{
+                    recommendation.recommendation.memberName
+                  }}</strong>
+                </div>
+                <div class="member-stats">
+                  <span class="stat">
+                    <i class="bi bi-trophy"></i>
+                    Score: {{ recommendation.recommendation.calculatedScore }}
+                  </span>
+                  <span class="stat">
+                    <i class="bi bi-list-task"></i>
+                    Active Tasks:
+                    {{ recommendation.recommendation.activeTasks }}
+                  </span>
+                  <span class="stat">
+                    <i class="bi bi-graph-up"></i>
+                    Overall Score:
+                    {{ recommendation.recommendation.overallScore }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="recommendation-reason">
+              <p>{{ recommendation.recommendation.reason }}</p>
+            </div>
+          </div>
         </div>
 
         <!-- Form Actions -->
