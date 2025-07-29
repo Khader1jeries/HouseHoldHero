@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService, Comment } from '../../../services/task.service';
 import { UserService } from '../../../services/user.service';
 import { Task } from '../../../services/interfaces/task.interface';
+
 @Component({
   selector: 'app-task-details',
   standalone: true,
@@ -19,8 +20,6 @@ export class TaskDetailsComponent implements OnInit {
   subTaskCompletionPercentage: number = 0;
   currentUser: any;
 
-  newComment: string = '';
-  isSubmittingComment: boolean = false;
   isCompletingTask: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
@@ -86,9 +85,43 @@ export class TaskDetailsComponent implements OnInit {
     return '';
   }
 
-  addComment(): void {}
+  // Helper methods for subtasks
+  getSubtaskKeys(): string[] {
+    if (!this.task?.['subtasks']) return [];
+    return Object.keys(this.task['subtasks']);
+  }
+
+  isSubtaskCompleted(subtaskKey: string): boolean {
+    if (!this.task?.['subtasks'] || !this.task['subtasks'][subtaskKey])
+      return false;
+    const subtask = this.task['subtasks'][subtaskKey] as any;
+    return subtask.status === true;
+  }
 
   goBack(): void {
     this.router.navigate(['/user/tasks']);
+  }
+
+  // New method to duplicate the task
+  duplicateTask(): void {
+    if (!this.task) {
+      return;
+    }
+
+    // Prepare task data for duplication
+    const duplicateTaskData = {
+      title: this.task.title,
+      description: this.task.description,
+      priority: this.task.priority,
+      subtasks: this.task['subtasks'] || {},
+    };
+
+    // Navigate to add-task component with the duplicate data as query parameters
+    this.router.navigate(['/user/tasks/add'], {
+      queryParams: {
+        duplicate: 'true',
+        taskData: JSON.stringify(duplicateTaskData),
+      },
+    });
   }
 }

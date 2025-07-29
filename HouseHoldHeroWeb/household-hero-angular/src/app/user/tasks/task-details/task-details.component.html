@@ -15,7 +15,6 @@
               'bi-hourglass-split': task.status === 'pending',
               'bi-check-circle-fill': task.status === 'completed',
               'bi-calendar-date': task.status === 'upcoming',
-              
             }"
           ></i>
           <span>{{ task.status | titlecase }}</span>
@@ -26,7 +25,21 @@
         </div>
       </div>
     </div>
-    <div class="task-actions"></div>
+
+    <!-- Updated task-actions section with duplicate button -->
+    <div class="task-actions">
+      <button
+        class="duplicate-button"
+        (click)="duplicateTask()"
+        title="Create a copy of this task"
+      >
+        <i class="bi bi-copy"></i>
+        <span>Duplicate Task</span>
+      </button>
+
+      <!-- Keep existing action buttons if you have any -->
+      <!-- Add other action buttons here as needed -->
+    </div>
   </div>
 
   <div class="task-details-grid">
@@ -40,17 +53,12 @@
         <div class="info-row">
           <div class="info-label">Assigned To</div>
           <div class="info-value assigned-to">
-            <!-- Updated to show member name with image -->
-            <!-- <img
-              [src]="'assets/profile_pic.png'"
-              [alt]="task.assignedToFullName || task.assignedToName || 'Member'"
-            /> -->
-            <!-- <span>{{
-              task.assignedToFullName ||
+            <span>{{
+              task["assignedToFullName"] ||
                 task.assignedToName ||
-                task.assigneeName ||
+                task["assigneeName"] ||
                 "Unassigned"
-            }}</span> -->
+            }}</span>
           </div>
         </div>
         <div class="info-row">
@@ -71,110 +79,73 @@
           </div>
         </div>
         <div class="info-row">
+          <div class="info-label">Priority</div>
+          <div class="info-value">{{ task.priority | titlecase }}</div>
+        </div>
+        <div class="info-row" *ngIf="task.score">
           <div class="info-label">Points</div>
-          <div class="info-value">
-            <!-- <span class="points-pill">{{ task.points }}</span> -->
+          <div class="info-value">{{ task.score }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtasks Section (if any) -->
+    <div
+      class="details-card subtasks-info"
+      *ngIf="task['subtasks'] && getSubtaskKeys().length > 0"
+    >
+      <h3>Sub-tasks ({{ subTaskCompletionPercentage }}% Complete)</h3>
+      <div class="subtasks-list">
+        <div class="subtask-item" *ngFor="let subtaskKey of getSubtaskKeys()">
+          <div class="subtask-status">
+            <i
+              class="bi"
+              [ngClass]="
+                isSubtaskCompleted(subtaskKey)
+                  ? 'bi-check-circle-fill'
+                  : 'bi-circle'
+              "
+            ></i>
+          </div>
+          <div class="subtask-details">
+            <span class="subtask-title">{{ subtaskKey }}</span>
           </div>
         </div>
-        <div class="info-row">
-          <div class="info-label">Created By</div>
-          <!-- <div class="info-value">{{ task.createdBy }}</div> -->
-        </div>
-        <div class="info-row">
-          <div class="info-label">Created On</div>
-          <!-- <div class="info-value">{{ task.createdDate | date : "medium" }}</div> -->
-        </div>
       </div>
     </div>
 
-    <!-- Sub-Tasks -->
-    <div
-      class="details-card sub-tasks"
-      *ngIf="task.subTasks && task.subTasks.length > 0"
-    >
-      <h3>Sub-Tasks</h3>
-      <div class="progress-bar">
-        <div
-          class="progress-value"
-          [style.width.%]="subTaskCompletionPercentage"
-        ></div>
-        <div class="progress-text">{{ subTaskCompletionPercentage }}%</div>
-      </div>
-      <div class="sub-tasks-list">
-        <div
-          *ngFor="let subTask of task.subTasks"
-          class="sub-task-item"
-          [class.completed]="subTask.completed"
-        >
-          <i
-            class="bi"
-            [ngClass]="subTask.completed ? 'bi-check-circle-fill' : 'bi-circle'"
-          ></i>
-          <span>{{ subTask.title }}</span>
+    <!-- Task Actions or Additional Info Section (if needed) -->
+    <div class="details-card additional-info" *ngIf="task.createdAt">
+      <h3>Task Details</h3>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">Created Date</div>
+          <div class="info-value">{{ task.createdAt | date : "medium" }}</div>
         </div>
-      </div>
-    </div>
-
-    <!-- Comments with Active Comment Form -->
-    <div class="details-card comments">
-      <h3>Comments</h3>
-      <div class="comments-container">
-        <!-- <div
-          *ngIf="task.comments && task.comments.length > 0"
-          class="comments-list"
-        > -->
-        <!-- <div *ngFor="let comment of task.comments" class="comment-item">
-            <div class="comment-author">
-              <img [src]="comment.authorImage" [alt]="comment.author" />
-              <div class="author-info">
-                <div class="author-name">{{ comment.author }}</div>
-                <div class="comment-time">
-                  {{ comment.timestamp | date : "medium" }}
-                </div>
-              </div>
-            </div>
-            <div class="comment-content">
-              <p>{{ comment.content }}</p>
-            </div>
-          </div> -->
-      </div>
-      <!-- <div
-          *ngIf="!task.comments || task.comments.length === 0"
-          class="no-comments"
-        >
-          <i class="bi bi-chat-left-text"></i>
-          <p>No comments yet</p>
-        </div> -->
-
-      <!-- Active Comment Form -->
-      <div class="add-comment-form">
-        <textarea
-          class="comment-textarea"
-          placeholder="Add your comment here..."
-          [(ngModel)]="newComment"
-          rows="4"
-        ></textarea>
-        <div class="comment-submit">
-          <button
-            class="submit-btn"
-            [disabled]="!newComment.trim()"
-            (click)="addComment()"
-          >
-            <i class="bi bi-send"></i>
-            <span>Submit Comment</span>
-          </button>
+        <div class="info-row" *ngIf="task.startDate">
+          <div class="info-label">Start Date</div>
+          <div class="info-value">{{ task.startDate | date : "medium" }}</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- </div> -->
 
-<div class="no-task-message" *ngIf="!task">
-  <div class="message-icon">
-    <i class="bi bi-exclamation-circle"></i>
+<!-- Loading state -->
+<div class="task-details-container" *ngIf="isLoading">
+  <div class="loading-message">
+    <i class="bi bi-hourglass-split"></i>
+    <p>Loading task details...</p>
   </div>
-  <h2>Task not found</h2>
-  <p>The task you're looking for doesn't exist or has been deleted.</p>
-  <button class="back-button" (click)="goBack()">Back to Tasks List</button>
+</div>
+
+<!-- No task message -->
+<div class="no-task-message" *ngIf="!task && !isLoading">
+  <i class="bi bi-exclamation-triangle message-icon"></i>
+  <h2>Task Not Found</h2>
+  <p>{{ errorMessage || "The requested task could not be found." }}</p>
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Back to Tasks</span>
+  </div>
 </div>

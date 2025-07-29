@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../../services/task.service';
 import { MemberService } from '../../../services/member.service';
 
@@ -55,13 +55,36 @@ export class AddTaskComponent implements OnInit {
     private router: Router,
     private taskService: TaskService,
     private memberService: MemberService,
-    private votesService: VotesService
+    private votesService: VotesService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadFamilyMembers();
-  }
+    // Retrieve the duplicate data from query params
+    this.route.queryParams.subscribe((params) => {
+      if (params['duplicate'] === 'true' && params['taskData']) {
+        try {
+          const duplicateData = JSON.parse(params['taskData']);
 
+          if (duplicateData) {
+            this.newTask.title = duplicateData.title;
+            this.newTask.description = duplicateData.description;
+            this.newTask.priority = duplicateData.priority;
+            this.newTask['subtasks'] = duplicateData.subtasks;
+
+            this.newVote.title = duplicateData.title;
+            this.newVote.description = duplicateData.description;
+            this.newVote.priority = duplicateData.priority;
+            this.newVote['subtasks'] = duplicateData.subtasks;
+          }
+        } catch (error) {
+          console.error('Error parsing task data:', error);
+        }
+      }
+
+      this.loadFamilyMembers();
+    });
+  }
   loadFamilyMembers(): void {
     const adminEmail = sessionStorage.getItem('adminEmail');
 
