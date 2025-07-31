@@ -8,6 +8,7 @@ function hashPassword(password) {
 }
 router.post("/login", async (req, res) => {
   try {
+    console.log("login android activated");
     const { email, password } = req.body;
     if (email && password) {
       const userRef = req.firestore.collection("members").doc(email);
@@ -65,6 +66,7 @@ router.get("/forgot-password/:email", async (req, res) => {
 });
 router.post("/reset-password", async (req, res) => {
   try {
+    console.log("aaa");
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({

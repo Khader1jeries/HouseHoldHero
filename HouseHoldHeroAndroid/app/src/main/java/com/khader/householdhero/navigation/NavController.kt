@@ -37,6 +37,7 @@ fun AppNavHost(navController: NavHostController) {
                     println("Settings clicked - navigating to settings")
                     navController.navigate(Screen.Settings.route)
                 }
+
             )
         }
 

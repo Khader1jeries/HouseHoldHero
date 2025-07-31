@@ -20,13 +20,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.khader.householdhero.R
+import com.khader.householdhero.network.RetrofitInstance
+import com.khader.householdhero.repository.TasksRepository
 import com.khader.householdhero.ui.tasks.TasksContent
+import com.khader.householdhero.ui.tasks.TasksViewModel
+import com.khader.householdhero.ui.tasks.TasksViewModelFactory
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -157,9 +163,15 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(Color(0xFFF5F5F5))
         ) {
+            val context = LocalContext.current
+            val repository = remember { TasksRepository(RetrofitInstance.tasksApi, context) }
+
+
+            val factory = remember { TasksViewModelFactory(repository) }
+            val viewModel: TasksViewModel = viewModel(factory = factory)
             when (selectedTab) {
                 0 -> HomeContent()
-                1 -> TasksContent()
+                1 -> TasksContent(viewModel = viewModel)
                 2 -> LeaderboardContent()
                 3 -> ProfileContent()
 

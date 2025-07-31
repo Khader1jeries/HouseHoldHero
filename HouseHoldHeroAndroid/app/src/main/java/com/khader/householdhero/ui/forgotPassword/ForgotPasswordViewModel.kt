@@ -32,29 +32,28 @@ class ForgotPasswordViewModel(private val repository: MemberRepository) : ViewMo
             isLoading = true
             result = null
 
-            try {
-                val response = RetrofitInstance.api.checkIfUserExists(email)
-                result = Result.success(response)
+            val response = repository.checkIfUserExists(email)
+
+            response.onSuccess {
+                result = Result.success(it)
                 isLoading = false
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 isLoading = false
                 val errorMessage = when (e) {
                     is HttpException -> {
                         val errorJson = e.response()?.errorBody()?.string()
                         val moshi = Moshi.Builder().build()
 
-                        // Try to parse as ErrorResponse first (your current backend format)
                         try {
                             val errorAdapter = moshi.adapter(ErrorResponse::class.java)
                             val errorResponse = errorAdapter.fromJson(errorJson)
                             errorResponse?.error ?: "HTTP ${e.code()} error"
-                        } catch (parseError: Exception) {
-                            // If that fails, try LoginResponse format
+                        } catch (_: Exception) {
                             try {
                                 val loginAdapter = moshi.adapter(LoginResponse::class.java)
                                 val loginResponse = loginAdapter.fromJson(errorJson)
                                 loginResponse?.message ?: "HTTP ${e.code()} error"
-                            } catch (parseError2: Exception) {
+                            } catch (_: Exception) {
                                 "HTTP ${e.code()} error"
                             }
                         }
@@ -63,11 +62,11 @@ class ForgotPasswordViewModel(private val repository: MemberRepository) : ViewMo
                     else -> "Unexpected error: ${e.localizedMessage}"
                 }
 
-                // Use LoginResponse just to hold the message
                 result = Result.success(LoginResponse(success = false, message = errorMessage))
             }
         }
     }
+
 
     fun clearResult() {
         result = null

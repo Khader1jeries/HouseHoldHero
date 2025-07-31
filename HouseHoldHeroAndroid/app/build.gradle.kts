@@ -69,6 +69,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.6.4") // or newer
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.ui:ui-text:1.6.4") // ✅ required for KeyboardOptions
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.5")
 
 
 }

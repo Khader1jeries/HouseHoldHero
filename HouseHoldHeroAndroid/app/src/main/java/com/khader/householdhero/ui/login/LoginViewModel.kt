@@ -21,10 +21,11 @@ class LoginViewModel(private val repository: MemberRepository) : ViewModel() {
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.loginMember(LoginRequest(email, password))
-                loginResult = Result.success(response)
-            }  catch (e: Exception) {
+            val result = repository.login(email, password)
+
+            result.onSuccess {
+                loginResult = Result.success(it)
+            }.onFailure { e ->
                 val errorMessage = when (e) {
                     is HttpException -> {
                         val errorJson = e.response()?.errorBody()?.string()
@@ -38,7 +39,6 @@ class LoginViewModel(private val repository: MemberRepository) : ViewModel() {
                     else -> "Unexpected error: ${e.localizedMessage}"
                 }
 
-                // Use LoginResponse just to hold the message
                 loginResult = Result.success(LoginResponse(success = false, message = errorMessage))
             }
         }

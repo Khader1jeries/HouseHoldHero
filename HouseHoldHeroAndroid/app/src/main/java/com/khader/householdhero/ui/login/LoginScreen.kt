@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -26,8 +27,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onForgotPassword: () -> Unit
 ) {
-    // Create ViewModel with repository
-    val repository = remember { MemberRepository(RetrofitInstance.api) }
+    val context = LocalContext.current
+    val repository = remember { MemberRepository(RetrofitInstance.memberApi, context) }
     val viewModel: LoginViewModel = viewModel { LoginViewModel(repository) }
 
     var email by remember { mutableStateOf("") }

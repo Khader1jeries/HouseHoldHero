@@ -14,10 +14,12 @@ import com.google.firebase.FirebaseApp
 import com.khader.householdhero.navigation.AppNavHost
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
 import com.khader.householdhero.ui.theme.login.LoginScreen
-
+import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         Log.d("MainActivity", "onCreate called") // Diagnostic log
 
         setContent {

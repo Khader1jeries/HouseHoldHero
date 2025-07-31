@@ -4,16 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.khader.householdhero.model.LoginResponse
 import com.khader.householdhero.model.ResetPasswordRequest
-import com.khader.householdhero.network.RetrofitInstance
+
+import com.khader.householdhero.repository.MemberRepository
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class ResetPasswordViewModel : ViewModel() {
+class ResetPasswordViewModel(private val repository: MemberRepository) : ViewModel() {
 
     var result by mutableStateOf<Result<LoginResponse>?>(null)
         private set
@@ -47,35 +49,47 @@ class ResetPasswordViewModel : ViewModel() {
             isLoading = true
             result = null
 
-            try {
-                val response = RetrofitInstance.api.resetPassword(ResetPasswordRequest(email, newPassword))
-                result = Result.success(response)
-            } catch (e: HttpException) {
-                val errorMessage = try {
-                    val errorJson = e.response()?.errorBody()?.string()
-                    if (!errorJson.isNullOrBlank()) {
-                        val moshi = Moshi.Builder().build()
-                        val adapter = moshi.adapter(LoginResponse::class.java)
-                        val errorResponse = adapter.fromJson(errorJson)
-                        errorResponse?.message ?: "Server error: HTTP ${e.code()}"
-                    } else {
-                        "Server error: HTTP ${e.code()}"
+            val response = repository.resetPassword(ResetPasswordRequest(email, newPassword))
+
+            response.onSuccess {
+                result = Result.success(it)
+            }.onFailure { e ->
+                val errorMessage = when (e) {
+                    is HttpException -> {
+                        val errorJson = e.response()?.errorBody()?.string()
+                        if (!errorJson.isNullOrBlank()) {
+                            val moshi = Moshi.Builder().build()
+                            val adapter = moshi.adapter(LoginResponse::class.java)
+                            val errorResponse = adapter.fromJson(errorJson)
+                            errorResponse?.message ?: "Server error: HTTP ${e.code()}"
+                        } else {
+                            "Server error: HTTP ${e.code()}"
+                        }
                     }
-                } catch (parseException: Exception) {
-                    "Server error: HTTP ${e.code()}"
+
+                    is IOException -> "Network error. Please check your internet connection."
+                    else -> "Unexpected error: ${e.localizedMessage ?: "Unknown error"}"
                 }
+
                 result = Result.success(LoginResponse(success = false, message = errorMessage))
-            } catch (e: IOException) {
-                result = Result.success(LoginResponse(success = false, message = "Network error. Please check your internet connection."))
-            } catch (e: Exception) {
-                result = Result.success(LoginResponse(success = false, message = "Unexpected error: ${e.localizedMessage ?: "Unknown error"}"))
-            } finally {
-                isLoading = false
             }
+
+            isLoading = false
         }
     }
 
+
     fun clearResult() {
         result = null
+    }
+}
+class ResetPasswordViewModelFactory(
+    private val repository: MemberRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ResetPasswordViewModel::class.java)) {
+            return ResetPasswordViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

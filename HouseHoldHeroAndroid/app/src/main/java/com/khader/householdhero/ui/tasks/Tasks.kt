@@ -20,17 +20,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.khader.householdhero.model.Task
+import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.SecondaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
+// Data class for task items
+data class TaskItemData(
+    val id: String,
+    val title: String,
+    val description: String,
+    val points: Int,
+    val status: String,
+    val backgroundColor: Color
+)
+
 @Composable
 fun TasksContent(
-    onNavigateToActiveTasks: () -> Unit = {},
+    viewModel: TasksViewModel,onNavigateToActiveTasks: () -> Unit = {},
     onNavigateToVotingTasks: () -> Unit = {},
     onNavigateToFutureTasks: () -> Unit = {},
-    onNavigateToFinishedTasks: () -> Unit = {}
+    onNavigateToFinishedTasks: () -> Unit = {},
+
 ) {
+    DisposableEffect(Unit) {
+        viewModel.fetchTwoActiveTasks()
+        viewModel.fetchTwoFutureTasks()
+        viewModel.fetchTwoFinishedTasks()
+        viewModel.fetchTwoVotes()
+        onDispose { }
+    }
+    val active = convertToTaskItemData(viewModel.twoActiveTasksResult?.getOrNull() ?: emptyList(),"Pending")
+    val future = convertToTaskItemData(viewModel.twoFutureTasksResult?.getOrNull() ?: emptyList(),"Upcoming")
+    val finished = convertToTaskItemData(viewModel.twoFinishedTasksResult?.getOrNull() ?: emptyList(),"")
+    val votes = convertVotesToTaskItemData(viewModel.twoVotes?.getOrNull() ?: emptyList())
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +72,7 @@ fun TasksContent(
                 title = "Active Tasks",
                 icon = Icons.Default.PlayArrow,
                 iconColor = Color(0xFF4CAF50),
-                tasks = getActiveTasksSample(),
+                tasks = active,
                 onSeeAllClick = onNavigateToActiveTasks
             )
         }
@@ -59,7 +83,7 @@ fun TasksContent(
                 title = "Voting",
                 icon = Icons.Default.CheckCircle,
                 iconColor = Color(0xFF2196F3),
-                tasks = getVotingTasksSample(),
+                tasks = votes,
                 onSeeAllClick = onNavigateToVotingTasks
             )
         }
@@ -68,9 +92,9 @@ fun TasksContent(
         item {
             TaskContainer(
                 title = "Future Tasks",
-                icon = Icons.Default.CheckCircle,
+                icon = Icons.Default.Schedule,
                 iconColor = Color(0xFFFF9800),
-                tasks = getFutureTasksSample(),
+                tasks = future,
                 onSeeAllClick = onNavigateToFutureTasks
             )
         }
@@ -79,9 +103,9 @@ fun TasksContent(
         item {
             TaskContainer(
                 title = "Finished Tasks",
-                icon = Icons.Default.CheckCircle,
-                iconColor = Color(0xFF9C27B0),
-                tasks = getFinishedTasksSample(),
+                icon = Icons.Default.Done,
+                iconColor = Color(0xFF9E9E9E),
+                tasks = finished,
                 onSeeAllClick = onNavigateToFinishedTasks
             )
         }
@@ -92,24 +116,69 @@ fun TasksContent(
     }
 }
 
+fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItemData> {
+    return tasks.map { task ->
+        TaskItemData(
+            id = task.id,
+            title = task.title,
+            description = task.description,
+            points = task.score,
+            status = "Votes: YES - ${task.yes.size}", // You can just use task.yes.size.toString() if you want a number only
+            backgroundColor = Color(
+                red = (70..150).random() / 255f,
+                green = (70..150).random() / 255f,
+                blue = (70..150).random() / 255f
+            )
+        )
+    }
+}
+
+fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItemData> {
+
+    return tasks.map {
+        task ->
+        val resolvedStatus = if (status.isEmpty() && task.status == false) {
+            "Uncompleted"
+        } else if (status.isEmpty() && task.status == true) {
+            "Completed"
+        } else {
+            status
+        }
+        TaskItemData(
+            id = task.id,
+            title = task.title,
+            description = task.description,
+            points = task.score,
+            status = resolvedStatus,// Placeholder for now
+            backgroundColor = Color(
+                red = (70..150).random() / 255f,
+                green = (70..150).random() / 255f,
+                blue = (70..150).random() / 255f
+            )
+        )
+    }
+}
+
 @Composable
 fun TaskContainer(
     title: String,
     icon: ImageVector,
     iconColor: Color,
-    tasks: List<TaskItem>,
+    tasks: List<TaskItemData>,
     onSeeAllClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            // Header with title and see all button
+            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -134,15 +203,13 @@ fun TaskContainer(
                 }
 
                 TextButton(
-                    onClick = onSeeAllClick,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = PrimaryColor
-                    )
+                    onClick = onSeeAllClick
                 ) {
                     Text(
                         text = "See All",
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = PrimaryColor
                     )
                 }
             }
@@ -177,7 +244,7 @@ fun TaskContainer(
 }
 
 @Composable
-fun TaskCard(task: TaskItem) {
+fun TaskCard(task: TaskItemData) {
     Card(
         modifier = Modifier
             .width(200.dp)
@@ -211,88 +278,43 @@ fun TaskCard(task: TaskItem) {
                         text = task.description,
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.8f),
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
+            // Bottom row with points and status
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (task.points > 0) {
-                    Text(
-                        text = "${task.points}pts",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = "${task.points} pts",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
 
-                if (task.status.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = task.status,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White,
-                            fontSize = 10.sp
-                        )
-                    }
-                }
+                Text(
+                    text = task.status,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
 }
 
-// Data class for task items
-data class TaskItemData(
-    val id: String,
-    val title: String,
-    val description: String,
-    val points: Int,
-    val status: String,
-    val backgroundColor: Color
-)
 
-// Sample data functions
-fun getActiveTasksSample(): List<TaskItemData> = listOf(
-    TaskItemData(
-        id = "1",
-        title = "Clean bathroom",
-        description = "Including sink, toilet, mirror",
-        points = 50,
-        status = "In Progress",
-        backgroundColor = Color(0xFF4CAF50)
-    ),
-    TaskItemData(
-        id = "2",
-        title = "Make the laundry",
-        description = "Wash, dry and fold clothes",
-        points = 30,
-        status = "Pending",
-        backgroundColor = Color(0xFF2196F3)
-    ),
-    TaskItemData(
-        id = "3",
-        title = "Vacuum living room",
-        description = "Complete vacuum of all areas",
-        points = 25,
-        status = "Assigned",
-        backgroundColor = Color(0xFFFF9800)
-    )
-)
 
 fun getVotingTasksSample(): List<TaskItemData> = listOf(
     TaskItemData(
         id = "4",
-        title = "Take the dog in walk",
+        title = "Take the dog for a walk",
         description = "30 minute walk in the park",
         points = 20,
         status = "Vote: YES - 2",
@@ -308,40 +330,5 @@ fun getVotingTasksSample(): List<TaskItemData> = listOf(
     )
 )
 
-fun getFutureTasksSample(): List<TaskItemData> = listOf(
-    TaskItemData(
-        id = "6",
-        title = "Clean garage",
-        description = "Organize and clean garage",
-        points = 75,
-        status = "Scheduled",
-        backgroundColor = Color(0xFF607D8B)
-    ),
-    TaskItemData(
-        id = "7",
-        title = "Garden maintenance",
-        description = "Trim hedges and water plants",
-        points = 45,
-        status = "Next Week",
-        backgroundColor = Color(0xFF795548)
-    )
-)
 
-fun getFinishedTasksSample(): List<TaskItemData> = listOf(
-    TaskItemData(
-        id = "8",
-        title = "Wash dishes",
-        description = "All dishes cleaned and dried",
-        points = 15,
-        status = "Complete",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItemData(
-        id = "9",
-        title = "Take out trash",
-        description = "Garbage and recycling",
-        points = 10,
-        status = "Complete",
-        backgroundColor = Color(0xFF9E9E9E)
-    )
-)
+

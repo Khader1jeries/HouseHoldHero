@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,8 +19,8 @@ fun ForgotPasswordScreen(
     onBackToLogin: () -> Unit,
     onEmailExists: (String) -> Unit
 ) {
-    // Create ViewModel with repository
-    val repository = remember { MemberRepository(RetrofitInstance.api) }
+    val context = LocalContext.current
+    val repository = remember { MemberRepository(RetrofitInstance.memberApi, context) }
     val viewModel: ForgotPasswordViewModel = viewModel { ForgotPasswordViewModel(repository) }
 
     var email by remember { mutableStateOf("") }

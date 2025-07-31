@@ -1,6 +1,7 @@
 package com.khader.householdhero.network
 
 import com.khader.householdhero.api.MemberApi
+import com.khader.householdhero.api.TasksApi
 import com.squareup.moshi.Moshi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -16,7 +17,13 @@ object RetrofitInstance {
             .addConverterFactory(MoshiConverterFactory.create(moshi)) // ✅ Moshi here
             .build()
     }
-    val api: MemberApi by lazy {
+
+    val memberApi: MemberApi by lazy {
         retrofit.create(MemberApi::class.java)
     }
+
+    val tasksApi: TasksApi by lazy {
+        retrofit.create(TasksApi::class.java)
+    }
+
 }

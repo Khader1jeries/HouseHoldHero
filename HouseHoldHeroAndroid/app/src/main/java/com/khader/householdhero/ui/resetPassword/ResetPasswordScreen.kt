@@ -7,12 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khader.householdhero.network.RetrofitInstance
+import com.khader.householdhero.repository.MemberRepository
 import com.khader.householdhero.viewmodel.ResetPasswordViewModel
+import com.khader.householdhero.viewmodel.ResetPasswordViewModelFactory
 
 @Composable
 fun ResetPasswordScreen(
@@ -20,7 +24,10 @@ fun ResetPasswordScreen(
     onPasswordResetSuccess: () -> Unit,
     onBackToLogin: () -> Unit
 ) {
-    val viewModel: ResetPasswordViewModel = viewModel()
+    val context = LocalContext.current
+    val repository = remember { MemberRepository(RetrofitInstance.memberApi, context) }
+    val factory = remember { ResetPasswordViewModelFactory(repository) }
+    val viewModel: ResetPasswordViewModel = viewModel(factory = factory)
 
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
