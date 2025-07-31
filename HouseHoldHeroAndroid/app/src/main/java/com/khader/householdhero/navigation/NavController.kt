@@ -8,6 +8,10 @@ import androidx.navigation.compose.composable
 import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
+import com.khader.householdhero.ui.tasks.ActiveTasksScreen
+import com.khader.householdhero.ui.tasks.FinishedTasksScreen
+import com.khader.householdhero.ui.tasks.FutureTasksScreen
+import com.khader.householdhero.ui.tasks.VotingTasksScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
 
@@ -68,32 +72,39 @@ fun AppNavHost(navController: NavHostController) {
             SettingsScreen(
                 onBackPressed = {
                     navController.popBackStack()
-                },
-                onEditProfile = {
-                    // TODO: Navigate to edit profile screen
-                },
-                onSecurity = {
-                    // TODO: Navigate to security screen
-                },
-                onPrivacy = {
-                    // TODO: Navigate to privacy screen
-                },
-                onContactAdmin = {
-                    // TODO: Navigate to contact admin screen
-                },
-                onHelpSupport = {
-                    // TODO: Navigate to help & support screen
-                },
-                onTermsPolicies = {
-                    // TODO: Navigate to terms & policies screen
-                },
-                onReportProblem = {
-                    // TODO: Navigate to report problem screen
-                },
-                onLogOut = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                }
+            )
+        }
+
+        // Task screens
+        composable(Screen.ActiveTasks.route) {
+            ActiveTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.VotingTasks.route) {
+            VotingTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.FutureTasks.route) {
+            FutureTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.FinishedTasks.route) {
+            FinishedTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
                 }
             )
         }

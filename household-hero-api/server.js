@@ -43,7 +43,10 @@ app.use("/api/tasksUnderVote", tasksUnderVoteWebRoutes);
 app.use("/api/messages", messagesWebRoutes);
 app.use("/api/analytics", analyticsWebRoutes);
 const memberAndroidRoutes = require("./androidAPI/routes/members");
+const tasksAndroidRoutes = require("./androidAPI/routes/tasks");
+
 app.use("/api/members/", memberAndroidRoutes);
+app.use("/api/tasks/", tasksAndroidRoutes);
 // Basic route for testing
 app.get("/", (req, res) => {
   res.send("Household Hero API is running");
