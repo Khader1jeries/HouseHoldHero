@@ -38,7 +38,11 @@ import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onNavigateToActiveTasks: () -> Unit = {},
+    onNavigateToVotingTasks: () -> Unit = {},
+    onNavigateToFutureTasks: () -> Unit = {},
+    onNavigateToFinishedTasks: () -> Unit = {}
 ) {
     println("HomeScreen loaded with onSettingsClick: ${onSettingsClick != {}}")
     var selectedTab by remember { mutableStateOf(0) }
@@ -171,7 +175,13 @@ fun HomeScreen(
             val viewModel: TasksViewModel = viewModel(factory = factory)
             when (selectedTab) {
                 0 -> HomeContent()
-                1 -> TasksContent(viewModel = viewModel)
+                1 -> TasksContent(
+                    viewModel = viewModel,
+                    onNavigateToActiveTasks = onNavigateToActiveTasks,
+                    onNavigateToVotingTasks = onNavigateToVotingTasks,
+                    onNavigateToFutureTasks = onNavigateToFutureTasks,
+                    onNavigateToFinishedTasks = onNavigateToFinishedTasks
+                )
                 2 -> LeaderboardContent()
                 3 -> ProfileContent()
 

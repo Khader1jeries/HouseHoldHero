@@ -36,8 +36,19 @@ fun AppNavHost(navController: NavHostController) {
                 onSettingsClick = {
                     println("Settings clicked - navigating to settings")
                     navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToActiveTasks = {
+                    navController.navigate(Screen.ActiveTasks.route)
+                },
+                onNavigateToVotingTasks = {
+                    navController.navigate(Screen.VotingTasks.route)
+                },
+                onNavigateToFutureTasks = {
+                    navController.navigate(Screen.FutureTasks.route)
+                },
+                onNavigateToFinishedTasks = {
+                    navController.navigate(Screen.FinishedTasks.route)
                 }
-
             )
         }
 
