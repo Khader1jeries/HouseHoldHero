@@ -74,7 +74,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Wash dishes",
         description = "All dishes cleaned and dried",
         points = 15,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -82,7 +82,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Take out trash",
         description = "Garbage and recycling",
         points = 10,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -90,7 +90,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Vacuum stairs",
         description = "Vacuumed all carpeted stairs",
         points = 25,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -98,12 +98,12 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Clean mirrors",
         description = "Cleaned all bathroom mirrors",
         points = 20,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
         id = "fin5",
-        title = "Dust living room",
+        title = "Dust living room",dueDate = "",
         description = "Dusted all surfaces and furniture",
         points = 30,
         status = "Completed",
@@ -114,7 +114,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Mop kitchen floor",
         description = "Swept and mopped entire kitchen",
         points = 35,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -122,7 +122,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Clean shower",
         description = "Scrubbed and disinfected shower",
         points = 45,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -130,12 +130,12 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Organize pantry",
         description = "Sorted and organized all pantry items",
         points = 40,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
         id = "fin9",
-        title = "Wash car",
+        title = "Wash car",dueDate = "",
         description = "Exterior wash and interior vacuum",
         points = 50,
         status = "Completed",
@@ -146,7 +146,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Clean baseboards",
         description = "Wiped down all baseboards",
         points = 25,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -154,7 +154,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Replace light bulbs",
         description = "Changed burned out bulbs",
         points = 15,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     ),
     TaskItem(
@@ -162,7 +162,7 @@ fun getFinishedTasksFullList(): List<TaskItem> = listOf(
         title = "Weed garden",
         description = "Removed weeds from flower beds",
         points = 30,
-        status = "Completed",
+        status = "Completed",dueDate = "",
         backgroundColor = Color(0xFF9E9E9E)
     )
 )

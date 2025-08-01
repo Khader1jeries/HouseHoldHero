@@ -20,7 +20,7 @@ import com.khader.householdhero.ui.theme.TextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FutureTasksScreen(
+fun VotingTasksScreen(
     onBackPressed: () -> Unit = {}
 ) {
     Scaffold(
@@ -33,12 +33,12 @@ fun FutureTasksScreen(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = Color(0xFFFF9800),
+                            tint = Color(0xFF2196F3),
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Future Tasks",
+                            text = "Voting Tasks",
                             color = TextColor,
                             fontWeight = FontWeight.Bold
                         )
@@ -61,84 +61,68 @@ fun FutureTasksScreen(
     ) { paddingValues ->
         TaskListContent(
             modifier = Modifier.padding(paddingValues),
-            tasks = getFutureTasksFullList(),
-            emptyMessage = "No future tasks scheduled"
+            tasks = getVotingTasksFullList(),
+            emptyMessage = "No tasks available for voting"
         )
     }
 }
 
-// Extended sample data for Future Tasks
-fun getFutureTasksFullList(): List<TaskItem> = listOf(
+// Extended sample data for Voting Tasks
+fun getVotingTasksFullList(): List<TaskItem> = listOf(
     TaskItem(
-        id = "f1",
-        title = "Clean garage",
-        description = "Organize and clean garage",
-        points = 75,
-        status = "Aug 15",
-        backgroundColor = Color(0xFF607D8B)
-    ),
-    TaskItem(
-        id = "f2",
-        title = "Garden maintenance",
-        description = "Trim hedges and water plants",
-        points = 45,
-        status = "Aug 20",
-        backgroundColor = Color(0xFF795548)
-    ),
-    TaskItem(
-        id = "f3",
-        title = "Monthly deep clean",
-        description = "Deep clean entire house",
-        points = 150,
-        status = "Sep 1",
+        id = "v1",
+        title = "Take the dog for a walk",
+        description = "30 minute walk in the park",
+        points = 20,
+        status = "Vote: YES - 2",dueDate = "",
         backgroundColor = Color(0xFF9C27B0)
     ),
     TaskItem(
-        id = "f4",
-        title = "Replace air filters",
-        description = "Change HVAC filters throughout house",
-        points = 25,
-        status = "Aug 25",
-        backgroundColor = Color(0xFF4CAF50)
-    ),
-    TaskItem(
-        id = "f5",
-        title = "Clean gutters",
-        description = "Remove debris from all gutters",
-        points = 80,
-        status = "Sep 10",
-        backgroundColor = Color(0xFFFF5722)
-    ),
-    TaskItem(
-        id = "f6",
-        title = "Winterize outdoor furniture",
-        description = "Store or cover patio furniture",
-        points = 35,
-        status = "Oct 1",
-        backgroundColor = Color(0xFF3F51B5)
-    ),
-    TaskItem(
-        id = "f7",
-        title = "Service lawn mower",
-        description = "Annual maintenance and tune-up",
+        id = "v2",
+        title = "Grocery shopping",
+        description = "Weekly grocery run",
         points = 40,
-        status = "Sep 5",
-        backgroundColor = Color(0xFF009688)
-    ),
-    TaskItem(
-        id = "f8",
-        title = "Organize holiday decorations",
-        description = "Sort and organize holiday items",
-        points = 30,
-        status = "Nov 1",
+        status = "Vote: YES - 1",dueDate = "",
         backgroundColor = Color(0xFFE91E63)
     ),
     TaskItem(
-        id = "f9",
-        title = "Inspect smoke detectors",
-        description = "Test and replace batteries if needed",
-        points = 20,
-        status = "Sep 15",
-        backgroundColor = Color(0xFFFF9800)
+        id = "v3",
+        title = "Fix leaky faucet",dueDate = "",
+        description = "Repair kitchen sink faucet",
+        points = 60,
+        status = "Vote: NO - 1",
+        backgroundColor = Color(0xFFFF5722)
+    ),
+    TaskItem(
+        id = "v4",
+        title = "Paint bedroom walls",dueDate = "",
+        description = "Paint master bedroom with new color",
+        points = 100,
+        status = "Vote: YES - 3",
+        backgroundColor = Color(0xFF3F51B5)
+    ),
+    TaskItem(
+        id = "v5",
+        title = "Install new light fixture",
+        description = "Replace dining room light",
+        points = 80,
+        status = "Vote: YES - 2",dueDate = "",
+        backgroundColor = Color(0xFF009688)
+    ),
+    TaskItem(
+        id = "v6",
+        title = "Deep clean carpets",dueDate = "",
+        description = "Steam clean all bedroom carpets",
+        points = 70,
+        status = "Vote: NO - 2",
+        backgroundColor = Color(0xFF795548)
+    ),
+    TaskItem(
+        id = "v7",
+        title = "Organize garage",dueDate = "",
+        description = "Sort and organize all garage items",
+        points = 90,
+        status = "Vote: YES - 1",
+        backgroundColor = Color(0xFF607D8B)
     )
 )

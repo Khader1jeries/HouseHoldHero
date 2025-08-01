@@ -20,7 +20,7 @@ import com.khader.householdhero.ui.theme.TextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VotingTasksScreen(
+fun FutureTasksScreen(
     onBackPressed: () -> Unit = {}
 ) {
     Scaffold(
@@ -33,12 +33,12 @@ fun VotingTasksScreen(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = Color(0xFF2196F3),
+                            tint = Color(0xFFFF9800),
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Voting Tasks",
+                            text = "Future Tasks",
                             color = TextColor,
                             fontWeight = FontWeight.Bold
                         )
@@ -61,68 +61,84 @@ fun VotingTasksScreen(
     ) { paddingValues ->
         TaskListContent(
             modifier = Modifier.padding(paddingValues),
-            tasks = getVotingTasksFullList(),
-            emptyMessage = "No tasks available for voting"
+            tasks = getFutureTasksFullList(),
+            emptyMessage = "No future tasks scheduled"
         )
     }
 }
 
-// Extended sample data for Voting Tasks
-fun getVotingTasksFullList(): List<TaskItem> = listOf(
+// Extended sample data for Future Tasks
+fun getFutureTasksFullList(): List<TaskItem> = listOf(
     TaskItem(
-        id = "v1",
-        title = "Take the dog for a walk",
-        description = "30 minute walk in the park",
-        points = 20,
-        status = "Vote: YES - 2",
-        backgroundColor = Color(0xFF9C27B0)
+        id = "f1",
+        title = "Clean garage",
+        description = "Organize and clean garage",
+        points = 75,
+        status = "Aug 15",dueDate = "",
+        backgroundColor = Color(0xFF607D8B)
     ),
     TaskItem(
-        id = "v2",
-        title = "Grocery shopping",
-        description = "Weekly grocery run",
-        points = 40,
-        status = "Vote: YES - 1",
-        backgroundColor = Color(0xFFE91E63)
-    ),
-    TaskItem(
-        id = "v3",
-        title = "Fix leaky faucet",
-        description = "Repair kitchen sink faucet",
-        points = 60,
-        status = "Vote: NO - 1",
-        backgroundColor = Color(0xFFFF5722)
-    ),
-    TaskItem(
-        id = "v4",
-        title = "Paint bedroom walls",
-        description = "Paint master bedroom with new color",
-        points = 100,
-        status = "Vote: YES - 3",
-        backgroundColor = Color(0xFF3F51B5)
-    ),
-    TaskItem(
-        id = "v5",
-        title = "Install new light fixture",
-        description = "Replace dining room light",
-        points = 80,
-        status = "Vote: YES - 2",
-        backgroundColor = Color(0xFF009688)
-    ),
-    TaskItem(
-        id = "v6",
-        title = "Deep clean carpets",
-        description = "Steam clean all bedroom carpets",
-        points = 70,
-        status = "Vote: NO - 2",
+        id = "f2",dueDate = "",
+        title = "Garden maintenance",
+        description = "Trim hedges and water plants",
+        points = 45,
+        status = "Aug 20",
         backgroundColor = Color(0xFF795548)
     ),
     TaskItem(
-        id = "v7",
-        title = "Organize garage",
-        description = "Sort and organize all garage items",
-        points = 90,
-        status = "Vote: YES - 1",
-        backgroundColor = Color(0xFF607D8B)
+        id = "f3",dueDate = "",
+        title = "Monthly deep clean",
+        description = "Deep clean entire house",
+        points = 150,
+        status = "Sep 1",
+        backgroundColor = Color(0xFF9C27B0)
+    ),
+    TaskItem(
+        id = "f4",
+        title = "Replace air filters",
+        description = "Change HVAC filters throughout house",
+        points = 25,
+        status = "Aug 25",dueDate = "",
+        backgroundColor = Color(0xFF4CAF50)
+    ),
+    TaskItem(
+        id = "f5",
+        title = "Clean gutters",
+        description = "Remove debris from all gutters",
+        points = 80,
+        status = "Sep 10",dueDate = "",
+        backgroundColor = Color(0xFFFF5722)
+    ),
+    TaskItem(
+        id = "f6",
+        title = "Winterize outdoor furniture",
+        description = "Store or cover patio furniture",
+        points = 35,
+        status = "Oct 1",dueDate = "",
+        backgroundColor = Color(0xFF3F51B5)
+    ),
+    TaskItem(
+        id = "f7",
+        title = "Service lawn mower",
+        description = "Annual maintenance and tune-up",
+        points = 40,
+        status = "Sep 5",dueDate = "",
+        backgroundColor = Color(0xFF009688)
+    ),
+    TaskItem(
+        id = "f8",
+        title = "Organize holiday decorations",
+        description = "Sort and organize holiday items",
+        points = 30,
+        status = "Nov 1",dueDate = "",
+        backgroundColor = Color(0xFFE91E63)
+    ),
+    TaskItem(
+        id = "f9",
+        title = "Inspect smoke detectors",
+        description = "Test and replace batteries if needed",
+        points = 20,
+        status = "Sep 15",dueDate = "",
+        backgroundColor = Color(0xFFFF9800)
     )
 )
