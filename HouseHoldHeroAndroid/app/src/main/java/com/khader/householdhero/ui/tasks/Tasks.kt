@@ -27,14 +27,7 @@ import com.khader.householdhero.ui.theme.SecondaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
 // Data class for task items
-data class TaskItemData(
-    val id: String,
-    val title: String,
-    val description: String,
-    val points: Int,
-    val status: String,
-    val backgroundColor: Color
-)
+
 
 @Composable
 fun TasksContent(
@@ -116,55 +109,14 @@ fun TasksContent(
     }
 }
 
-fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItemData> {
-    return tasks.map { task ->
-        TaskItemData(
-            id = task.id,
-            title = task.title,
-            description = task.description,
-            points = task.score,
-            status = "Votes: YES - ${task.yes.size}", // You can just use task.yes.size.toString() if you want a number only
-            backgroundColor = Color(
-                red = (70..150).random() / 255f,
-                green = (70..150).random() / 255f,
-                blue = (70..150).random() / 255f
-            )
-        )
-    }
-}
 
-fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItemData> {
-
-    return tasks.map {
-        task ->
-        val resolvedStatus = if (status.isEmpty() && task.status == false) {
-            "Uncompleted"
-        } else if (status.isEmpty() && task.status == true) {
-            "Completed"
-        } else {
-            status
-        }
-        TaskItemData(
-            id = task.id,
-            title = task.title,
-            description = task.description,
-            points = task.score,
-            status = resolvedStatus,// Placeholder for now
-            backgroundColor = Color(
-                red = (70..150).random() / 255f,
-                green = (70..150).random() / 255f,
-                blue = (70..150).random() / 255f
-            )
-        )
-    }
-}
 
 @Composable
 fun TaskContainer(
     title: String,
     icon: ImageVector,
     iconColor: Color,
-    tasks: List<TaskItemData>,
+    tasks: List<TaskItem>,
     onSeeAllClick: () -> Unit
 ) {
     Card(
@@ -244,7 +196,7 @@ fun TaskContainer(
 }
 
 @Composable
-fun TaskCard(task: TaskItemData) {
+fun TaskCard(task: TaskItem) {
     Card(
         modifier = Modifier
             .width(200.dp)
@@ -311,24 +263,8 @@ fun TaskCard(task: TaskItemData) {
 
 
 
-fun getVotingTasksSample(): List<TaskItemData> = listOf(
-    TaskItemData(
-        id = "4",
-        title = "Take the dog for a walk",
-        description = "30 minute walk in the park",
-        points = 20,
-        status = "Vote: YES - 2",
-        backgroundColor = Color(0xFF9C27B0)
-    ),
-    TaskItemData(
-        id = "5",
-        title = "Grocery shopping",
-        description = "Weekly grocery run",
-        points = 40,
-        status = "Vote: YES - 1",
-        backgroundColor = Color(0xFFE91E63)
-    )
-)
+
+
 
 
 

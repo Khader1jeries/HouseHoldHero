@@ -137,5 +137,44 @@ router.get("/android/TwoFinished/:assignedTo", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
+router.get("/android/AllActive/:assignedTo", async (req, res) => {
+  const { assignedTo } = req.params;
 
+  if (!assignedTo) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing assignedTo parameter" });
+  }
+
+  try {
+    console.log(assignedTo);
+    const now = new Date().toISOString();
+
+    const snapshot = await db
+      .collection("tasks")
+      .where("assignedTo", "==", assignedTo)
+      .orderBy("startDate")
+      .get();
+
+    const activeTasks = [];
+
+    snapshot.forEach((doc) => {
+      const task = doc.data();
+
+      if (
+        task.startDate &&
+        task.dueDate &&
+        now >= task.startDate &&
+        now <= task.dueDate
+      ) {
+        activeTasks.push({ id: doc.id, ...task });
+      }
+    });
+
+    return res.status(200).json(activeTasks);
+  } catch (error) {
+    console.error("Error getting active tasks:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 module.exports = router;

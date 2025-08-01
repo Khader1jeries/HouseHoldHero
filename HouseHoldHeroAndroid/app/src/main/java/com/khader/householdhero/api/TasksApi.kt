@@ -18,6 +18,9 @@ interface TasksApi {
     suspend fun getTwoFutureTasks(@Path("email") email: String): List<Task>
     @GET("tasks/android/TwoFinished/{email}")
     suspend fun getTwoFinishedTasks(@Path("email") email: String): List<Task>
-    @GET("tasksUnderVote/android/TwoVotes/{email}")
-    suspend fun getTwoVotes(@Path("email") email: String): List<TaskUnderVote>
+    @GET("tasksUnderVote/android/TwoVotes/{adminEmail}/{email}")
+    suspend fun getTwoVotes(@Path("adminEmail") adminEmail: String,
+                            @Path("email") email: String): List<TaskUnderVote>
+    @GET("tasks/android/AllActive/{email}")
+    suspend fun getAllActiveTasks(@Path("email") email: String): List<Task>
 }

@@ -2,13 +2,14 @@ package com.khader.householdhero.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
-import com.khader.householdhero.ui.tasks.ActiveTasksScreen
+import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
 import com.khader.householdhero.ui.tasks.FinishedTasksScreen
 import com.khader.householdhero.ui.tasks.FutureTasksScreen
 import com.khader.householdhero.ui.tasks.VotingTasksScreen

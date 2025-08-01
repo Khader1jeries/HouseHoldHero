@@ -16,6 +16,7 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
             if (response.success) {
                 val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
                 sharedPrefs.edit().putString("email", email).apply()
+                sharedPrefs.edit().putString("adminEmail", response.message).apply()
             }
             Result.success(response)
 

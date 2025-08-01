@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks
+package com.khader.householdhero.ui.tasks.activeTasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,20 +9,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khader.householdhero.ui.tasks.TasksViewModel
+import com.khader.householdhero.ui.tasks.convertToTaskItemData
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActiveTasksScreen(
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit,
+    viewModel: ActiveTasksViewModel = viewModel()
 ) {
+    DisposableEffect(Unit) {
+        viewModel.fetchAllActiveTasks()
+
+        onDispose { }
+    }
+    val tasks = convertToTaskItemData(viewModel.tasks?.getOrNull() ?: emptyList(),"Pending")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,17 +70,17 @@ fun ActiveTasksScreen(
             )
         }
     ) { paddingValues ->
-        TaskListContent(
+        _root_ide_package_.com.khader.householdhero.ui.tasks.TaskListContent(
             modifier = Modifier.padding(paddingValues),
-            tasks = getActiveTasksFullList(),
+            tasks = tasks,
             emptyMessage = "No active tasks available"
         )
     }
 }
 
 // Extended sample data for Active Tasks
-fun getActiveTasksFullList(): List<TaskItem> = listOf(
-    TaskItem(
+fun getActiveTasksFullList(): List<com.khader.householdhero.ui.tasks.TaskItem> = listOf(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "1",
         title = "Clean bathroom",
         description = "Including sink, toilet, mirror",
@@ -77,7 +88,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "In Progress",
         backgroundColor = Color(0xFF4CAF50)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "2",
         title = "Make the laundry",
         description = "Wash, dry and fold clothes",
@@ -85,7 +96,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "Pending",
         backgroundColor = Color(0xFF2196F3)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "3",
         title = "Vacuum living room",
         description = "Complete vacuum of all areas",
@@ -93,7 +104,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "Assigned",
         backgroundColor = Color(0xFFFF9800)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "4",
         title = "Clean kitchen counters",
         description = "Wipe down all surfaces and appliances",
@@ -101,7 +112,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "In Progress",
         backgroundColor = Color(0xFF4CAF50)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "5",
         title = "Organize bedroom",
         description = "Make bed and organize closet",
@@ -109,7 +120,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "Assigned",
         backgroundColor = Color(0xFFE91E63)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "6",
         title = "Water plants",
         description = "Water all indoor and outdoor plants",
@@ -117,7 +128,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "Pending",
         backgroundColor = Color(0xFF795548)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "7",
         title = "Clean windows",
         description = "Clean all windows in living room",
@@ -125,7 +136,7 @@ fun getActiveTasksFullList(): List<TaskItem> = listOf(
         status = "In Progress",
         backgroundColor = Color(0xFF607D8B)
     ),
-    TaskItem(
+    _root_ide_package_.com.khader.householdhero.ui.tasks.TaskItem(
         id = "8",
         title = "Sweep patio",
         description = "Sweep and clean outdoor patio area",

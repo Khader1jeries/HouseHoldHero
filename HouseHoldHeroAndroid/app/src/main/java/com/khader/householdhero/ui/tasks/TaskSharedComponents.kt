@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.khader.householdhero.model.Task
+import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
@@ -29,6 +31,48 @@ data class TaskItem(
     val status: String,
     val backgroundColor: Color
 )
+fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
+    return tasks.map { task ->
+        TaskItem(
+            id = task.id,
+            title = task.title,
+            description = task.description,
+            points = task.score,
+            status = "Votes: YES - ${task.yes.size}", // You can just use task.yes.size.toString() if you want a number only
+            backgroundColor = Color(
+                red = (70..150).random() / 255f,
+                green = (70..150).random() / 255f,
+                blue = (70..150).random() / 255f
+            )
+        )
+    }
+}
+
+fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItem> {
+
+    return tasks.map {
+            task ->
+        val resolvedStatus = if (status.isEmpty() && task.status == false) {
+            "Uncompleted"
+        } else if (status.isEmpty() && task.status == true) {
+            "Completed"
+        } else {
+            status
+        }
+        TaskItem(
+            id = task.id,
+            title = task.title,
+            description = task.description,
+            points = task.score,
+            status = resolvedStatus,// Placeholder for now
+            backgroundColor = Color(
+                red = (70..150).random() / 255f,
+                green = (70..150).random() / 255f,
+                blue = (70..150).random() / 255f
+            )
+        )
+    }
+}
 
 // Shared Task List Content Component
 @Composable

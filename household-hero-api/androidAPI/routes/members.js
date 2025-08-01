@@ -25,7 +25,7 @@ router.post("/login", async (req, res) => {
       if (hashedPassword == storedPassword) {
         return res.status(200).json({
           success: true,
-          message: "Log in successfully",
+          message: userData.adminEmail,
         });
       } else {
         return res.status(400).json({

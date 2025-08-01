@@ -8,6 +8,7 @@ import com.khader.householdhero.model.TaskUnderVote
 class TasksRepository(private val api: TasksApi,    private val context: Context) {
     val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
     val email = sharedPrefs.getString("email", null)
+    val adminEmail = sharedPrefs.getString("adminEmail", null)
     suspend fun getTwoActiveTasks(): Result<List<Task>> {
         return try {
 
@@ -49,12 +50,28 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
     suspend fun getTwoVotes(): Result<List<TaskUnderVote>> {
         return try {
 
+            if (email.isNullOrBlank()) {
+                return Result.failure(Exception("User email not found in SharedPreferences"))
+            }
+            if (adminEmail.isNullOrBlank()) {
+                return Result.failure(Exception("User email not found in SharedPreferences"))
+            }
+
+            val response = api.getTwoVotes(adminEmail,email)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun getAllActiveTasks(): Result<List<Task>> {
+        return try {
 
             if (email.isNullOrBlank()) {
                 return Result.failure(Exception("User email not found in SharedPreferences"))
             }
 
-            val response = api.getTwoVotes(email)
+
+            val response = api.getAllActiveTasks(email)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)

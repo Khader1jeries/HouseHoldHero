@@ -3,26 +3,16 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const { calculateScore } = require("../../webApi/controllers/scoreController");
-router.get("/android/TwoVotes/:assignedTo", async (req, res) => {
-  const { assignedTo } = req.params;
+router.get("/android/TwoVotes/:adminEmail/:assignedTo", async (req, res) => {
+  const { adminEmail, assignedTo } = req.params;
 
-  if (!assignedTo) {
+  if (!adminEmail) {
     return res
       .status(400)
       .json({ success: false, message: "Missing assignedTo parameter" });
   }
   console.log("called");
   try {
-    const memberSnapshot = await db.collection("members").doc(assignedTo).get();
-
-    if (!memberSnapshot.exists) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Member not found" });
-    }
-
-    const memberData = memberSnapshot.data();
-    const adminEmail = memberData.adminEmail;
     const now = new Date().toISOString();
     const snapshot = await db
       .collection("tasksUnderVote")
