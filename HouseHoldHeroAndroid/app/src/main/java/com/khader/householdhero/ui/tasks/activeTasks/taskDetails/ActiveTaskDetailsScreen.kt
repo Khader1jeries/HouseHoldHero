@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khader.householdhero.model.subTasks
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModel
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModelFactory
 import com.khader.householdhero.ui.tasks.convertToTaskItemData
@@ -44,11 +45,12 @@ fun ActiveTaskDetailsScreen(
 
     DisposableEffect(Unit) {
         viewModel.fetchTask(taskId)
+        viewModel.fetchSubTasks(taskId)
         onDispose { }
     }
 
     val task = viewModel.task?.getOrNull()
-
+    val subtasks = viewModel.subTask?.getOrNull()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -261,7 +263,10 @@ fun ActiveTaskDetailsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-
+                    if (!subtasks.isNullOrEmpty()) {
+                        SubtaskChecklist(subtasks)
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     // Details rows
                     DetailRow(label = "Assigned to", value = task?.assignedTo ?: "", icon = Icons.Default.Person)
 
@@ -339,16 +344,56 @@ fun DetailRow(
     }
 }
 
-// Dummy data class for the task details
-data class DummyTaskData(
-    val id: String,
-    val title: String,
-    val description: String,
-    val points: Int,
-    val status: String,
-    val dueDate: String,
-    val assignedTo: String,
-    val createdBy: String,
-    val priority: String,
-    val estimatedTime: String
-)
+@Composable
+fun SubtaskChecklist(subtasks: List<subTasks>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .heightIn(max = 300.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = "Subtasks",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = TextColor,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        subtasks.forEach { subtask ->
+            val isDone = subtask.status
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isDone) Color(0xFFA5D6A7) else Color.White
+                ),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Subtask: ${subtask.id}", // ID = Name
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = TextColor
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Score: ${subtask.score}",
+                        fontSize = 14.sp,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Status: ${if (isDone) "Done" else "Not Done"}",
+                        fontSize = 14.sp,
+                        color = Color.DarkGray
+                    )
+                }
+            }
+        }
+    }
+}

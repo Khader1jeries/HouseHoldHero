@@ -15,10 +15,11 @@ data class Task(
     val dueDate: String,
     val score: Int,
     val status: Boolean,
-    val subtasks:List<subTasks>
+
 )
 data class subTasks(
-    val status:Boolean,
-    val id: String,
-    val score: Double
+    val id:String,
+    val score: Double,
+    val status: Boolean
+
 )

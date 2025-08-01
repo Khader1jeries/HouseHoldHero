@@ -247,4 +247,32 @@ router.get("/android/AllFuture/:assignedTo", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
+router.get("/android/subtasks/:taskId", async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const subtasksRef = db
+      .collection("tasks")
+      .doc(taskId)
+      .collection("subtasks");
+    const subtasksSnap = await subtasksRef.get();
+
+    const subtasks = [];
+
+    subtasksSnap.forEach((doc) => {
+      subtasks.push({ id: doc.id, ...doc.data() });
+    });
+    console.log(!subtasks);
+    return res.status(200).json({
+      success: true,
+      subtasks: subtasks,
+    });
+  } catch (error) {
+    console.error("Error fetching subtasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch subtasks",
+    });
+  }
+});
+
 module.exports = router;

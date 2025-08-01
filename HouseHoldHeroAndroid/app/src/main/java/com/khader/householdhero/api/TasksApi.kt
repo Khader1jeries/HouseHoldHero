@@ -3,6 +3,7 @@ package com.khader.householdhero.api
 
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
+import com.khader.householdhero.model.subTasks
 
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -32,5 +33,6 @@ interface TasksApi {
     suspend fun getAllFutureTasks(@Path("email") email: String): List<Task>
     @GET("tasks/{taskId}")
     suspend fun getTask(@Path("taskId") taskId: String):Task
-
+    @GET("tasks/android/subtasks/{taskId}")
+    suspend fun getSubTasks(@Path("taskId") taskId: String): List<subTasks>
 }

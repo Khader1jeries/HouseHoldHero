@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.khader.householdhero.api.TasksApi
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
+import com.khader.householdhero.model.subTasks
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModel
 
 class TasksRepository(private val api: TasksApi,    private val context: Context) {
@@ -133,4 +134,13 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
         }
 
 }
+    suspend fun getSubTask(taskId:String): Result<List<subTasks>> {
+        return try {
+            val response = api.getSubTasks(taskId)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
 }
