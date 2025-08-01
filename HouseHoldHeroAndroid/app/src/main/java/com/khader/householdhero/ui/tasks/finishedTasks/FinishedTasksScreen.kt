@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks
+package com.khader.householdhero.ui.tasks.activeTasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,12 +9,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModel
+import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModelFactory
+import com.khader.householdhero.ui.tasks.convertToTaskItemData
+import com.khader.householdhero.ui.tasks.finishedTasks.FinishedTasksViewModel
+import com.khader.householdhero.ui.tasks.finishedTasks.FinishedTasksViewModelFactory
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
@@ -23,6 +31,21 @@ import com.khader.householdhero.ui.theme.TextColor
 fun FinishedTasksScreen(
     onBackPressed: () -> Unit = {}
 ) {
+
+    // Get context for repository
+    val context = LocalContext.current
+
+    // Create ViewModel using factory that handles repository creation
+    val viewModel: FinishedTasksViewModel = viewModel(
+        factory = FinishedTasksViewModelFactory(context)
+    )
+
+    DisposableEffect(Unit) {
+        viewModel.fetchAllFinishedTasks()
+        onDispose { }
+    }
+
+    val tasks = convertToTaskItemData(viewModel.tasks?.getOrNull() ?: emptyList(),"")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,110 +82,11 @@ fun FinishedTasksScreen(
             )
         }
     ) { paddingValues ->
-        TaskListContent(
+        _root_ide_package_.com.khader.householdhero.ui.tasks.TaskListContent(
             modifier = Modifier.padding(paddingValues),
-            tasks = getFinishedTasksFullList(),
+            tasks = tasks,
             emptyMessage = "No finished tasks"
         )
     }
 }
 
-// Extended sample data for Finished Tasks
-fun getFinishedTasksFullList(): List<TaskItem> = listOf(
-    TaskItem(
-        id = "fin1",
-        title = "Wash dishes",
-        description = "All dishes cleaned and dried",
-        points = 15,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin2",
-        title = "Take out trash",
-        description = "Garbage and recycling",
-        points = 10,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin3",
-        title = "Vacuum stairs",
-        description = "Vacuumed all carpeted stairs",
-        points = 25,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin4",
-        title = "Clean mirrors",
-        description = "Cleaned all bathroom mirrors",
-        points = 20,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin5",
-        title = "Dust living room",dueDate = "",
-        description = "Dusted all surfaces and furniture",
-        points = 30,
-        status = "Completed",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin6",
-        title = "Mop kitchen floor",
-        description = "Swept and mopped entire kitchen",
-        points = 35,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin7",
-        title = "Clean shower",
-        description = "Scrubbed and disinfected shower",
-        points = 45,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin8",
-        title = "Organize pantry",
-        description = "Sorted and organized all pantry items",
-        points = 40,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin9",
-        title = "Wash car",dueDate = "",
-        description = "Exterior wash and interior vacuum",
-        points = 50,
-        status = "Completed",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin10",
-        title = "Clean baseboards",
-        description = "Wiped down all baseboards",
-        points = 25,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin11",
-        title = "Replace light bulbs",
-        description = "Changed burned out bulbs",
-        points = 15,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    ),
-    TaskItem(
-        id = "fin12",
-        title = "Weed garden",
-        description = "Removed weeds from flower beds",
-        points = 30,
-        status = "Completed",dueDate = "",
-        backgroundColor = Color(0xFF9E9E9E)
-    )
-)

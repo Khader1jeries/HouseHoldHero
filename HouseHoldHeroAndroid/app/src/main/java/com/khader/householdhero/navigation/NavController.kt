@@ -10,9 +10,10 @@ import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
-import com.khader.householdhero.ui.tasks.FinishedTasksScreen
-import com.khader.householdhero.ui.tasks.FutureTasksScreen
-import com.khader.householdhero.ui.tasks.VotingTasksScreen
+
+import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
+import com.khader.householdhero.ui.tasks.votes.VotingTasksScreen
+import com.khader.householdhero.ui.tasks.activeTasks.FinishedTasksScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
 

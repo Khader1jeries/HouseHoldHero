@@ -177,4 +177,74 @@ router.get("/android/AllActive/:assignedTo", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
+router.get("/android/AllFinished/:assignedTo", async (req, res) => {
+  const { assignedTo } = req.params;
+
+  if (!assignedTo) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing assignedTo parameter" });
+  }
+
+  try {
+    console.log(assignedTo);
+    const now = new Date().toISOString();
+
+    const snapshot = await db
+      .collection("tasks")
+      .where("assignedTo", "==", assignedTo)
+      .orderBy("startDate")
+      .get();
+
+    const finishedTasks = [];
+
+    snapshot.forEach((doc) => {
+      const task = doc.data();
+
+      if (task.dueDate && now > task.dueDate) {
+        finishedTasks.push({ id: doc.id, ...task });
+      }
+    });
+
+    return res.status(200).json(finishedTasks);
+  } catch (error) {
+    console.error("Error getting Finished tasks:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+router.get("/android/AllFuture/:assignedTo", async (req, res) => {
+  const { assignedTo } = req.params;
+
+  if (!assignedTo) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing assignedTo parameter" });
+  }
+
+  try {
+    console.log(assignedTo);
+    const now = new Date().toISOString();
+
+    const snapshot = await db
+      .collection("tasks")
+      .where("assignedTo", "==", assignedTo)
+      .orderBy("startDate")
+      .get();
+
+    const futureTasks = [];
+
+    snapshot.forEach((doc) => {
+      const task = doc.data();
+
+      if (task.startDate && now < task.startDate) {
+        futureTasks.push({ id: doc.id, ...task });
+      }
+    });
+
+    return res.status(200).json(futureTasks);
+  } catch (error) {
+    console.error("Error getting future tasks:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 module.exports = router;

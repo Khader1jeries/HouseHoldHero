@@ -21,6 +21,10 @@ import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 // Data class for task items (shared across all screens)
 data class TaskItem(
@@ -29,7 +33,8 @@ data class TaskItem(
     val description: String,
     val points: Int,
     val status: String,
-    val backgroundColor: Color
+    val backgroundColor: Color,
+    val dueDate: String
 )
 fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
     return tasks.map { task ->
@@ -38,7 +43,7 @@ fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
             title = task.title,
             description = task.description,
             points = task.score,
-            status = "Votes: YES - ${task.yes.size}", // You can just use task.yes.size.toString() if you want a number only
+            status = "Votes: YES - ${task.yes.size}", dueDate = formatDateString(task.dueDate), // You can just use task.yes.size.toString() if you want a number only
             backgroundColor = Color(
                 red = (70..150).random() / 255f,
                 green = (70..150).random() / 255f,
@@ -64,7 +69,7 @@ fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItem> {
             title = task.title,
             description = task.description,
             points = task.score,
-            status = resolvedStatus,// Placeholder for now
+            status = resolvedStatus,dueDate = formatDateString(task.dueDate),
             backgroundColor = Color(
                 red = (70..150).random() / 255f,
                 green = (70..150).random() / 255f,
@@ -215,6 +220,12 @@ fun TaskListItem(
                         fontWeight = FontWeight.Bold,
                         color = PrimaryColor
                     )
+                    Text(
+                        text = "Ends: ${task.dueDate}",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = task.backgroundColor
+                    )
                 }
             }
         }
@@ -299,4 +310,30 @@ fun StatusBadge(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
+}fun formatDateString(input: String): String {
+    val formatsToTry = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "yyyy-MM-dd'T'HH:mm",
+        "yyyy-MM-dd'T'HH:mm:ss"
+    )
+
+    val locale = Locale.getDefault()
+    val outputFormat = SimpleDateFormat("MMMM dd, yyyy - hh:mm a", locale)
+    outputFormat.timeZone = TimeZone.getDefault()
+
+    for (format in formatsToTry) {
+        try {
+            val parser = SimpleDateFormat(format, locale)
+            parser.timeZone = TimeZone.getTimeZone("UTC")
+            val date = parser.parse(input)
+            if (date != null) {
+                return outputFormat.format(date)
+            }
+        } catch (e: Exception) {
+            // Try the next format
+        }
+    }
+
+    return "Invalid date"
 }
