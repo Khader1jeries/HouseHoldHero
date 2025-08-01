@@ -28,4 +28,12 @@ class ActiveTaskDetailsViewModel (private val repository: TasksRepository): View
             subTask = result
         }
     }
+    fun updateSubtasks() {
+        viewModelScope.launch {
+            val subtasks = subTask?.getOrNull() ?: emptyList()
+            val taskId = task?.getOrNull()?.id ?: return@launch
+            val result = repository.updateSubtasks(taskId,subtasks)
+
+        }
+    }
 }

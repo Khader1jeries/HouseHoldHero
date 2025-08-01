@@ -242,13 +242,14 @@ fun TaskCard(task: TaskItem) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "${task.points} pts",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
+                if ((task.points ?: 0) > 0) {
+                    Text(
+                        text = "${task.points} pts",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
                 Text(
                     text = task.status,
                     style = MaterialTheme.typography.bodySmall,

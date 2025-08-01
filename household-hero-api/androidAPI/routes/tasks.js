@@ -272,5 +272,43 @@ router.get("/android/subtasks/:taskId", async (req, res) => {
     });
   }
 });
+router.put("/android/subtasks/complete/:taskId", async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const subtasksArray = req.body.subtasks;
+
+    if (!Array.isArray(subtasksArray)) {
+      return res.status(400).json({
+        success: false,
+        message: "'subtasks' must be an array",
+      });
+    }
+
+    // Convert array to object where each item uses its `id` as the key
+    const subtasksObject = {};
+    for (const subtask of subtasksArray) {
+      if (!subtask.id) continue; // Skip if no ID
+      subtasksObject[subtask.id] = {
+        score: subtask.score,
+        status: subtask.status,
+      };
+    }
+
+    await db.collection("tasks").doc(taskId).update({
+      subtasks: subtasksObject,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Subtasks updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating subtasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
 
 module.exports = router;

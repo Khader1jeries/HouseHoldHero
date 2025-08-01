@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const { calculateScore } = require("../../webApi/controllers/scoreController");
 router.get("/android/TwoVotes/:adminEmail/:assignedTo", async (req, res) => {
   const { adminEmail, assignedTo } = req.params;
 
@@ -32,7 +31,7 @@ router.get("/android/TwoVotes/:adminEmail/:assignedTo", async (req, res) => {
         createdAt: task.createdAt,
         startDate: task.startDate,
         dueDate: task.dueDate,
-        score: await calculateScore(assignedTo, task.id),
+
         yes: task.yes || [],
         no: task.no || [],
       };
@@ -79,7 +78,6 @@ router.get("/android/AllVotes/:adminEmail/:assignedTo", async (req, res) => {
         createdAt: task.createdAt,
         startDate: task.startDate,
         dueDate: task.dueDate,
-        score: await calculateScore(assignedTo, task.id),
         yes: task.yes || [],
         no: task.no || [],
       };

@@ -13,7 +13,6 @@ data class TaskUnderVote(
     val createdAt: String,
     val startDate: String,
     val dueDate: String,
-    val score: Int,
     val yes: List<String>,
     val no: List<String>
 )

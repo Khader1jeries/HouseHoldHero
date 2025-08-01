@@ -118,16 +118,16 @@ fun AppNavHost(navController: NavHostController) {
             VotingTasksScreen(
                 onBackPressed = {
                     navController.popBackStack()
-                },onTaskClick = { taskId, score ->
-                    navController.navigate("${Screen.VoteDetails.route}/$taskId/$score")
+                }, onTaskClick = { taskId ->
+                    navController.navigate("${Screen.VoteDetails.route}/$taskId")
                 }
             )
         }
-        composable("${Screen.VoteDetails.route}/{taskId}/{score}") { backStackEntry ->
+        composable("${Screen.VoteDetails.route}/{taskId}") { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
-            val score = backStackEntry.arguments?.getInt("score") ?: 0
+
             VoteDetailsScreen(
-                taskId = taskId,score = score,
+                taskId = taskId,
                 onBackPressed = {
                     navController.popBackStack()
                 }

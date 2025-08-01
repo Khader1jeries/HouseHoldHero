@@ -27,7 +27,6 @@ import com.khader.householdhero.ui.theme.TextColor
 @Composable
 fun VoteDetailsScreen(
     taskId: String,
-    score:Int,
     onBackPressed: () -> Unit,
 ) {
     // Get context for repository
@@ -50,27 +49,32 @@ fun VoteDetailsScreen(
     val subtaskError = viewModel.subTask?.exceptionOrNull()
     val taskError = viewModel.task?.exceptionOrNull()
 
-
-
-
-
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Task Details",
-                        color = TextColor,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Assignment,
+                            contentDescription = null,
+                            tint = PrimaryColor,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Vote Details",
+                            color = TextColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = TextColor
+                            contentDescription = "Back"
                         )
                     }
                 },
@@ -80,249 +84,56 @@ fun VoteDetailsScreen(
                 )
             )
         }
-    ) { innerPadding ->
-
-        // Show loading state
-        if (viewModel.task == null || viewModel.subTask == null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(color = PrimaryColor)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Loading task details...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                }
-            }
-            return@Scaffold
-        }
-
-        // Show error state if task loading failed
-        if (task == null && taskError != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Error",
-                        tint = Color.Red,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Failed to load task",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = TextColor
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = taskError.message ?: "Unknown error",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = onBackPressed) {
-                        Text("Go Back")
-                    }
-                }
-            }
-            return@Scaffold
-        }
-
-        // Show task with subtasks info
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Task Header Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+            if (taskError != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
                 ) {
                     Text(
-                        text = task?.title ?: "No Title",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = TextColor
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = task?.description ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF666666),
-                        lineHeight = 20.sp
+                        text = "Error loading task: ${taskError.message}",
+                        modifier = Modifier.padding(16.dp),
+                        color = Color(0xFFD32F2F)
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Task Details Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    .padding(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = PrimaryColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Task Details",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextColor
-                        )
-                    }
+                    Text(
+                        text = task?.title ?: "Loading...",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextColor
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = task?.description ?: "Loading description...",
+                        fontSize = 14.sp,
+                        color = Color(0xFF666666)
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Subtasks section with debugging info
-                    when {
-                        subtasks != null && subtasks.isNotEmpty() -> {
-                            SubtaskChecklist(subtasks)
-                        }
-                        subtasks != null && subtasks.isEmpty() -> {
-                            // Empty list returned from API
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFFFFF3CD)
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Text(
-                                        text = "No subtasks found",
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF856404)
-                                    )
-                                    Text(
-                                        text = "This task doesn't have any subtasks configured.",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF856404)
-                                    )
-                                }
-                            }
-                        }
-                        subtaskError != null -> {
-                            // Error loading subtasks
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFFF8D7DA)
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Warning,
-                                            contentDescription = null,
-                                            tint = Color(0xFF721C24),
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "Failed to load subtasks",
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF721C24)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = subtaskError.message ?: "Unknown error",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF721C24)
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    TextButton(
-                                        onClick = {
-                                            println("🔄 Retrying subtask fetch for taskId: $taskId")
-                                            viewModel.fetchSubTasks(taskId)
-                                        }
-                                    ) {
-                                        Text("Retry", color = Color(0xFF721C24))
-                                    }
-                                }
-                            }
-                        }
-                        else -> {
-                            // Still loading subtasks
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFFF5F5F5)
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(16.dp),
-                                        strokeWidth = 2.dp,
-                                        color = PrimaryColor
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Loading subtasks...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color(0xFF666666)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Task details rows
                     DetailRow(
                         label = "Priority",
                         value = task?.priority ?: "Not set",
@@ -333,16 +144,107 @@ fun VoteDetailsScreen(
                         value = formatDateString(task?.dueDate ?: "") ?: "No due date",
                         icon = Icons.Default.CalendarToday
                     )
-                    DetailRow(
-                        label = "Score",
-                        value = "${score ?: 0} points",
-                        icon = Icons.Default.Star
-                    )
+
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Voting Results Card
+            task?.let { currentTask ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Voting Results",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = TextColor
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Vote counts display
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            // Yes votes
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFF4CAF50).copy(alpha = 0.1f)
+                                ),
+                                border = BorderStroke(1.dp, Color(0xFF4CAF50))
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ThumbUp,
+                                        contentDescription = "Yes votes",
+                                        tint = Color(0xFF4CAF50),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "${currentTask.yes?.size ?: 0}",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF4CAF50)
+                                    )
+                                    Text(
+                                        text = "Yes",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF4CAF50)
+                                    )
+                                }
+                            }
+
+                            // No votes
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFF44336).copy(alpha = 0.1f)
+                                ),
+                                border = BorderStroke(1.dp, Color(0xFFF44336))
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ThumbDown,
+                                        contentDescription = "No votes",
+                                        tint = Color(0xFFF44336),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "${currentTask.no?.size ?: 0}",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFF44336)
+                                    )
+                                    Text(
+                                        text = "No",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFFF44336)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Action Buttons
             Row(
@@ -351,9 +253,9 @@ fun VoteDetailsScreen(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Mark as Complete Button
+                // Yes Button
                 Button(
-                    onClick = { /* TODO: Mark as complete */ },
+                    onClick = { /* TODO: Vote Yes */ },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50)
@@ -361,13 +263,34 @@ fun VoteDetailsScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        imageVector = Icons.Default.ThumbUp,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Complete",
+                        text = "YES ${task?.yes?.size ?: 0}",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // No Button
+                Button(
+                    onClick = { /* TODO: Vote No */ },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF44336)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ThumbDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "NO ${task?.no?.size ?: 0}",
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -387,126 +310,28 @@ fun DetailRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = Color(0xFF666666),
-            modifier = Modifier.size(16.dp)
+            tint = PrimaryColor,
+            modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF666666),
-            modifier = Modifier.width(100.dp)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextColor,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Composable
-fun SubtaskChecklist(subtasks: List<subTasks>) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        // Subtasks header
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.List,
-                contentDescription = null,
-                tint = PrimaryColor,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
+        Column {
             Text(
-                text = "Subtasks (${subtasks.size})",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
+                text = label,
+                fontSize = 12.sp,
+                color = Color(0xFF666666),
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = value,
+                fontSize = 14.sp,
                 color = TextColor
             )
-        }
-
-        // Subtasks list
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 300.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            subtasks.forEach { subtask ->
-                val isDone = subtask.status
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isDone) Color(0xFFE8F5E8) else Color(0xFFF8F9FA)
-                    ),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isDone) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Status icon
-                        Icon(
-                            imageVector = if (isDone) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                            contentDescription = if (isDone) "Completed" else "Not completed",
-                            tint = if (isDone) Color(0xFF4CAF50) else Color(0xFF757575),
-                            modifier = Modifier.size(20.dp)
-                        )
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        // Subtask content
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = subtask.id, // Using ID as the name
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                                color = TextColor
-                            )
-                            if (subtask.score > 0) {
-                                Text(
-                                    text = "${subtask.score} points",
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF666666)
-                                )
-                            }
-                        }
-
-                        // Status badge
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isDone) Color(0xFF4CAF50) else Color(0xFF757575)
-                        ) {
-                            Text(
-                                text = if (isDone) "Done" else "Pending",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                fontSize = 10.sp,
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

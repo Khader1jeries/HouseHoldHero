@@ -17,6 +17,7 @@ class VotingTasksViewModel(private val repository: TasksRepository): ViewModel()
         viewModelScope.launch {
             val result = repository.getAllVotes()
             tasks = result
+
         }
     }
 }

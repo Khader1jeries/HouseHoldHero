@@ -47,7 +47,7 @@ fun ActiveTaskDetailsScreen(
     val task = viewModel.task?.getOrNull()
     val subtasks = viewModel.subTask?.getOrNull()
     val subtaskError = viewModel.subTask?.exceptionOrNull()
-    val taskError = viewModel.task?.exceptionOrNull()
+
 
 
 
@@ -108,44 +108,6 @@ fun ActiveTaskDetailsScreen(
             return@Scaffold
         }
 
-        // Show error state if task loading failed
-        if (task == null && taskError != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Error",
-                        tint = Color.Red,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Failed to load task",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = TextColor
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = taskError.message ?: "Unknown error",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = onBackPressed) {
-                        Text("Go Back")
-                    }
-                }
-            }
-            return@Scaffold
-        }
 
         // Show task with subtasks info
         Column(

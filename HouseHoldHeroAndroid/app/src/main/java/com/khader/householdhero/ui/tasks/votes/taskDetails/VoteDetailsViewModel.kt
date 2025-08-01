@@ -20,6 +20,7 @@ class VoteDetailsViewModel (private val repository: TasksRepository): ViewModel(
         viewModelScope.launch {
             val result = repository.getVote(taskId)
             task = result
+
         }
     }
     fun fetchSubTasks(taskId:String) {

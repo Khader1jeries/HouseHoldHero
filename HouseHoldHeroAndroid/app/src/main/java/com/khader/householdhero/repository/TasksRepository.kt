@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.khader.householdhero.api.TasksApi
+import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.model.subTasks
@@ -160,5 +161,18 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
             Result.failure(e)
         }
 
+    }
+    suspend fun updateSubtasks(taskId: String, subtasks: List<subTasks>): Result<Unit> {
+        return try {
+            val request = SubtaskRequest(subtasks)
+            val response = api.updateSubtasks(taskId, request)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

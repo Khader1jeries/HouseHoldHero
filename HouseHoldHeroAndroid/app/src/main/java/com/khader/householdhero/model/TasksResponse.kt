@@ -24,3 +24,6 @@ data class subTasks(
     val status: Boolean
 
 )
+data class SubtaskRequest(
+    val subtasks: List<subTasks>
+)

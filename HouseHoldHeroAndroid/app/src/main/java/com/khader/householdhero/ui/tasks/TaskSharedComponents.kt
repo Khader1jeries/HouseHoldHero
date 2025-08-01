@@ -41,7 +41,8 @@ fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
             id = task.id,
             title = task.title,
             description = task.description,
-            points = task.score,
+            points = 0
+            ,
             status = "Votes: YES - ${task.yes.size}",
             dueDate = formatDateString(task.dueDate),
 
@@ -70,7 +71,7 @@ fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItem> {
             title = task.title,
             description = task.description,
             points = task.score,
-            status = resolvedStatus,dueDate = formatDateString(task.dueDate),
+            status = resolvedStatus, dueDate = formatDateString(task.dueDate),
             backgroundColor = Color(
                 red = (70..150).random() / 255f,
                 green = (70..150).random() / 255f,
