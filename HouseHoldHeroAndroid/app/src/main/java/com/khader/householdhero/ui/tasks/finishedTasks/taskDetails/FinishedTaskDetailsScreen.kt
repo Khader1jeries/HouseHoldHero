@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks.activeTasks.taskDetails
+package com.khader.householdhero.ui.tasks.finishedTasks.taskDetails
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -25,7 +25,8 @@ import com.khader.householdhero.ui.theme.TextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActiveTaskDetailsScreen(
+
+fun FinishedTaskDetailsScreen(
     taskId: String,
     onBackPressed: () -> Unit,
 ) {
@@ -33,8 +34,8 @@ fun ActiveTaskDetailsScreen(
     val context = LocalContext.current
     var totalScore: Double = 0.0
     // Create ViewModel using factory that handles repository creation
-    val viewModel: ActiveTaskDetailsViewModel = viewModel(
-        factory = ActiveTaskDetailsViewModelFactory(context)
+    val viewModel: FinishedTaskDetailsViewModel = viewModel(
+        factory = FinishedTaskDetailsViewModelFactory(context)
     )
 
     // Fetch task and subtasks when screen loads
@@ -383,36 +384,8 @@ fun ActiveTaskDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Action Buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Mark as Complete Button
-                Button(
-                    onClick = { /* TODO: Mark as complete */ },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Complete",
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+
         }
     }
 }

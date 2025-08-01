@@ -143,4 +143,22 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
         }
 
     }
+    suspend fun getVote(taskId:String): Result<TaskUnderVote> {
+        return try {
+            val response = api.getVote(taskId)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
+    suspend fun getVoteSubTask(taskId:String): Result<List<subTasks>> {
+        return try {
+            val response = api.getVoteSubTasks(taskId)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
 }

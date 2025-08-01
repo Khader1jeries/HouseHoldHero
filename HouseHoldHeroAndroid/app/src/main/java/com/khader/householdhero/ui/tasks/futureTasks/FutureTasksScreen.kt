@@ -27,7 +27,8 @@ import com.khader.householdhero.ui.theme.TextColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FutureTasksScreen(
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    onTaskClick: (String) -> Unit = {}
 ) {
     // Get context for repository
     val context = LocalContext.current
@@ -82,7 +83,8 @@ fun FutureTasksScreen(
         _root_ide_package_.com.khader.householdhero.ui.tasks.TaskListContent(
             modifier = Modifier.padding(paddingValues),
             tasks = tasks,
-            emptyMessage = "No future tasks scheduled"
+            emptyMessage = "No future tasks scheduled",
+            onTaskClick = onTaskClick
         )
     }
 }

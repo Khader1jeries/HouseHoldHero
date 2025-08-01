@@ -12,6 +12,9 @@ import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
 import com.khader.householdhero.ui.tasks.votes.VotingTasksScreen
 import com.khader.householdhero.ui.tasks.activeTasks.FinishedTasksScreen
 import com.khader.householdhero.ui.tasks.activeTasks.taskDetails.ActiveTaskDetailsScreen
+import com.khader.householdhero.ui.tasks.finishedTasks.taskDetails.FinishedTaskDetailsScreen
+import com.khader.householdhero.ui.tasks.futureTasks.taskDetails.FutureTaskDetailsScreen
+import com.khader.householdhero.ui.tasks.votes.taskDetails.VoteDetailsScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
 
@@ -115,12 +118,36 @@ fun AppNavHost(navController: NavHostController) {
             VotingTasksScreen(
                 onBackPressed = {
                     navController.popBackStack()
+                },onTaskClick = { taskId, score ->
+                    navController.navigate("${Screen.VoteDetails.route}/$taskId/$score")
                 }
             )
         }
-
+        composable("${Screen.VoteDetails.route}/{taskId}/{score}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            val score = backStackEntry.arguments?.getInt("score") ?: 0
+            VoteDetailsScreen(
+                taskId = taskId,score = score,
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable(Screen.FutureTasks.route) {
             FutureTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onTaskClick = { taskId ->
+                    navController.navigate("${Screen.FutureTaskDetails.route}/$taskId")
+                }
+            )
+        }
+        composable("${Screen.FutureTaskDetails.route}/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+
+            FutureTaskDetailsScreen(
+                taskId = taskId,
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -129,6 +156,21 @@ fun AppNavHost(navController: NavHostController) {
 
         composable(Screen.FinishedTasks.route) {
             FinishedTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onTaskClick = { taskId ->
+                    navController.navigate("${Screen.FinishedTaskDetails.route}/$taskId")
+                }
+            )
+        }
+
+
+        composable("${Screen.FinishedTaskDetails.route}/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+
+            FinishedTaskDetailsScreen(
+                taskId = taskId,
                 onBackPressed = {
                     navController.popBackStack()
                 }

@@ -15,4 +15,7 @@ sealed class Screen(val route: String) {
 
 
     object ActiveTaskDetails : Screen("active-task-details")
+    object FinishedTaskDetails : Screen("finished-task-details")
+    object FutureTaskDetails : Screen("future-task-details")
+    object VoteDetails : Screen("vote-details")
 }

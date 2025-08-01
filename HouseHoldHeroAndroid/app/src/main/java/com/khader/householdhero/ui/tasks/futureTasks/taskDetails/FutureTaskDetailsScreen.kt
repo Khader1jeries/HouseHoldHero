@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks.finishedTasks.taskDetails
+package com.khader.householdhero.ui.tasks.futureTasks.taskDetails
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -26,7 +26,7 @@ import com.khader.householdhero.ui.theme.TextColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun FinishedTaskDetailsScreen(
+fun FutureTaskDetailsScreen(
     taskId: String,
     onBackPressed: () -> Unit,
 ) {
@@ -34,8 +34,8 @@ fun FinishedTaskDetailsScreen(
     val context = LocalContext.current
     var totalScore: Double = 0.0
     // Create ViewModel using factory that handles repository creation
-    val viewModel: FinishedTaskDetailsViewModel = viewModel(
-        factory = FinishedTaskDetailsViewModelFactory(context)
+    val viewModel: FutureTaskDetailsViewModel = viewModel(
+        factory = FutureTaskDetailsViewModelFactory(context)
     )
 
     // Fetch task and subtasks when screen loads

@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks.activeTasks.taskDetails
+package com.khader.householdhero.ui.tasks.votes.taskDetails
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -25,16 +25,17 @@ import com.khader.householdhero.ui.theme.TextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActiveTaskDetailsScreen(
+fun VoteDetailsScreen(
     taskId: String,
+    score:Int,
     onBackPressed: () -> Unit,
 ) {
     // Get context for repository
     val context = LocalContext.current
-    var totalScore: Double = 0.0
+
     // Create ViewModel using factory that handles repository creation
-    val viewModel: ActiveTaskDetailsViewModel = viewModel(
-        factory = ActiveTaskDetailsViewModelFactory(context)
+    val viewModel: VoteDetailsViewModel = viewModel(
+        factory = VoteDetailsViewModelFactory(context)
     )
 
     // Fetch task and subtasks when screen loads
@@ -51,11 +52,7 @@ fun ActiveTaskDetailsScreen(
 
 
 
-        if (subtasks != null) {
-            subtasks.forEachIndexed { index, subtask ->
-                if(subtask.status)totalScore+=subtask.score
-            }
-        }
+
 
 
     Scaffold(
@@ -327,11 +324,6 @@ fun ActiveTaskDetailsScreen(
 
                     // Task details rows
                     DetailRow(
-                        label = "Assigned to",
-                        value = task?.assignedTo ?: "Unassigned",
-                        icon = Icons.Default.Person
-                    )
-                    DetailRow(
                         label = "Priority",
                         value = task?.priority ?: "Not set",
                         icon = Icons.Default.Flag
@@ -343,7 +335,7 @@ fun ActiveTaskDetailsScreen(
                     )
                     DetailRow(
                         label = "Score",
-                        value = "${task?.score ?: 0} points",
+                        value = "${score ?: 0} points",
                         icon = Icons.Default.Star
                     )
                 }
@@ -351,37 +343,6 @@ fun ActiveTaskDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
-            ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
-                    Text(
-                        text = "Total Score Gained",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = Color(0xFF1565C0)
-                    )
-                    Text(
-                        text = "Subtasks: ${if (subtasks == null) "null" else "${subtasks.size} items"}",
-                        fontSize = 10.sp,
-                        color = Color(0xFF1565C0)
-                    )
-                    Text(
-                        text = "Total Score (Completed): $totalScore",
-                        fontSize = 10.sp,
-                        color = Color(0xFF1565C0)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Action Buttons
             Row(

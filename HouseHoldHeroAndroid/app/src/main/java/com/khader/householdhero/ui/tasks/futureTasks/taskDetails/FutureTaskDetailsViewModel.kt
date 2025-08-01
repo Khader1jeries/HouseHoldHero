@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.tasks.finishedTasks.taskDetails
+package com.khader.householdhero.ui.tasks.futureTasks.taskDetails
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,7 @@ import com.khader.householdhero.model.subTasks
 import com.khader.householdhero.repository.TasksRepository
 import kotlinx.coroutines.launch
 
-class FinishedTaskDetailsViewModel (private val repository: TasksRepository): ViewModel() {
+class FutureTaskDetailsViewModel (private val repository: TasksRepository): ViewModel() {
     var task by mutableStateOf<Result<Task>?>(null)
     var subTask by mutableStateOf<Result<List<subTasks>>?>(null)
         private set

@@ -35,4 +35,8 @@ interface TasksApi {
     suspend fun getTask(@Path("taskId") taskId: String):Task
     @GET("tasks/android/subtasks/{taskId}")
     suspend fun getSubTasks(@Path("taskId") taskId: String): List<subTasks>
+    @GET("tasksUnderVote/id/{taskId}")
+    suspend fun getVote(@Path("taskId") taskId: String): TaskUnderVote
+    @GET("tasksUnderVote/android/subtasks/{taskId}")
+    suspend fun getVoteSubTasks(@Path("taskId") taskId: String): List<subTasks>
 }

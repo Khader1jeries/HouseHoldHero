@@ -28,7 +28,7 @@ import com.khader.householdhero.ui.theme.TextColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VotingTasksScreen(
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},onTaskClick: (String, Int) -> Unit = { _, _ -> }
 ) {
     // Get context for repository
     val context = LocalContext.current
@@ -83,7 +83,8 @@ fun VotingTasksScreen(
         _root_ide_package_.com.khader.householdhero.ui.tasks.TaskListContent(
             modifier = Modifier.padding(paddingValues),
             tasks = tasks,
-            emptyMessage = "No tasks available for voting"
+            emptyMessage = "No tasks available for voting",
+                    onTaskClick = onTaskClick
         )
     }
 }

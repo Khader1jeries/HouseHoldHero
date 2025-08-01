@@ -93,4 +93,29 @@ router.get("/android/AllVotes/:adminEmail/:assignedTo", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
+router.get("/android/subtasks/:taskId", async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const taskRef = db.collection("tasksUnderVote").doc(taskId);
+    const taskSnap = await taskRef.get();
+
+    if (!taskSnap.exists) return res.status(404).json({ success: false });
+
+    const taskData = taskSnap.data();
+    const subtasksObject = taskData.subtasks || {};
+
+    const subtasks = Object.entries(subtasksObject).map(([id, data]) => ({
+      id,
+      ...data,
+    }));
+
+    return res.status(200).json(subtasks);
+  } catch (error) {
+    console.error("Error fetching subtasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch subtasks",
+    });
+  }
+});
 module.exports = router;

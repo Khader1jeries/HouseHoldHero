@@ -31,7 +31,7 @@ fun ActiveTaskDetailsScreen(
 ) {
     // Get context for repository
     val context = LocalContext.current
-
+    var totalScore: Double = 0.0
     // Create ViewModel using factory that handles repository creation
     val viewModel: ActiveTaskDetailsViewModel = viewModel(
         factory = ActiveTaskDetailsViewModelFactory(context)
@@ -49,16 +49,14 @@ fun ActiveTaskDetailsScreen(
     val subtaskError = viewModel.subTask?.exceptionOrNull()
     val taskError = viewModel.task?.exceptionOrNull()
 
-    // Debug logging
-    LaunchedEffect(subtasks, subtaskError) {
-        println("🔍 Subtasks state - List: $subtasks, Error: $subtaskError")
+
+
         if (subtasks != null) {
-            println("🔍 Subtasks count: ${subtasks.size}")
             subtasks.forEachIndexed { index, subtask ->
-                println("🔍 Subtask $index: id=${subtask.id}, status=${subtask.status}, score=${subtask.score}")
+                if(subtask.status)totalScore+=subtask.score
             }
         }
-    }
+
 
     Scaffold(
         topBar = {
@@ -353,7 +351,7 @@ fun ActiveTaskDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Debug Info Card (remove this in production)
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -365,7 +363,7 @@ fun ActiveTaskDetailsScreen(
                     modifier = Modifier.padding(12.dp)
                 ) {
                     Text(
-                        text = "Debug Info (TaskID: $taskId)",
+                        text = "Total Score Gained",
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
                         color = Color(0xFF1565C0)
@@ -376,7 +374,7 @@ fun ActiveTaskDetailsScreen(
                         color = Color(0xFF1565C0)
                     )
                     Text(
-                        text = "Error: ${subtaskError?.message ?: "none"}",
+                        text = "Total Score (Completed): $totalScore",
                         fontSize = 10.sp,
                         color = Color(0xFF1565C0)
                     )

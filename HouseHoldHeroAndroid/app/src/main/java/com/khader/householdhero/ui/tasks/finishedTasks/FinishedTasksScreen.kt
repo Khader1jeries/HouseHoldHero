@@ -29,7 +29,8 @@ import com.khader.householdhero.ui.theme.TextColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinishedTasksScreen(
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    onTaskClick: (String) -> Unit = {}
 ) {
 
     // Get context for repository
@@ -85,7 +86,8 @@ fun FinishedTasksScreen(
         _root_ide_package_.com.khader.householdhero.ui.tasks.TaskListContent(
             modifier = Modifier.padding(paddingValues),
             tasks = tasks,
-            emptyMessage = "No finished tasks"
+            emptyMessage = "No finished tasks",
+            onTaskClick = onTaskClick
         )
     }
 }

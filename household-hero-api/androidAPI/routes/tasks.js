@@ -250,17 +250,18 @@ router.get("/android/AllFuture/:assignedTo", async (req, res) => {
 router.get("/android/subtasks/:taskId", async (req, res) => {
   try {
     const taskId = req.params.taskId;
-    const subtasksRef = db
-      .collection("tasks")
-      .doc(taskId)
-      .collection("subtasks");
-    const subtasksSnap = await subtasksRef.get();
+    const taskRef = db.collection("tasks").doc(taskId);
+    const taskSnap = await taskRef.get();
 
-    const subtasks = [];
+    if (!taskSnap.exists) return res.status(404).json({ success: false });
 
-    subtasksSnap.forEach((doc) => {
-      subtasks.push({ id: doc.id, ...doc.data() });
-    });
+    const taskData = taskSnap.data();
+    const subtasksObject = taskData.subtasks || {};
+
+    const subtasks = Object.entries(subtasksObject).map(([id, data]) => ({
+      id,
+      ...data,
+    }));
 
     return res.status(200).json(subtasks);
   } catch (error) {
