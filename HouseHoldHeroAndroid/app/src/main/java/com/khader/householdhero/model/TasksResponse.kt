@@ -17,6 +17,7 @@ data class Task(
     val status: Boolean,
 
 )
+@JsonClass(generateAdapter = true)
 data class subTasks(
     val id:String,
     val score: Double,

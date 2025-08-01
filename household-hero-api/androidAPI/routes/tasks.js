@@ -261,11 +261,8 @@ router.get("/android/subtasks/:taskId", async (req, res) => {
     subtasksSnap.forEach((doc) => {
       subtasks.push({ id: doc.id, ...doc.data() });
     });
-    console.log(!subtasks);
-    return res.status(200).json({
-      success: true,
-      subtasks: subtasks,
-    });
+
+    return res.status(200).json(subtasks);
   } catch (error) {
     console.error("Error fetching subtasks:", error);
     return res.status(500).json({

@@ -22,7 +22,6 @@ import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
