@@ -14,5 +14,11 @@ data class Task(
     val startDate: String,
     val dueDate: String,
     val score: Int,
-    val status: Boolean
+    val status: Boolean,
+    val subtasks:List<subTasks>
+)
+data class subTasks(
+    val status:Boolean,
+    val id: String,
+    val score: Double
 )
