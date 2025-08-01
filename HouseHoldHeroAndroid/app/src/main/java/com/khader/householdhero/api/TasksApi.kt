@@ -9,7 +9,6 @@ import retrofit2.Response
 
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 interface TasksApi {
@@ -41,9 +40,9 @@ interface TasksApi {
     suspend fun getVote(@Path("taskId") taskId: String): TaskUnderVote
     @GET("tasksUnderVote/android/subtasks/{taskId}")
     suspend fun getVoteSubTasks(@Path("taskId") taskId: String): List<subTasks>
-    @PUT("android/subtasks/complete/{taskId}")
+    @PUT("tasks/android/subtasks/complete/{taskId}")
     suspend fun updateSubtasks(
         @Path("taskId") taskId: String,
-        @Body request: SubtaskRequest
+        @Body subtasks: SubtaskRequest  // Send list directly
     ): Response<Unit>
 }

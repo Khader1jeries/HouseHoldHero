@@ -1,14 +1,11 @@
 package com.khader.householdhero.repository
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.khader.householdhero.api.TasksApi
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
 import com.khader.householdhero.model.subTasks
-import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModel
 
 class TasksRepository(private val api: TasksApi,    private val context: Context) {
     val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
@@ -165,13 +162,31 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
     suspend fun updateSubtasks(taskId: String, subtasks: List<subTasks>): Result<Unit> {
         return try {
             val request = SubtaskRequest(subtasks)
+
+            // Add debugging
+            println("🔄 Updating subtasks for task: $taskId")
+            println("📦 Subtasks to send: $subtasks")
+            println("📦 Request object: $request")
+
             val response = api.updateSubtasks(taskId, request)
+
+            println("📡 Response code: ${response.code()}")
+            println("📡 Response message: ${response.message()}")
+
+            if (!response.isSuccessful) {
+                val errorBody = response.errorBody()?.string()
+                println("❌ Error body: $errorBody")
+            }
+
             if (response.isSuccessful) {
+                println("✅ Subtasks updated successfully")
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
             }
         } catch (e: Exception) {
+            println("❌ Exception in updateSubtasks: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

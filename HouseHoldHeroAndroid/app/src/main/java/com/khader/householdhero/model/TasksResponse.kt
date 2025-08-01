@@ -24,6 +24,7 @@ data class subTasks(
     val status: Boolean
 
 )
+@JsonClass(generateAdapter = true)
 data class SubtaskRequest(
     val subtasks: List<subTasks>
 )

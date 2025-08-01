@@ -283,7 +283,7 @@ router.put("/android/subtasks/complete/:taskId", async (req, res) => {
         message: "'subtasks' must be an array",
       });
     }
-
+    let count = 0;
     // Convert array to object where each item uses its `id` as the key
     const subtasksObject = {};
     for (const subtask of subtasksArray) {
@@ -292,8 +292,14 @@ router.put("/android/subtasks/complete/:taskId", async (req, res) => {
         score: subtask.score,
         status: subtask.status,
       };
+      if (subtask.status) count++;
     }
-
+    await db
+      .collection("tasks")
+      .doc(taskId)
+      .update({
+        status: count === subtasksArray.length,
+      });
     await db.collection("tasks").doc(taskId).update({
       subtasks: subtasksObject,
     });
