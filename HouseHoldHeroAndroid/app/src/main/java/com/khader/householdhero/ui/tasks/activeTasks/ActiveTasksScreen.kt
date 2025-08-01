@@ -17,13 +17,11 @@ import com.khader.householdhero.ui.tasks.convertToTaskItemData
 import com.khader.householdhero.ui.theme.TextColor
 import com.khader.householdhero.ui.tasks.TaskListContent
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActiveTasksScreen(
     onBackPressed: () -> Unit,
-
+    onTaskClick: (String) -> Unit = {} // Add this parameter
 ) {
     // Get context for repository
     val context = LocalContext.current
@@ -79,10 +77,8 @@ fun ActiveTasksScreen(
         TaskListContent(
             modifier = Modifier.padding(paddingValues),
             tasks = tasks,
-            emptyMessage = "No finished tasks"
+            emptyMessage = "No active tasks",
+            onTaskClick = onTaskClick // Pass the onTaskClick parameter here
         )
     }
 }
-
-
-

@@ -30,5 +30,7 @@ interface TasksApi {
     suspend fun getAllFinishedTasks(@Path("email") email: String): List<Task>
     @GET("tasks/android/AllFuture/{email}")
     suspend fun getAllFutureTasks(@Path("email") email: String): List<Task>
+    @GET("tasks/{taskId}")
+    suspend fun getTask(@Path("taskId") taskId: String):Task
 
 }

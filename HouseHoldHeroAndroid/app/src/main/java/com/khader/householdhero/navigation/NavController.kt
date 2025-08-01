@@ -11,6 +11,7 @@ import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
 import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
 import com.khader.householdhero.ui.tasks.votes.VotingTasksScreen
 import com.khader.householdhero.ui.tasks.activeTasks.FinishedTasksScreen
+import com.khader.householdhero.ui.tasks.activeTasks.taskDetails.ActiveTaskDetailsScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
 
@@ -87,28 +88,25 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
 
-        // Task screens - Updated to include the new navigation
         composable(Screen.ActiveTasks.route) {
-            ActiveTasksScreen(
-                onBackPressed = {
-                    navController.popBackStack()
-                },
-                // Note: If you want to add task click navigation, you'll need to update your
-                // ActiveTasksScreen to accept onTaskClick parameter and uncomment the line below:
-                // onTaskClick = { taskId ->
-                //     navController.navigate("${Screen.ActiveTaskDetails.route}/$taskId")
-                // }
-            )
-        }
-
-        // Add the new ActiveTaskDetails route
-        composable("${Screen.ActiveTaskDetails.route}/{taskId}") { backStackEntry ->
             ActiveTasksScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 },
                 onTaskClick = { taskId ->
                     navController.navigate("${Screen.ActiveTaskDetails.route}/$taskId")
+                }
+            )
+        }
+
+// Add the new ActiveTaskDetails route
+        composable("${Screen.ActiveTaskDetails.route}/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+
+            ActiveTaskDetailsScreen(
+                taskId = taskId,
+                onBackPressed = {
+                    navController.popBackStack()
                 }
             )
         }

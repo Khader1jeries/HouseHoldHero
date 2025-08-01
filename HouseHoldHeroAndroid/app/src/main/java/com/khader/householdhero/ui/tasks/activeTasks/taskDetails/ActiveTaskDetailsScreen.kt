@@ -14,10 +14,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModel
+import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksViewModelFactory
+import com.khader.householdhero.ui.tasks.convertToTaskItemData
+import com.khader.householdhero.ui.tasks.formatDateString
 import com.khader.householdhero.ui.theme.PrimaryColor
 import com.khader.householdhero.ui.theme.TextColor
 
@@ -28,20 +34,20 @@ fun ActiveTaskDetailsScreen(
     onBackPressed: () -> Unit,
 
 ) {
-    // For now, we'll use dummy data since you'll add the task ID manually
-    // You can replace this with actual task fetching logic later
-    val dummyTask = DummyTaskData(
-        id = taskId,
-        title = "Clean the Kitchen",
-        description = "Wash dishes, clean counters, sweep and mop the floor. Make sure to clean the stove and organize the cabinets.",
-        points = 50,
-        status = "Pending",
-        dueDate = "Dec 15, 2024",
-        assignedTo = "John Doe",
-        createdBy = "Jane Smith",
-        priority = "High",
-        estimatedTime = "2 hours"
+    // Get context for repository
+    val context = LocalContext.current
+
+    // Create ViewModel using factory that handles repository creation
+    val viewModel: ActiveTaskDetailsViewModel = viewModel(
+        factory = ActiveTaskDetailsViewModelFactory(context)
     )
+
+    DisposableEffect(Unit) {
+        viewModel.fetchTask(taskId)
+        onDispose { }
+    }
+
+    val task = viewModel.task?.getOrNull()
 
     Scaffold(
         topBar = {
@@ -104,7 +110,7 @@ fun ActiveTaskDetailsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = dummyTask.title,
+                                text = task?.title ?: "",
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = TextColor
@@ -121,7 +127,7 @@ fun ActiveTaskDetailsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Due: ${dummyTask.dueDate}",
+                                    text = "Due: ${formatDateString(task?.dueDate ?: "")}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color(0xFF666666)
                                 )
@@ -136,7 +142,7 @@ fun ActiveTaskDetailsScreen(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = "${dummyTask.points}\npts",
+                                text = "${task?.score}\npts",
                                 modifier = Modifier.padding(12.dp),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = Color.White,
@@ -162,29 +168,7 @@ fun ActiveTaskDetailsScreen(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = Color(0xFF4CAF50),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Status",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF666666)
-                        )
-                        Text(
-                            text = dummyTask.status,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextColor
-                        )
-                    }
+
                 }
 
                 // Priority Card
@@ -211,7 +195,7 @@ fun ActiveTaskDetailsScreen(
                             color = Color(0xFF666666)
                         )
                         Text(
-                            text = dummyTask.priority,
+                            text = task?.priority ?: "",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = TextColor
@@ -253,7 +237,7 @@ fun ActiveTaskDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = dummyTask.description,
+                        text = task?.description ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0xFF666666),
                         lineHeight = 20.sp
@@ -295,10 +279,8 @@ fun ActiveTaskDetailsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Details rows
-                    DetailRow(label = "Assigned to", value = dummyTask.assignedTo, icon = Icons.Default.Person)
-                    DetailRow(label = "Created by", value = dummyTask.createdBy, icon = Icons.Default.PersonAdd)
-                    DetailRow(label = "Estimated time", value = dummyTask.estimatedTime, icon = Icons.Default.AccessTime)
-                    DetailRow(label = "Task ID", value = dummyTask.id, icon = Icons.Default.Tag)
+                    DetailRow(label = "Assigned to", value = task?.assignedTo ?: "", icon = Icons.Default.Person)
+
                 }
             }
 

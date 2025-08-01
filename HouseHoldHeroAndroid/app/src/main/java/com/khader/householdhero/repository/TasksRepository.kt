@@ -124,5 +124,13 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
             Result.failure(e)
         }
     }
+    suspend fun getTask(taskId:String): Result<Task> {
+        return try {
+            val response = api.getTask(taskId)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
 
+}
 }
