@@ -34,7 +34,7 @@ data class TaskItem(
     val points: Int,
     val status: String,
     val backgroundColor: Color,
-    val dueDate: String
+    val dueDate: String,
 )
 fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
     return tasks.map { task ->
@@ -43,7 +43,9 @@ fun convertVotesToTaskItemData(tasks: List<TaskUnderVote>): List<TaskItem> {
             title = task.title,
             description = task.description,
             points = task.score,
-            status = "Votes: YES - ${task.yes.size}", dueDate = formatDateString(task.dueDate), // You can just use task.yes.size.toString() if you want a number only
+            status = "Votes: YES - ${task.yes.size}",
+            dueDate = formatDateString(task.dueDate),
+
             backgroundColor = Color(
                 red = (70..150).random() / 255f,
                 green = (70..150).random() / 255f,
@@ -79,12 +81,12 @@ fun convertToTaskItemData(tasks: List<Task>,status: String): List<TaskItem> {
     }
 }
 
-// Shared Task List Content Component
 @Composable
 fun TaskListContent(
     modifier: Modifier = Modifier,
     tasks: List<TaskItem>,
-    emptyMessage: String
+    emptyMessage: String,
+    onTaskClick: (String) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -121,7 +123,10 @@ fun TaskListContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(tasks) { task ->
-                    TaskListItem(task = task)
+                    TaskListItem(
+                        task = task,
+                        onTaskClick = { onTaskClick(task.id) }
+                    )
                 }
 
                 // Add some bottom padding
@@ -133,7 +138,7 @@ fun TaskListContent(
     }
 }
 
-// Individual task list item component
+// Updated TaskListItem component with click handler
 @Composable
 fun TaskListItem(
     task: TaskItem,
@@ -191,40 +196,44 @@ fun TaskListItem(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                if (task.dueDate.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Due: ${task.dueDate}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF666666),
+                        fontSize = 12.sp
+                    )
+                }
+            }
 
-                // Status and points row
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            // Points and status
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                // Points badge
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = PrimaryColor.copy(alpha = 0.1f)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    // Status badge
-                    Surface(
-                        color = task.backgroundColor.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.padding(0.dp)
-                    ) {
-                        Text(
-                            text = task.status,
-                            color = task.backgroundColor,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-
-                    // Points
                     Text(
                         text = "${task.points} pts",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Medium
                     )
+                }
+
+                if (task.status.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Ends: ${task.dueDate}",
+                        text = task.status,
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = task.backgroundColor
+                        color = Color(0xFF666666),
+                        fontSize = 11.sp
                     )
                 }
             }

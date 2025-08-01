@@ -12,4 +12,7 @@ sealed class Screen(val route: String) {
     object VotingTasks : Screen("voting-tasks")
     object FutureTasks : Screen("future-tasks")
     object FinishedTasks : Screen("finished-tasks")
+
+
+    object ActiveTaskDetails : Screen("active-task-details")
 }

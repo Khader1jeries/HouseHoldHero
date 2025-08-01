@@ -1,8 +1,6 @@
 package com.khader.householdhero.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +8,6 @@ import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
-
 import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
 import com.khader.householdhero.ui.tasks.votes.VotingTasksScreen
 import com.khader.householdhero.ui.tasks.activeTasks.FinishedTasksScreen
@@ -90,11 +87,28 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
 
-        // Task screens
+        // Task screens - Updated to include the new navigation
         composable(Screen.ActiveTasks.route) {
             ActiveTasksScreen(
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                // Note: If you want to add task click navigation, you'll need to update your
+                // ActiveTasksScreen to accept onTaskClick parameter and uncomment the line below:
+                // onTaskClick = { taskId ->
+                //     navController.navigate("${Screen.ActiveTaskDetails.route}/$taskId")
+                // }
+            )
+        }
+
+        // Add the new ActiveTaskDetails route
+        composable("${Screen.ActiveTaskDetails.route}/{taskId}") { backStackEntry ->
+            ActiveTasksScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onTaskClick = { taskId ->
+                    navController.navigate("${Screen.ActiveTaskDetails.route}/$taskId")
                 }
             )
         }
