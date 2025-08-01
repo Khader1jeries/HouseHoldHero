@@ -68,15 +68,7 @@ fun ActiveTaskDetailsScreen(
                         )
                     }
                 },
-                actions = {
-                    IconButton(onClick = { /* TODO: Edit functionality */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Task",
-                            tint = TextColor
-                        )
-                    }
-                },
+
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                     titleContentColor = TextColor
@@ -161,15 +153,7 @@ fun ActiveTaskDetailsScreen(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Status Card
-                Card(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
 
-                }
 
                 // Priority Card
                 Card(
@@ -313,37 +297,13 @@ fun ActiveTaskDetailsScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-
-                // More Options Button
-                OutlinedButton(
-                    onClick = { /* TODO: More options */ },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = PrimaryColor
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(
-                        width = 1.dp,
-                        color = PrimaryColor
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Options",
-                        fontWeight = FontWeight.Medium
-                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-}
+
 
 @Composable
 fun DetailRow(

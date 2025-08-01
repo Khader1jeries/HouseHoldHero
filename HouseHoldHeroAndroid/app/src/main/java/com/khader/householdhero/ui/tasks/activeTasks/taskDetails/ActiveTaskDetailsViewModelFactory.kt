@@ -12,7 +12,7 @@ class ActiveTaskDetailsViewModelFactory(
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ActiveTasksViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(ActiveTaskDetailsViewModel::class.java)) {
             val repository = TasksRepository(RetrofitInstance.tasksApi, context)
             return ActiveTaskDetailsViewModel(repository) as T
         }
