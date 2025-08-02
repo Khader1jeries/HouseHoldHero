@@ -10,6 +10,7 @@ import com.khader.householdhero.ui.profile.EditProfileScreen
 import com.khader.householdhero.ui.profile.ProfileScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
+import com.khader.householdhero.ui.settings.privacy.PrivacyScreen
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
 import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
 import com.khader.householdhero.ui.tasks.votes.VotingTasksScreen
@@ -123,9 +124,7 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(Screen.Privacy.route) {
             PrivacyScreen(
-                onBackPressed = {
-                    navController.popBackStack()
-                }
+
             )
         }
         composable(Screen.Leaderboard.route) {
