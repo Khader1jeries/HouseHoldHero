@@ -34,6 +34,7 @@ import com.khader.householdhero.ui.tasks.TasksContent
 import com.khader.householdhero.ui.tasks.TasksViewModel
 import com.khader.householdhero.ui.tasks.TasksViewModelFactory
 import com.khader.householdhero.ui.theme.HouseHoldHeroTheme
+import kotlin.Unit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +45,8 @@ fun HomeScreen(
     onNavigateToFutureTasks: () -> Unit = {},
     onNavigateToFinishedTasks: () -> Unit = {},
     onNavigateToLeaderboard: () -> Unit = {},
-            onNavigateToProfile: () -> Unit = {}
+            onNavigateToProfile: () -> Unit = {},
+    onNotifications: () -> Unit = {},
 ) {
     println("HomeScreen loaded with onSettingsClick: ${onSettingsClick != {}}")
     var selectedTab by remember { mutableStateOf(0) }
@@ -108,7 +110,8 @@ fun HomeScreen(
                                     when (item.index) {
                                         2 -> onNavigateToLeaderboard()
                                         3->onNavigateToProfile()
-                                        4 -> onSettingsClick() // Settings
+                                        4 -> onSettingsClick()
+                                        5 -> onNotifications()
                                         else -> selectedTab = item.index
                                     }
                                 }
@@ -189,8 +192,9 @@ fun HomeScreen(
                 2 -> LeaderboardContent()
                 3 -> ProfileContent()
 
-                4-> NotificationsContent()
+
                 5 -> SettingsContent()
+                4-> NotificationsContent()
             }
         }
     }

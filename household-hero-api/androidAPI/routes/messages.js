@@ -11,10 +11,15 @@ router.get("/android/:email", async (req, res) => {
       .where("to", "==", email)
       .get();
 
-    const messages = messagesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const messages = messagesSnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate().toISOString(),
+      };
+    });
 
     return res.status(200).json({
       success: true,

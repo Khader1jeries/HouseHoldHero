@@ -1,6 +1,7 @@
 package com.khader.householdhero.network
 
 import com.khader.householdhero.api.MemberApi
+import com.khader.householdhero.api.MessagesApi
 import com.khader.householdhero.api.TasksApi
 import com.squareup.moshi.Moshi
 import retrofit2.Retrofit
@@ -24,6 +25,9 @@ object RetrofitInstance {
 
     val tasksApi: TasksApi by lazy {
         retrofit.create(TasksApi::class.java)
+    }
+    val messagesApi: MessagesApi by lazy {
+        retrofit.create(MessagesApi::class.java)
     }
 
 }

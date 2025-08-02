@@ -10,6 +10,7 @@ import com.khader.householdhero.ui.profile.EditProfileScreen
 import com.khader.householdhero.ui.profile.ProfileScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
+import com.khader.householdhero.ui.settings.notifications.NotificationsScreen
 import com.khader.householdhero.ui.settings.privacy.PrivacyScreen
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
 import com.khader.householdhero.ui.tasks.futureTasks.FutureTasksScreen
@@ -61,6 +62,9 @@ fun AppNavHost(navController: NavHostController) {
                 },
                 onNavigateToProfile={
                     navController.navigate(Screen.Profile.route)
+                },
+                onNotifications={
+                    navController.navigate(Screen.Notification.route)
                 }
             )
         }
@@ -104,6 +108,9 @@ fun AppNavHost(navController: NavHostController) {
                 onPrivacy={
                     navController.navigate(Screen.Privacy.route)
                 },
+                onNotifications={
+                    navController.navigate(Screen.Notification.route)
+                },
                 onLogOut = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
@@ -133,6 +140,14 @@ fun AppNavHost(navController: NavHostController) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable(Screen.Notification.route) {
+            NotificationsScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+
             )
         }
         composable(Screen.Leaderboard.route) {

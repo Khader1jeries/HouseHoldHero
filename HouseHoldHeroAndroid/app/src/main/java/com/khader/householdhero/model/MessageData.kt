@@ -1,7 +1,7 @@
 package com.khader.householdhero.model
 
 import com.squareup.moshi.JsonClass
-import javax.security.auth.Subject
+
 @JsonClass(generateAdapter = true)
 data class MessageData(
     val id: String,
@@ -10,7 +10,7 @@ data class MessageData(
     val from: String,
     val subject: String,
     val message: String,
-    val reply: String
+    val reply: String?
 )
 @JsonClass(generateAdapter = true)
 data class MessageDataCreate (
@@ -18,5 +18,5 @@ data class MessageDataCreate (
     val from: String,
     val subject: String,
     val message: String,
-    val reply: String
+    val reply: String?
 )

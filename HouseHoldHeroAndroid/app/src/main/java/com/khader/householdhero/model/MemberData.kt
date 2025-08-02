@@ -23,3 +23,8 @@ data class EditMemberData (
     val countryCode:String,
     val phoneNumber:String,
 )
+@JsonClass(generateAdapter = true)
+data class MessagesApiResponse(
+    val success: Boolean,
+    val data: List<MessageData>
+)

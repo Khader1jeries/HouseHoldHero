@@ -7,6 +7,7 @@ import com.khader.householdhero.model.MemberData
 import com.khader.householdhero.model.MessageData
 
 import com.khader.householdhero.model.MessageDataCreate
+import com.khader.householdhero.model.MessagesApiResponse
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
@@ -23,5 +24,5 @@ interface MessagesApi {
     @POST("messages/")
     suspend fun createMessage(@Body message: MessageDataCreate): LoginResponse
     @GET("messages/android/{email}")
-    suspend fun getMessages(@Path("email") email: String): List<MessageData>
+    suspend fun getMessages(@Path("email") email: String): MessagesApiResponse
 }
