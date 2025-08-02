@@ -42,7 +42,8 @@ fun HomeScreen(
     onNavigateToActiveTasks: () -> Unit = {},
     onNavigateToVotingTasks: () -> Unit = {},
     onNavigateToFutureTasks: () -> Unit = {},
-    onNavigateToFinishedTasks: () -> Unit = {}
+    onNavigateToFinishedTasks: () -> Unit = {},
+    onNavigateToLeaderboard: () -> Unit = {}
 ) {
     println("HomeScreen loaded with onSettingsClick: ${onSettingsClick != {}}")
     var selectedTab by remember { mutableStateOf(0) }
@@ -104,8 +105,9 @@ fun HomeScreen(
                                     selectedTab = item.index
                                     // Handle special actions
                                     when (item.index) {
+                                        2 -> onNavigateToLeaderboard()
                                         4 -> onSettingsClick() // Settings
-                                        5 -> { /* Handle notification click */ }
+                                        else -> selectedTab = item.index
                                     }
                                 }
                             )

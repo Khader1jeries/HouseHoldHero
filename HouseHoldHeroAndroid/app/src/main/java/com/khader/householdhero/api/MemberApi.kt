@@ -1,5 +1,6 @@
 package com.khader.householdhero.api
 
+import com.khader.householdhero.model.LeaderboardMember
 import com.khader.householdhero.model.LoginRequest
 import com.khader.householdhero.model.LoginResponse
 import com.khader.householdhero.model.ResetPasswordRequest
@@ -17,4 +18,6 @@ interface MemberApi {
     suspend fun checkIfUserExists(@Path("email") email: String): LoginResponse
     @POST("members/reset-password")
     suspend fun resetPassword(@Body request: ResetPasswordRequest): LoginResponse
+    @GET("members/leaderboard/{adminEmail}")
+    suspend fun getLeaderboard(@Path("adminEmail") adminEmail: String): List<LeaderboardMember>
 }

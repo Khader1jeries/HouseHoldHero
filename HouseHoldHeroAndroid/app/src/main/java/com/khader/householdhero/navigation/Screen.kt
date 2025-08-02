@@ -7,6 +7,7 @@ sealed class Screen(val route: String) {
     object ResetPassword : Screen("reset-password")
     object Settings : Screen("settings")
     object Tasks : Screen("tasks")
+    object Leaderboard : Screen("leaderboard")
     // Task screens
     object ActiveTasks : Screen("active-tasks")
     object VotingTasks : Screen("voting-tasks")

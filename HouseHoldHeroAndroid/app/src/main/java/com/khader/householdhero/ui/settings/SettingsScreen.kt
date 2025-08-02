@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,43 +42,38 @@ fun SettingsScreen(
 ) {
     Scaffold(
         topBar = {
-            // Custom Top Bar
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-                color = Color(0xFFF5F5F5), // Same grey as home screen
-                shadowElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Back Arrow
-                    IconButton(
-                        onClick = onBackPressed
+            TopAppBar(
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null,
+                            tint = Color(0xFF000000),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Settings",
+                            color = Color(0xFF333333),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            modifier = Modifier.size(28.dp),
                             tint = Color(0xFF333333)
                         )
                     }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Settings Title
-                    Text(
-                        text = "Settings",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF333333)
-                    )
-                }
-            }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
+            )
         },
         containerColor = Color(0xFFF5F5F5) // Same grey background as home screen
     ) { paddingValues ->
@@ -255,10 +252,3 @@ data class SettingsItem(
     val isDestructive: Boolean = false
 )
 
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    HouseHoldHeroTheme {
-        SettingsScreen()
-    }
-}
