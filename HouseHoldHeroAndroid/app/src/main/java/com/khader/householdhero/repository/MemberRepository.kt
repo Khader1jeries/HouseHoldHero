@@ -9,6 +9,8 @@ import com.khader.householdhero.model.LoginRequest
 import com.khader.householdhero.model.LoginResponse
 import com.khader.householdhero.model.MemberData
 import com.khader.householdhero.model.ResetPasswordRequest
+import kotlin.apply
+import kotlin.text.clear
 
 
 class MemberRepository(private val api: MemberApi,private val context: Context) {
@@ -104,6 +106,26 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
             )
             val response = api.resetPassword(req)
             Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun deleteMember(): Result<Unit> {
+        return try {
+            val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
+            val email = sharedPrefs.getString("email", null)
+            if (email.isNullOrBlank()) {
+                return Result.failure(Exception("Email not found in preferences"))
+            }
+
+            val response = api.deleteMember(email)
+            if (response.isSuccessful) {
+                val prefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
+                prefs.edit().clear().apply()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Delete failed with code ${response.code()}"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -126,6 +126,12 @@ fun AppNavHost(navController: NavHostController) {
             PrivacyScreen(
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onNavigateToLogin = {
+                    // Navigate to login and clear the entire back stack
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

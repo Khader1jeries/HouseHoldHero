@@ -176,5 +176,33 @@ router.put("/android/:email", async (req, res) => {
     });
   }
 });
+router.delete("/android/:email", async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const memberRef = db.collection("members").doc(email);
+    const memberDoc = await memberRef.get();
+
+    if (!memberDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found",
+      });
+    }
+
+    await memberRef.delete();
+
+    return res.status(200).json({
+      success: true,
+      message: "Member deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting member:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 
 module.exports = router;

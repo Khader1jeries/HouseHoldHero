@@ -11,6 +11,10 @@ import kotlinx.coroutines.launch
 class PrivacyViewModel (
     private val memberRepo: MemberRepository
 ) : ViewModel() {
+    private var onNavigateToLogin: (() -> Unit)? = null
+    fun setNavigationCallback(onNavigateToLogin: () -> Unit) {
+        this.onNavigateToLogin = onNavigateToLogin
+    }
     fun changePassword(newPassword: String, confirmPassword: String) {
         if (newPassword == confirmPassword){
             viewModelScope.launch {
@@ -22,9 +26,20 @@ class PrivacyViewModel (
             }
         }
     }
-    // Empty functions for delete account - to be implemented later
     fun deleteAccount() {
-        // TODO: Implement delete account functionality
+        viewModelScope.launch {
+            val result = memberRepo.deleteMember()
+            if (result.isSuccess) {
+                // Handle success (e.g., clear local data, navigate away)
+                println("Account deleted successfully")
+
+                // Navigate to login screen
+                onNavigateToLogin?.invoke()
+            } else {
+                // Handle failure
+                println("Failed to delete account: ${result.exceptionOrNull()?.message}")
+            }
+        }
     }
 
     fun confirmDeleteAccount() {

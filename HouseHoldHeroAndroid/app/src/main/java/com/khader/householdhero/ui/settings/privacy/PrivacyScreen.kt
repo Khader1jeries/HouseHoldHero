@@ -27,7 +27,7 @@ import com.khader.householdhero.ui.theme.PrimaryColor
 @Composable
 fun PrivacyScreen(
     onBackPressed: () -> Unit,
-    viewModel: PrivacyViewModel = viewModel()
+    onNavigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
     val repository = remember { MemberRepository(RetrofitInstance.memberApi, context) }
@@ -39,7 +39,9 @@ fun PrivacyScreen(
     var showNewPassword by remember { mutableStateOf(false) }
     var showConfirmPassword by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-
+    LaunchedEffect(viewModel) {
+        viewModel.setNavigationCallback(onNavigateToLogin)
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -73,25 +75,25 @@ fun PrivacyScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Change Password Box
+            // Change Password Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
+                    modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
                         text = "Change Password",
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryColor
                     )
 
-                    // New Password Input
+                    // New Password Field
                     OutlinedTextField(
                         value = newPassword,
                         onValueChange = { newPassword = it },
@@ -100,16 +102,15 @@ fun PrivacyScreen(
                         trailingIcon = {
                             IconButton(onClick = { showNewPassword = !showNewPassword }) {
                                 Icon(
-                                    imageVector = if (showNewPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    imageVector = if (showNewPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                     contentDescription = if (showNewPassword) "Hide password" else "Show password"
                                 )
                             }
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Confirm Password Input
+                    // Confirm Password Field
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
@@ -118,118 +119,87 @@ fun PrivacyScreen(
                         trailingIcon = {
                             IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
                                 Icon(
-                                    imageVector = if (showConfirmPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    imageVector = if (showConfirmPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                     contentDescription = if (showConfirmPassword) "Hide password" else "Show password"
                                 )
                             }
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     // Change Password Button
                     Button(
                         onClick = {
-                            // Handle password change logic here
-                            if (newPassword.isNotEmpty() && newPassword == confirmPassword) {
-                                // Call viewModel method to change password
-                                // viewModel.changePassword(newPassword)
-                            }
+                            viewModel.changePassword(newPassword, confirmPassword)
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = newPassword.isNotEmpty() && newPassword == confirmPassword
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Change Password")
+                        Text(
+                            text = "Change Password",
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }
 
-            // Privacy Policy Information
+            // Delete Account Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Privacy Policy",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    Text(
-                        text = "Your privacy is important to us. We collect and use your information to provide and improve our services. For detailed information about how we handle your data, please review our full privacy policy.",
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    )
-                }
-            }
-
-            // Account Deletion Section
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
+                    modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "Account Management",
+                        text = "Delete Account",
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
                     )
 
                     Text(
-                        text = "If you wish to delete your account, all your data will be permanently removed and cannot be recovered.",
+                        text = "This action cannot be undone. All your data will be permanently deleted.",
                         fontSize = 14.sp,
-                        lineHeight = 20.sp
+                        color = Color.Gray
                     )
 
                     Button(
                         onClick = { showDeleteDialog = true },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Delete Account", color = Color.White)
+                        Text(
+                            text = "Delete Account",
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }
         }
     }
 
-    // Delete Account Confirmation Dialog
+    // Delete Confirmation Dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = {
-                Text(
-                    text = "Delete Account",
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Text("Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.")
-            },
+            title = { Text("Delete Account") },
+            text = { Text("Are you sure you want to delete your account? This action cannot be undone.") },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Handle account deletion logic here
-                        // viewModel.deleteAccount()
+                        viewModel.deleteAccount()
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text("Delete", color = Color.Red)
                 }
             },
             dismissButton = {

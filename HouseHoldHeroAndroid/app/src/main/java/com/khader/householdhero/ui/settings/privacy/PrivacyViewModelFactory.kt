@@ -9,7 +9,7 @@ import com.khader.householdhero.ui.profile.EditProfileViewModel
 class PrivacyViewModelFactory(private val repository: MemberRepository) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EditProfileViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(PrivacyViewModel::class.java)) { // ✅ Fixed: Check for PrivacyViewModel
             @Suppress("UNCHECKED_CAST")
             return PrivacyViewModel(repository) as T
         }
