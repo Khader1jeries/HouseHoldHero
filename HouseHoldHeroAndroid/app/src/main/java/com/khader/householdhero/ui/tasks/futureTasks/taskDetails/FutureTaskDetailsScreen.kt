@@ -338,6 +338,11 @@ fun FutureTaskDetailsScreen(
                         icon = Icons.Default.Flag
                     )
                     DetailRow(
+                        label = "start Date",
+                        value = formatDateString(task?.startDate ?: "") ?: "No start date",
+                        icon = Icons.Default.CalendarToday
+                    )
+                    DetailRow(
                         label = "Due Date",
                         value = formatDateString(task?.dueDate ?: "") ?: "No due date",
                         icon = Icons.Default.CalendarToday

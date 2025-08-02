@@ -21,3 +21,7 @@ data class VoteApiResponse(
     val success: Boolean,
     val message: String
 )
+@JsonClass(generateAdapter = true)
+data class CommentRequest(
+    val comment: String
+)

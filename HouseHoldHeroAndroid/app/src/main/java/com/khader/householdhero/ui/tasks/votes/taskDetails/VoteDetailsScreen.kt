@@ -380,32 +380,112 @@ fun VoteDetailsScreen(
                 }
             }
 
-            // Subtasks section (if needed)
-            subtasks?.let { subTaskList ->
-                if (subTaskList.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Subtasks",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = TextColor
-                            )
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Add Comment",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextColor
+                    )
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                            subTaskList.forEach { subtask ->
-                                SubtaskItem(subtask = subtask)
-                                Spacer(modifier = Modifier.height(8.dp))
+                    var commentText by remember { mutableStateOf("") }
+                    var isAddingComment by remember { mutableStateOf(false) }
+                    var commentMessage by remember { mutableStateOf("") }
+
+                    // Comment input field
+                    OutlinedTextField(
+                        value = commentText,
+                        onValueChange = { commentText = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Your comment") },
+                        placeholder = { Text("Share your thoughts about this task...") },
+                        maxLines = 4,
+                        minLines = 2,
+                        enabled = !isAddingComment,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryColor,
+                            focusedLabelColor = PrimaryColor
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Comment message
+                    if (commentMessage.isNotEmpty()) {
+                        Text(
+                            text = commentMessage,
+                            color = if (commentMessage.contains("successfully"))
+                                Color(0xFF4CAF50)
+                            else
+                                Color(0xFFF44336),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    // Submit comment button
+                    Button(
+                        onClick = {
+                            if (commentText.trim().isNotEmpty()) {
+                                coroutineScope.launch {
+                                    isAddingComment = true
+                                    commentMessage = ""
+                                    try {
+                                        val result = viewModel.addComment(taskId, userEmail, commentText.trim())
+                                        if (result.isSuccess) {
+                                            val response = result.getOrNull()
+                                            commentMessage = response?.message ?: "Comment added successfully!"
+                                            if (response?.success == true) {
+                                                commentText = "" // Clear the input
+                                            }
+                                        } else {
+                                            commentMessage = result.exceptionOrNull()?.message ?: "Failed to add comment"
+                                        }
+                                    } catch (e: Exception) {
+                                        commentMessage = "Error: ${e.message}"
+                                    } finally {
+                                        isAddingComment = false
+                                    }
+                                }
+                            } else {
+                                commentMessage = "Please enter a comment"
                             }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isAddingComment && commentText.trim().isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryColor
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        if (isAddingComment) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Adding...")
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Add Comment")
                         }
                     }
                 }

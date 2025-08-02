@@ -52,6 +52,7 @@ fun AppNavHost(navController: NavHostController) {
                 onNavigateToFinishedTasks = {
                     navController.navigate(Screen.FinishedTasks.route)
                 }
+                
             )
         }
 

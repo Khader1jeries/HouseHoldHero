@@ -2,6 +2,7 @@ package com.khader.householdhero.repository
 
 import android.content.Context
 import com.khader.householdhero.api.TasksApi
+import com.khader.householdhero.model.CommentRequest
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
@@ -204,5 +205,28 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
         }
     }
 
+    suspend fun addComment(taskId: String, userEmail: String, comment: String): Result<VoteApiResponse> {
+        return try {
+            println("🔄 Repository: Adding comment for task $taskId, email: $userEmail")
+            val commentRequest = CommentRequest(comment)
+            val response = api.addComment(taskId, userEmail, commentRequest)
 
+            println("📡 Repository: Response code: ${response.code()}")
+            println("📡 Repository: Response message: ${response.message()}")
+
+            if (response.isSuccessful && response.body() != null) {
+                val body = response.body()!!
+                println("✅ Repository: Comment added successfully - ${body.message}")
+                Result.success(body)
+            } else {
+                val errorMsg = "Failed to add comment: ${response.code()} ${response.message()}"
+                println("❌ Repository: $errorMsg")
+                Result.failure(Exception(errorMsg))
+            }
+        } catch (e: Exception) {
+            println("❌ Repository: Exception in addComment: ${e.message}")
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
 }

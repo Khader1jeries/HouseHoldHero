@@ -1,6 +1,7 @@
 package com.khader.householdhero.api
 
 
+import com.khader.householdhero.model.CommentRequest
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
@@ -51,5 +52,11 @@ interface TasksApi {
         @Path("taskId") taskId: String,
         @Path("vote") vote: String,
         @Path("email") email: String
+    ): Response<VoteApiResponse>
+    @PUT("tasksUnderVote/android/addComment/{taskId}/{email}")
+    suspend fun addComment(
+        @Path("taskId") taskId: String,
+        @Path("email") email: String,
+        @Body commentRequest: CommentRequest
     ): Response<VoteApiResponse>
 }
