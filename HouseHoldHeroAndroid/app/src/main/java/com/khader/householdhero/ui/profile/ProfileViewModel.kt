@@ -15,7 +15,9 @@ class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
     var member by mutableStateOf<Result<MemberData>?>(null)
     fun fetchMember(){
         viewModelScope.launch {
+
             val result = repository.getMember()
+            println("member is   "+member==null)
             member = result
         }
     }

@@ -57,7 +57,6 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
     }
     suspend fun getMember(): Result<MemberData> {
         return try {
-            // Get adminEmail from SharedPreferences
             val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
             val email = sharedPrefs.getString("email", null)
                 ?: return Result.failure(Exception("email not found in preferences"))

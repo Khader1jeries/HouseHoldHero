@@ -21,6 +21,6 @@ interface MemberApi {
     suspend fun resetPassword(@Body request: ResetPasswordRequest): LoginResponse
     @GET("members/leaderboard/{adminEmail}")
     suspend fun getLeaderboard(@Path("adminEmail") adminEmail: String): List<LeaderboardMember>
-    @GET("members/{email}")
+    @GET("members/android/{email}")
     suspend fun getMember(@Path("email") email: String): MemberData
 }

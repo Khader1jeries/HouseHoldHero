@@ -68,7 +68,7 @@ fun ProfileScreen(
 
     // Create ViewModel using factory that handles repository creation
     val viewModel: ProfileViewModel = viewModel(
-        factory = FinishedTasksViewModelFactory(context)
+        factory = ProfileViewModelFactory(context)
     )
     val level=viewModel.calculateLevel()
     val progress=viewModel.calculateLevelProgress()

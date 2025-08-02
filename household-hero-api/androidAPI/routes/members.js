@@ -99,7 +99,7 @@ router.post("/reset-password", async (req, res) => {
     });
   }
 });
-router.get("/:email", async (req, res) => {
+router.get("/android/:email", async (req, res) => {
   const { email } = req.params;
 
   try {
