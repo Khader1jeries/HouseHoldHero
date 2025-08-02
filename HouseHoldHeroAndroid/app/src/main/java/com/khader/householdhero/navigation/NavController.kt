@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.leaderboard.LeaderboardScreen
+import com.khader.householdhero.ui.profile.EditProfileScreen
 import com.khader.householdhero.ui.profile.ProfileScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
@@ -96,8 +97,34 @@ fun AppNavHost(navController: NavHostController) {
                 onBackPressed = {
                     navController.popBackStack()
                 },
-                onEditProfile={
+                onEditProfile = {
                     navController.navigate(Screen.EditProfile.route)
+                },
+                onPrivacy={
+                    navController.navigate(Screen.Privacy.route)
+                },
+                onLogOut = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onProfileUpdated = {
+                    // Navigate back to settings or profile after successful update
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Privacy.route) {
+            PrivacyScreen(
+                onBackPressed = {
+                    navController.popBackStack()
                 }
             )
         }

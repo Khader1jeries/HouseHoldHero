@@ -22,4 +22,5 @@ sealed class Screen(val route: String) {
     object VoteDetails : Screen("vote-details")
 
     object EditProfile:Screen("edit-profile")
+    object Privacy: Screen("privacy")
 }

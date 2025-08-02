@@ -2,6 +2,7 @@ package com.khader.householdhero.repository
 
 import android.content.Context
 import com.khader.householdhero.api.MemberApi
+import com.khader.householdhero.model.EditMemberData
 import com.khader.householdhero.model.LeaderboardMember
 
 import com.khader.householdhero.model.LoginRequest
@@ -60,25 +61,33 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
             val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
             val email = sharedPrefs.getString("email", null)
 
-            println("🔍 DEBUG Repository: Starting getMember()")
-            println("📧 DEBUG Repository: Email from SharedPrefs: $email")
-
             if (email.isNullOrBlank()) {
-                println("❌ DEBUG Repository: Email is null or blank!")
                 return Result.failure(Exception("Email not found in preferences"))
             }
-
-            println("🌐 DEBUG Repository: About to call API with email: $email")
             val response = api.getMember(email)
-
-            println("✅ DEBUG Repository: API call successful")
-            println("📦 DEBUG Repository: Raw response: $response")
-
             Result.success(response)
         } catch (e: Exception) {
-            println("💥 DEBUG Repository: Exception occurred: ${e.message}")
-            println("💥 DEBUG Repository: Exception type: ${e.javaClass.simpleName}")
             e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+    suspend fun updateMember(
+        updateData: MemberData
+    ): Result<Unit> {
+
+        return try {
+            val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
+            val email = sharedPrefs.getString("email", null)
+            if (email.isNullOrBlank()) {
+                return Result.failure(Exception("Email not found in preferences"))
+            }
+            val response = api.updateMember(email, updateData)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Update failed with code ${response.code()}"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

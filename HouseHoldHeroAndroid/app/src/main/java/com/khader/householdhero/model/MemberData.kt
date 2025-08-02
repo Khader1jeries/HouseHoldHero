@@ -10,5 +10,16 @@ data class MemberData (
     val score:Int,
     val completedTasks:Int,
     val activeTasks:Int,
-    val completionRate: Double
+    val completionRate: Double,
+    val firstName: String,
+    val lastName: String,
+    val phoneNumber: String,
+    val countryCode:String
+)
+@JsonClass(generateAdapter = true)
+data class EditMemberData (
+    val firstName:String,
+    val lastName:String,
+    val countryCode:String,
+    val phoneNumber:String,
 )

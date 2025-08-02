@@ -133,5 +133,48 @@ router.get("/android/:email", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch member" });
   }
 });
+router.put("/android/:email", async (req, res) => {
+  const { email } = req.params;
+  const { firstName, lastName, countryCode, phoneNumber } = req.body;
+
+  // Check if all required fields are present
+  if (!firstName || !lastName || !countryCode || !phoneNumber) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields",
+    });
+  }
+
+  try {
+    const memberRef = db.collection("members").doc(email);
+    const memberDoc = await memberRef.get();
+
+    if (!memberDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found",
+      });
+    }
+
+    await memberRef.update({
+      firstName,
+      lastName,
+      countryCode,
+      phoneNumber,
+      fullName: `${firstName} ${lastName}`, // optional: keep fullName in sync
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Member updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating member:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 
 module.exports = router;
