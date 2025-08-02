@@ -6,6 +6,7 @@ import com.khader.householdhero.model.LeaderboardMember
 
 import com.khader.householdhero.model.LoginRequest
 import com.khader.householdhero.model.LoginResponse
+import com.khader.householdhero.model.MemberData
 import com.khader.householdhero.model.ResetPasswordRequest
 
 
@@ -49,6 +50,19 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
                 ?: return Result.failure(Exception("Admin email not found in preferences"))
 
             val response = api.getLeaderboard(adminEmail)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun getMember(): Result<MemberData> {
+        return try {
+            // Get adminEmail from SharedPreferences
+            val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
+            val email = sharedPrefs.getString("email", null)
+                ?: return Result.failure(Exception("email not found in preferences"))
+
+            val response = api.getMember(email)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.khader.householdhero.ui.forgotPassword.ForgotPasswordScreen
 import com.khader.householdhero.ui.leaderboard.LeaderboardScreen
+import com.khader.householdhero.ui.profile.ProfileScreen
 import com.khader.householdhero.ui.resetPassword.ResetPasswordScreen
 import com.khader.householdhero.ui.settings.SettingsScreen
 import com.khader.householdhero.ui.tasks.activeTasks.ActiveTasksScreen
@@ -55,6 +56,9 @@ fun AppNavHost(navController: NavHostController) {
                 },
                 onNavigateToLeaderboard = {
                     navController.navigate(Screen.Leaderboard.route)
+                },
+                onNavigateToProfile={
+                    navController.navigate(Screen.Profile.route)
                 }
             )
         }
@@ -96,6 +100,13 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(Screen.Leaderboard.route) {
             LeaderboardScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Profile.route) {
+            ProfileScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 }

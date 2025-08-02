@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object Tasks : Screen("tasks")
     object Leaderboard : Screen("leaderboard")
+    object Profile:Screen("profile")
     // Task screens
     object ActiveTasks : Screen("active-tasks")
     object VotingTasks : Screen("voting-tasks")

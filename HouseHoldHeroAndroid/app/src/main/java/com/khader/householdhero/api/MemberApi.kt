@@ -3,6 +3,7 @@ package com.khader.householdhero.api
 import com.khader.householdhero.model.LeaderboardMember
 import com.khader.householdhero.model.LoginRequest
 import com.khader.householdhero.model.LoginResponse
+import com.khader.householdhero.model.MemberData
 import com.khader.householdhero.model.ResetPasswordRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,4 +21,6 @@ interface MemberApi {
     suspend fun resetPassword(@Body request: ResetPasswordRequest): LoginResponse
     @GET("members/leaderboard/{adminEmail}")
     suspend fun getLeaderboard(@Path("adminEmail") adminEmail: String): List<LeaderboardMember>
+    @GET("members/{email}")
+    suspend fun getMember(@Path("email") email: String): MemberData
 }

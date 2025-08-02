@@ -99,4 +99,29 @@ router.post("/reset-password", async (req, res) => {
     });
   }
 });
+router.get("/:email", async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const memberRef = db.collection("members").doc(email);
+    const memberDoc = await memberRef.get();
+
+    if (!memberDoc.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    }
+
+    const memberData = memberDoc.data();
+    memberData.id = memberDoc.id; // Add the document ID to the returned data
+
+    return res.status(200).json({ success: true, data: memberData });
+  } catch (error) {
+    console.error("Error retrieving member:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;
