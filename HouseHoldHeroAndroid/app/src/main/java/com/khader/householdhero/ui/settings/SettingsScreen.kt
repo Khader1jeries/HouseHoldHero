@@ -33,11 +33,8 @@ fun SettingsScreen(
     onBackPressed: () -> Unit = {},
     onEditProfile: () -> Unit = {},
     onSecurity: () -> Unit = {},
-    onPrivacy: () -> Unit = {},
     onContactAdmin: () -> Unit = {},
-    onHelpSupport: () -> Unit = {},
     onTermsPolicies: () -> Unit = {},
-    onReportProblem: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     Scaffold(
@@ -102,11 +99,6 @@ fun SettingsScreen(
                         onClick = onSecurity
                     ),
                     SettingsItem(
-                        icon = Icons.Default.Lock,
-                        title = "Privacy",
-                        onClick = onPrivacy
-                    ),
-                    SettingsItem(
                         icon = Icons.Default.Email,
                         title = "Contact the Admin",
                         onClick = onContactAdmin
@@ -120,11 +112,6 @@ fun SettingsScreen(
                 items = listOf(
                     SettingsItem(
                         icon = Icons.Default.Info,
-                        title = "Help & Support",
-                        onClick = onHelpSupport
-                    ),
-                    SettingsItem(
-                        icon = Icons.Default.Info,
                         title = "Terms and Policies",
                         onClick = onTermsPolicies
                     )
@@ -135,11 +122,7 @@ fun SettingsScreen(
             SettingsSection(
                 title = "Actions",
                 items = listOf(
-                    SettingsItem(
-                        icon = Icons.Default.Info,
-                        title = "Report a problem",
-                        onClick = onReportProblem
-                    ),
+
                     SettingsItem(
                         icon = Icons.Default.ExitToApp,
                         title = "Log out",

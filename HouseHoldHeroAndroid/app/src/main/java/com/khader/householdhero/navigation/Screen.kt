@@ -20,4 +20,6 @@ sealed class Screen(val route: String) {
     object FinishedTaskDetails : Screen("finished-task-details")
     object FutureTaskDetails : Screen("future-task-details")
     object VoteDetails : Screen("vote-details")
+
+    object EditProfile:Screen("edit-profile")
 }

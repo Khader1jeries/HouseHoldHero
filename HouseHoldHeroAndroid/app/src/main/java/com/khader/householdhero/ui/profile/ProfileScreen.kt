@@ -32,29 +32,9 @@ import com.khader.householdhero.ui.tasks.finishedTasks.FinishedTasksViewModelFac
 import com.khader.householdhero.ui.tasks.formatDateString
 import com.khader.householdhero.ui.theme.TextColor
 
-// Data class for user profile
-data class UserProfile(
-    val id: String,
-    val fullName: String,
-    val email: String,
-    val score: Int,
-    val level: Int,
-    val completedTasks: Int,
-    val activeTasks: Int,
-    val streakDays: Int,
-    val joinedDate: String,
-    val profileImageRes: Int = R.drawable.logo,
-    val badges: List<Badge> = emptyList()
-)
 
-data class Badge(
-    val id: String,
-    val name: String,
-    val description: String,
-    val icon: ImageVector,
-    val color: Color,
-    val isEarned: Boolean = true
-)
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,31 +43,47 @@ fun ProfileScreen(
     onEditProfile: () -> Unit = {},
     onSettings: () -> Unit = {}
 ) {
-    // Get context for repository
     val context = LocalContext.current
-
-    // Create ViewModel using factory that handles repository creation
     val viewModel: ProfileViewModel = viewModel(
         factory = ProfileViewModelFactory(context)
     )
-    val level=viewModel.calculateLevel()
-    val progress=viewModel.calculateLevelProgress()
-    val toGo =viewModel.pointsNeededToNextLevel()
-    DisposableEffect(Unit) {
-        viewModel.fetchMember()
 
+    val level = viewModel.calculateLevel()
+    val progress = viewModel.calculateLevelProgress()
+    val toGo = viewModel.pointsNeededToNextLevel()
+
+    // Enhanced state tracking
+    val member = viewModel.member?.getOrNull()
+    val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
+
+    DisposableEffect(Unit) {
+        println("🎬 DEBUG Screen: ProfileScreen composed, calling fetchMember()")
+        viewModel.fetchMember()
         onDispose { }
     }
 
-    val member = viewModel.member?.getOrNull()
+    // Add debug UI
+    LaunchedEffect(viewModel.member) {
+        println("🔄 DEBUG Screen: Member state changed")
+        when {
+            member != null -> {
+                println("✅ DEBUG Screen: Member is available: ${member.fullName}")
+            }
+            viewModel.member?.isFailure == true -> {
+                println("❌ DEBUG Screen: Member fetch failed: ${viewModel.member?.exceptionOrNull()?.message}")
+            }
+            else -> {
+                println("⏳ DEBUG Screen: Member is null (still loading?)")
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
@@ -120,9 +116,7 @@ fun ProfileScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         },
         containerColor = Color(0xFFF5F5F5)
@@ -133,31 +127,78 @@ fun ProfileScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Profile Header Card
-            ProfileHeaderCard(
-                member = member,
-                onEditProfile = onEditProfile
-            )
+            // DEBUG: Show loading/error states
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("Loading profile...")
+                        }
+                    }
+                }
+                errorMessage != null -> {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Error loading profile:",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red
+                            )
+                            Text(
+                                text = errorMessage,
+                                color = Color.Red
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = { viewModel.fetchMember() }
+                            ) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                }
+                member != null -> {
+                    // Success: Show the profile
+                    ProfileHeaderCard(member = member, onEditProfile = onEditProfile)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LevelScoreCard(member = member, level = level, progress = progress, toGo = toGo)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    StatsCardsRow(member = member)
+                }
+                else -> {
+                    // Member is null but no error
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "No profile data available",
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Member data could not be loaded"
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = { viewModel.fetchMember() }
+                            ) {
+                                Text("Try Again")
+                            }
+                        }
+                    }
+                }
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Level & Score Card
-            LevelScoreCard(member = member, level =level,progress=progress,toGo=toGo)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Stats Cards Row
-            StatsCardsRow(member = member)
-
-
-
-
-
-
-
-
-
-            Spacer(modifier = Modifier.height(100.dp)) // Bottom padding
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

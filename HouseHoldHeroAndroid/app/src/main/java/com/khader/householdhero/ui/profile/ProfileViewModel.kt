@@ -10,17 +10,61 @@ import com.khader.householdhero.repository.MemberRepository
 import kotlinx.coroutines.launch
 import kotlin.math.pow
 
-
 class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
     var member by mutableStateOf<Result<MemberData>?>(null)
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
     fun fetchMember(){
         viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
 
-            val result = repository.getMember()
-            println("member is   "+member==null)
-            member = result
+            try {
+                println("🔍 DEBUG: Starting fetchMember()")
+
+                val result = repository.getMember()
+
+                // Enhanced debugging
+                when {
+                    result.isSuccess -> {
+                        val memberData = result.getOrNull()
+                        println("✅ DEBUG: API Success - Member data received:")
+                        println("   📧 ID: ${memberData?.id}")
+                        println("   👤 Full Name: ${memberData?.fullName}")
+                        println("   📅 Created At: ${memberData?.createdAt}")
+                        println("   🏆 Score: ${memberData?.score}")
+                        println("   ✅ Completed Tasks: ${memberData?.completedTasks}")
+                        println("   🔄 Active Tasks: ${memberData?.activeTasks}")
+                        println("   📊 Completion Rate: ${memberData?.completionRate}")
+
+                        if (memberData != null) {
+                            println("✅ DEBUG: Member is NOT null - setting state")
+                        } else {
+                            println("❌ DEBUG: Member data is null despite success")
+                        }
+                    }
+                    result.isFailure -> {
+                        val exception = result.exceptionOrNull()
+                        println("❌ DEBUG: API Failed - Error: ${exception?.message}")
+                        println("❌ DEBUG: Exception type: ${exception?.javaClass?.simpleName}")
+                        errorMessage = exception?.message
+                    }
+                }
+
+                member = result
+                println("🔧 DEBUG: State updated - member is now: ${member != null}")
+
+            } catch (e: Exception) {
+                println("💥 DEBUG: Unexpected error in fetchMember(): ${e.message}")
+                errorMessage = e.message
+                member = Result.failure(e)
+            } finally {
+                isLoading = false
+            }
         }
     }
+
     fun calculateLevel(): Int {
         val memberData = member?.getOrNull() ?: return 0
         var level = 0
@@ -29,6 +73,7 @@ class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
         }
         return level
     }
+
     fun calculateLevelProgress(): Float {
         val memberData = member?.getOrNull() ?: return 0f
         val score = memberData.score
@@ -40,6 +85,7 @@ class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
         val progress = ((score - currentLevelXP) / (nextLevelXP - currentLevelXP)).toFloat()
         return progress.coerceIn(0f, 1f) // Ensure it's between 0% and 100%
     }
+
     fun pointsNeededToNextLevel(): Int {
         val memberData = member?.getOrNull() ?: return 0
         val score = memberData.score

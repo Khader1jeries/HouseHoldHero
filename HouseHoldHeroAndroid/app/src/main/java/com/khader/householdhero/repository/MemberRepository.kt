@@ -59,11 +59,26 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
         return try {
             val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
             val email = sharedPrefs.getString("email", null)
-                ?: return Result.failure(Exception("email not found in preferences"))
 
+            println("🔍 DEBUG Repository: Starting getMember()")
+            println("📧 DEBUG Repository: Email from SharedPrefs: $email")
+
+            if (email.isNullOrBlank()) {
+                println("❌ DEBUG Repository: Email is null or blank!")
+                return Result.failure(Exception("Email not found in preferences"))
+            }
+
+            println("🌐 DEBUG Repository: About to call API with email: $email")
             val response = api.getMember(email)
+
+            println("✅ DEBUG Repository: API call successful")
+            println("📦 DEBUG Repository: Raw response: $response")
+
             Result.success(response)
         } catch (e: Exception) {
+            println("💥 DEBUG Repository: Exception occurred: ${e.message}")
+            println("💥 DEBUG Repository: Exception type: ${e.javaClass.simpleName}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

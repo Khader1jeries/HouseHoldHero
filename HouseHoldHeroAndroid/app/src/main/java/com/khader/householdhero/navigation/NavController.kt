@@ -95,6 +95,9 @@ fun AppNavHost(navController: NavHostController) {
             SettingsScreen(
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onEditProfile={
+                    navController.navigate(Screen.EditProfile.route)
                 }
             )
         }
