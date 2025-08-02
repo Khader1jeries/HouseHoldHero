@@ -10,22 +10,12 @@ import kotlinx.coroutines.launch
 
 class PrivacyViewModel (
     private val memberRepo: MemberRepository
-, private val context: Context) : ViewModel() {
+) : ViewModel() {
     fun changePassword(newPassword: String, confirmPassword: String) {
-        if (newPassword == confirmPassword) {
-            val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
-            val email = sharedPrefs.getString("email", null)
-            if (email.isNullOrBlank()) {
-                return
-            }
-            val request = ResetPasswordRequest(
-                email = email,
-                password = newPassword
-            )
-
+        if (newPassword == confirmPassword){
             viewModelScope.launch {
                 try {
-                    memberRepo.resetPassword(request)
+                    memberRepo.resetPasswordIn(newPassword)
                 } catch (e: Exception) {
 
                 }

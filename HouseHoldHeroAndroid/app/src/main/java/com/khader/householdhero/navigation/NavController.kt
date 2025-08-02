@@ -124,7 +124,9 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(Screen.Privacy.route) {
             PrivacyScreen(
-
+                onBackPressed = {
+                    navController.popBackStack()
+                }
             )
         }
         composable(Screen.Leaderboard.route) {

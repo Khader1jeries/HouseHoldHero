@@ -91,4 +91,21 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
             Result.failure(e)
         }
     }
+    suspend fun resetPasswordIn(password: String): Result<LoginResponse> {
+        return try {
+            val sharedPrefs = context.getSharedPreferences("HouseholdHeroPrefs", Context.MODE_PRIVATE)
+            val email = sharedPrefs.getString("email", null)
+            if (email.isNullOrBlank()) {
+                return Result.failure(Exception("Email not found in preferences"))
+            }
+            val req = ResetPasswordRequest(
+                email = email,
+                password = password
+            )
+            val response = api.resetPassword(req)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
