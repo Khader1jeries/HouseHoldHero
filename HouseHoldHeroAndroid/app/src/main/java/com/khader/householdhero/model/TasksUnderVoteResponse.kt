@@ -16,3 +16,8 @@ data class TaskUnderVote(
     val yes: List<String>,
     val no: List<String>
 )
+@JsonClass(generateAdapter = true)
+data class VoteApiResponse(
+    val success: Boolean,
+    val message: String
+)

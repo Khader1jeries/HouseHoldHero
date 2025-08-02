@@ -4,6 +4,7 @@ package com.khader.householdhero.api
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
+import com.khader.householdhero.model.VoteApiResponse
 import com.khader.householdhero.model.subTasks
 import retrofit2.Response
 
@@ -45,4 +46,10 @@ interface TasksApi {
         @Path("taskId") taskId: String,
         @Body subtasks: SubtaskRequest  // Send list directly
     ): Response<Unit>
+    @PUT("tasksUnderVote/android/updateVote/{taskId}/{vote}/{email}")
+    suspend fun updateVote(
+        @Path("taskId") taskId: String,
+        @Path("vote") vote: String,
+        @Path("email") email: String
+    ): Response<VoteApiResponse>
 }

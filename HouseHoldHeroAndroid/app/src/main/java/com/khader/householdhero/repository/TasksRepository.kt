@@ -5,6 +5,7 @@ import com.khader.householdhero.api.TasksApi
 import com.khader.householdhero.model.SubtaskRequest
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
+import com.khader.householdhero.model.VoteApiResponse
 import com.khader.householdhero.model.subTasks
 
 class TasksRepository(private val api: TasksApi,    private val context: Context) {
@@ -190,4 +191,18 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
             Result.failure(e)
         }
     }
+    suspend fun updateVote(taskId: String, vote: String, userEmail: String): Result<VoteApiResponse> {
+        return try {
+            val response = api.updateVote(taskId, vote, userEmail)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to update vote: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.khader.householdhero.model.Task
 import com.khader.householdhero.model.TaskUnderVote
+import com.khader.householdhero.model.VoteApiResponse
 import com.khader.householdhero.model.subTasks
 import com.khader.householdhero.repository.TasksRepository
 import kotlinx.coroutines.launch
@@ -29,5 +30,9 @@ class VoteDetailsViewModel (private val repository: TasksRepository): ViewModel(
             val result = repository.getVoteSubTask(taskId)
             subTask = result
         }
+    }
+    suspend fun submitVote(taskId: String, vote: String, userEmail: String): Result<VoteApiResponse> {
+        println("🔄 ViewModel: Submitting vote - Task: $taskId, Vote: $vote, Email: $userEmail")
+        return repository.updateVote(taskId, vote, userEmail)
     }
 }

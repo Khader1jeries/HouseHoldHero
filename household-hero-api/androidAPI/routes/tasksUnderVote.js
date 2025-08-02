@@ -116,4 +116,116 @@ router.get("/android/subtasks/:taskId", async (req, res) => {
     });
   }
 });
+router.put("/android/updateVote/:taskId/:vote/:email", async (req, res) => {
+  const { taskId, vote, email } = req.params;
+
+  try {
+    const taskRef = db.collection("tasksUnderVote").doc(taskId);
+    const taskDoc = await taskRef.get();
+
+    if (!taskDoc.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+
+    const taskData = taskDoc.data();
+
+    // Get current yes/no arrays (default to empty if missing)
+    const yesArray = taskData.yes || [];
+    const noArray = taskData.no || [];
+
+    let updatedYes = yesArray;
+    let updatedNo = noArray;
+
+    if (vote === "yes") {
+      if (yesArray.includes(email)) {
+        return res
+          .status(200)
+          .json({ success: false, message: "Already voted YES" });
+      }
+
+      // Remove from no array if present
+      if (noArray.includes(email)) {
+        updatedNo = noArray.filter((e) => e !== email);
+        console.log(`User ${email} changed vote from NO to YES`);
+      }
+
+      // Add to yes array
+      updatedYes = [...yesArray, email];
+    } else if (vote === "no") {
+      if (noArray.includes(email)) {
+        return res
+          .status(200)
+          .json({ success: false, message: "Already voted NO" });
+      }
+
+      // Remove from yes array if present
+      if (yesArray.includes(email)) {
+        updatedYes = yesArray.filter((e) => e !== email);
+        console.log(`User ${email} changed vote from YES to NO`);
+      }
+
+      // Add to no array
+      updatedNo = [...noArray, email];
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid vote type" });
+    }
+
+    // Update Firestore document
+    await taskRef.update({
+      yes: updatedYes,
+      no: updatedNo,
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Vote updated successfully" });
+  } catch (error) {
+    console.error("Error updating vote:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+});
+router.put("/android/addComment/:taskId/:email", async (req, res) => {
+  const { taskId, email } = req.params;
+  const { comment } = req.body;
+
+  if (!comment || comment.trim() === "") {
+    return res
+      .status(400)
+      .json({ success: false, message: "Comment is required" });
+  }
+
+  try {
+    const taskRef = db.collection("tasksUnderVote").doc(taskId);
+    const taskDoc = await taskRef.get();
+
+    if (!taskDoc.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+
+    // Use Firestore field path notation to update a single key inside the "comments" map
+    const commentFieldPath = `comments.${email}`;
+
+    await taskRef.update({
+      [commentFieldPath]: comment,
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Comment added/updated" });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;
