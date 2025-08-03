@@ -78,4 +78,9 @@ export class UserService {
   deleteUser(email: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/delete-user/${email}`);
   }
+  verficationCheck(email: string, verfication: string): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/forgot-password/${email}/${verfication}`
+    );
+  }
 }

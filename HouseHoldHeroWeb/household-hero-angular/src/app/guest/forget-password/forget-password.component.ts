@@ -12,7 +12,7 @@ import { UserService } from '../../services/user.service';
   styleUrl: './forget-password.component.css',
 })
 export class ForgotPasswordComponent {
-  currentStep: 'email' | 'reset' = 'email';
+  currentStep: 'email' | 'reset' | 'verification' = 'email';
 
   emailData = {
     email: '',
@@ -22,7 +22,7 @@ export class ForgotPasswordComponent {
     newPassword: '',
     confirmPassword: '',
   };
-
+  verficationCode: string = '';
   errorMessage: string = '';
   successMessage: string = '';
   isSubmitting: boolean = false;
@@ -40,7 +40,7 @@ export class ForgotPasswordComponent {
       next: (res) => {
         // Assume backend returns success if email exists
         this.successMessage = 'Email found. Please reset your password.';
-        this.currentStep = 'reset';
+        this.currentStep = 'verification';
         this.isSubmitting = false;
       },
       error: (err) => {
@@ -78,7 +78,26 @@ export class ForgotPasswordComponent {
       },
     });
   }
+  onVerifyCode(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.isSubmitting = true;
 
+    const email = this.emailData.email.toLowerCase(); // Normalize email
+
+    this.userService.verficationCheck(email, this.verficationCode).subscribe({
+      next: (res) => {
+        this.successMessage =
+          'Verification successful. Please reset your password.';
+        this.currentStep = 'reset'; // Move to next step
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Invalid verification code.';
+        this.isSubmitting = false;
+      },
+    });
+  }
   goBackToEmail(): void {
     this.currentStep = 'email';
     this.successMessage = '';
