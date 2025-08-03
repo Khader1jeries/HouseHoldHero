@@ -20,6 +20,7 @@ export class RegistrationComponent implements OnInit {
     password: '',
     confirmPassword: '',
     countryCode: '+972',
+    DOB: new Date(),
   };
 
   errorMessage: string = '';

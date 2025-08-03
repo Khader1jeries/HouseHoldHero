@@ -114,40 +114,7 @@ router.post("/reset-password", async (req, res) => {
     });
   }
 });
-router.get("/android/:email", async (req, res) => {
-  try {
-    const memberEmail = req.params.email;
 
-    // Query the members collection using email as document ID
-    const memberDoc = await db.collection("members").doc(memberEmail).get();
-
-    if (!memberDoc.exists) {
-      return res.status(404).json({ error: "Member not found" });
-    }
-
-    const memberData = memberDoc.data();
-
-    // Format the response to match what Android expects
-    const formattedMember = {
-      id: memberDoc.id,
-      fullName:
-        memberData.fullName ||
-        `${memberData.firstName || ""} ${memberData.lastName || ""}`.trim(),
-      score: memberData.score || 0,
-      completedTasks: memberData.completedTasks || 0,
-      activeTasks: memberData.activeTasks || 0,
-      createdAt: memberData.joinDate || memberData.createdAt,
-      // Include all other fields from memberData
-      ...memberData,
-    };
-
-    console.log("Android member data fetched:", formattedMember);
-    res.status(200).json(formattedMember);
-  } catch (error) {
-    console.error("Error fetching member for Android:", error);
-    res.status(500).json({ error: "Failed to fetch member" });
-  }
-});
 router.put("/android/:email", async (req, res) => {
   const { email } = req.params;
   const { firstName, lastName, countryCode, phoneNumber } = req.body;

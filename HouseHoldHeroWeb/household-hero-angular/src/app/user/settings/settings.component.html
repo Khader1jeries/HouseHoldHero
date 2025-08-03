@@ -63,15 +63,23 @@
 
         <div class="form-section">
           <div class="form-group">
-            <label for="fullName">Full Name</label>
+            <label for="fullName">First Name</label>
             <input
               type="text"
               id="fullName"
-              [(ngModel)]="userData.fullName"
+              [(ngModel)]="userData.firstName"
               class="form-control"
             />
           </div>
-
+          <div class="form-group">
+            <label for="fullName">Last Name</label>
+            <input
+              type="text"
+              id="fullName"
+              [(ngModel)]="userData.lastName"
+              class="form-control"
+            />
+          </div>
           <div class="form-group">
             <label for="email">Email Address</label>
             <input
@@ -79,6 +87,12 @@
               id="email"
               [(ngModel)]="userData.email"
               class="form-control"
+              disabled
+              style="
+                background-color: #f0f0f0;
+                color: #888;
+                cursor: not-allowed;
+              "
             />
           </div>
 

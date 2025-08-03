@@ -1,56 +1,7 @@
 // controllers/memberController.js
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const crypto = require("crypto");
-function hashPassword(password) {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
-async function createMember(memberData, adminEmail) {
-  // Validate required fields
-  if (
-    (!memberData.fullName && !(memberData.firstName || memberData.lastName)) ||
-    !memberData.email
-  ) {
-    throw { code: 400, message: "Name and email are required" };
-  }
 
-  if (!adminEmail) {
-    throw { code: 400, message: "adminEmail is required" };
-  }
-
-  // Ensure fullName is set
-  if (!memberData.fullName && (memberData.firstName || memberData.lastName)) {
-    memberData.fullName = `${memberData.firstName || ""} ${
-      memberData.lastName || ""
-    }`.trim();
-  }
-  let password = memberData.password;
-  memberData.password = hashPassword(password);
-  // Default values
-  memberData.score = 0;
-  memberData.activeTasks = 0;
-
-  memberData.completedTasks = 0;
-  memberData.totalTasks = 0;
-  memberData.adminEmail = adminEmail;
-  const email = memberData.email;
-  delete memberData.email;
-  delete memberData.confirmPassword;
-  const docRef = db.collection("members").doc(email);
-  await docRef.set(memberData);
-
-  await db
-    .collection("users")
-    .doc(adminEmail)
-    .update({
-      members: admin.firestore.FieldValue.arrayUnion(docRef.id),
-    });
-
-  return {
-    id: docRef.id,
-    ...memberData,
-  };
-}
 async function addTaskToMember(memberEmail, taskId) {
   if (!memberEmail || !taskId) {
     throw new Error("Both memberEmail and taskId are required.");

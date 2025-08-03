@@ -71,7 +71,16 @@
           required
         />
       </div>
-
+      <!--Date of birth input-->
+      <label for="dob">Date of Birth</label>
+      <input
+        type="date"
+        id="dob"
+        [(ngModel)]="user.DOB"
+        name="DOB"
+        required
+        max="2020-12-31"
+      />
       <!-- Email Input -->
       <input
         type="email"

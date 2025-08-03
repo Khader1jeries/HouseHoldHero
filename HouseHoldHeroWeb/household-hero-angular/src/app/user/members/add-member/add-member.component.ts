@@ -73,7 +73,8 @@ export class AddMemberComponent {
         }, 1500);
       },
       error: (error) => {
-        this.errorMessage = 'Failed to add member. Please try again.';
+        this.errorMessage =
+          error.error?.message || 'Failed to add member. Please try again.';
         console.error(error);
         this.isSubmitting = false;
       },
