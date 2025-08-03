@@ -18,7 +18,7 @@
 }
 .img1 {
   /* object-fit: cover; */
-  height: 40vh;
+  height: 50vh;
 }
 .img2 {
   position: absolute; /* Positions it on top */

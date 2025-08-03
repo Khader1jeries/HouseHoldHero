@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -246,129 +248,82 @@ fun HomeContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Welcome Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "Welcome to HouseHold Hero!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Manage your household tasks and compete with family members!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF666666)
-                )
-            }
-        }
-
-        // Quick Stats Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "Today's Overview",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    QuickStatItem("Tasks", "3", Color(0xFF4CAF50))
-                    QuickStatItem("Points", "150", Color(0xFF2196F3))
-                    QuickStatItem("Rank", "#2", Color(0xFFFF9800))
-                }
-            }
-        }
-
-        // Recent Activity Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "Recent Activity",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                ActivityItem("Completed: Wash dishes", "2 hours ago")
-                ActivityItem("Completed: Take out trash", "5 hours ago")
-                ActivityItem("Assigned: Clean living room", "1 day ago")
-            }
-        }
-    }
-}
-
-@Composable
-fun QuickStatItem(label: String, value: String, color: Color) {
-    Column(
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Logo placeholder - replace with your actual logo
+        Box(
+            modifier = Modifier.size(120.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "HouseHold Hero Logo",
+                modifier = Modifier.size(120.dp)
+            )
+
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // App Name
         Text(
-            text = value,
-            style = MaterialTheme.typography.headlineMedium,
+            text = "HouseHold Hero",
+            style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            color = color
+            color = Color(0xFF333333),
+            textAlign = TextAlign.Center
         )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF666666)
-        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // App Information Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Transform household chores into an exciting family competition!",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "• Assign and track household tasks\n" +
+                            "• Earn points for completed chores\n" +
+                            "• Compete with family members\n" +
+                            "• Build better household habits together",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF666666),
+                    textAlign = TextAlign.Start,
+                    lineHeight = 24.sp
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Get started and make household management fun for everyone!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF4CAF50),
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }
 
-@Composable
-fun ActivityItem(activity: String, time: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = activity,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF333333),
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = time,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF999999)
-        )
-    }
-}
 
 
 
