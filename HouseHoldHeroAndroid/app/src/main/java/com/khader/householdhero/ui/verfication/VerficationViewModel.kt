@@ -8,13 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.khader.householdhero.model.LoginResponse
 import com.khader.householdhero.model.ErrorResponse
 import com.khader.householdhero.repository.MemberRepository
-import com.khader.householdhero.network.RetrofitInstance
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class ForgotPasswordViewModel(private val repository: MemberRepository) : ViewModel() {
+class VerficationViewModel(private val repository: MemberRepository) : ViewModel() {
 
     var result by mutableStateOf<Result<LoginResponse>?>(null)
         private set
@@ -22,8 +21,8 @@ class ForgotPasswordViewModel(private val repository: MemberRepository) : ViewMo
     var isLoading by mutableStateOf(false)
         private set
 
-    fun checkEmail(email: String) {
-        if (email.isBlank()) {
+    fun checkVerfication(email:String,Verfication: String) {
+        if (Verfication.isBlank()) {
             result = Result.success(LoginResponse(success = false, message = "Please enter an email address"))
             return
         }
@@ -32,7 +31,7 @@ class ForgotPasswordViewModel(private val repository: MemberRepository) : ViewMo
             isLoading = true
             result = null
 
-            val response = repository.checkIfUserExists(email)
+            val response = repository.verfication(email,Verfication)
 
             response.onSuccess {
                 result = Result.success(it)

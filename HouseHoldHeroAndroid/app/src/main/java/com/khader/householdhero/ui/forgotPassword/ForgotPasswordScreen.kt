@@ -10,9 +10,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.khader.householdhero.viewmodel.ForgotPasswordViewModel
+import com.khader.householdhero.viewmodel.VerficationViewModel
 import com.khader.householdhero.network.RetrofitInstance
 import com.khader.householdhero.repository.MemberRepository
+import com.khader.householdhero.viewmodel.ForgotPasswordViewModel
 
 @Composable
 fun ForgotPasswordScreen(
@@ -30,7 +31,7 @@ fun ForgotPasswordScreen(
         viewModel.result?.let { result ->
             result.onSuccess { response ->
                 if (response.success) {
-                    // Email exists, navigate to reset password screen
+                    // Email exists, navigate to verfication screen
                     onEmailExists(email)
                 }
             }

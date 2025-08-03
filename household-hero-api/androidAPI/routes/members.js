@@ -3,6 +3,7 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 const crypto = require("crypto");
+const transporter = require("../../emailService");
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
@@ -53,11 +54,25 @@ router.get("/forgot-password/:email", async (req, res) => {
 
     const userRef = db.collection("members").doc(email);
     const userDoc = await userRef.get();
-
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    const length = 4;
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
     if (!userDoc.exists) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    await transporter.sendMail({
+      from: "khader.jeryes@gmail.com",
+      to: email,
+      subject: "reset verfication",
+      text: `The verification code is: ${result}`,
+    });
+    await userRef.update({
+      verfication: result,
+    });
     res.status(200).json({ success: true, message: "User exists" });
   } catch (error) {
     console.error("Error checking user email:", error);
@@ -202,6 +217,40 @@ router.delete("/android/:email", async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+});
+router.get("/forgot-password/:email/:verfication", async (req, res) => {
+  const { email, verfication } = req.params;
+
+  try {
+    const userRef = db.collection("members").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const userData = userDoc.data();
+
+    if (userData.verfication === verfication) {
+      await userRef.update({
+        verfication: admin.firestore.FieldValue.delete(),
+      });
+      return res
+        .status(200)
+        .json({ success: true, message: "Verification successful." });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid verification code." });
+    }
+  } catch (error) {
+    console.error("Error verifying code:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error." });
   }
 });
 

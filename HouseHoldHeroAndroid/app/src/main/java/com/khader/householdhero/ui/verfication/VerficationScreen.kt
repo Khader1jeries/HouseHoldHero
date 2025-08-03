@@ -1,4 +1,4 @@
-package com.khader.householdhero.ui.forgotPassword
+package com.khader.householdhero.ui.verfication
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,28 +10,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.khader.householdhero.viewmodel.ForgotPasswordViewModel
+import com.khader.householdhero.viewmodel.VerficationViewModel
 import com.khader.householdhero.network.RetrofitInstance
 import com.khader.householdhero.repository.MemberRepository
 
 @Composable
-fun ForgotPasswordScreen(
+fun VerficationScreen(
+    email: String,
     onBackToLogin: () -> Unit,
-    onEmailExists: (String) -> Unit
+    onVerfication: (String) -> Unit
 ) {
     val context = LocalContext.current
     val repository = remember { MemberRepository(RetrofitInstance.memberApi, context) }
-    val viewModel: ForgotPasswordViewModel = viewModel { ForgotPasswordViewModel(repository) }
+    val viewModel: VerficationViewModel = viewModel { VerficationViewModel(repository) }
 
-    var email by remember { mutableStateOf("") }
-
+    var verfication by remember { mutableStateOf("") }
     // Handle successful email check
     LaunchedEffect(viewModel.result) {
         viewModel.result?.let { result ->
             result.onSuccess { response ->
                 if (response.success) {
-                    // Email exists, navigate to reset password screen
-                    onEmailExists(email)
+                    onVerfication(email)
                 }
             }
         }
@@ -45,27 +44,27 @@ fun ForgotPasswordScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Forgot Password",
+            text = "Verfication Code",
             style = MaterialTheme.typography.titleLarge
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Enter your email address to check if you have an account",
+            text = "Enter your verification",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
         OutlinedTextField(
-            value = email,
+            value = verfication,
             onValueChange = {
-                email = it
+                verfication = it
                 // Clear previous result when user types
                 viewModel.clearResult()
             },
-            label = { Text("Enter your email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            label = { Text("Enter your verification") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -74,7 +73,7 @@ fun ForgotPasswordScreen(
 
         Button(
             onClick = {
-                viewModel.checkEmail(email)
+                viewModel.checkVerfication(email,verfication)
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !viewModel.isLoading && email.isNotBlank()

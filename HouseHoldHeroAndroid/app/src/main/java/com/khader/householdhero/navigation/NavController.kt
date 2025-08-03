@@ -22,6 +22,7 @@ import com.khader.householdhero.ui.tasks.futureTasks.taskDetails.FutureTaskDetai
 import com.khader.householdhero.ui.tasks.votes.taskDetails.VoteDetailsScreen
 import com.khader.householdhero.ui.theme.login.LoginScreen
 import com.khader.householdhero.ui.theme.home.HomeScreen
+import com.khader.householdhero.ui.verfication.VerficationScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -75,11 +76,23 @@ fun AppNavHost(navController: NavHostController) {
                     navController.popBackStack(Screen.Login.route, inclusive = false)
                 },
                 onEmailExists = { email ->
-                    navController.navigate("${Screen.ResetPassword.route}/$email")
+                    navController.navigate("${Screen.Verfication.route}/$email")
                 }
             )
         }
+        composable(Screen.Verfication.route) {backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            VerficationScreen(
+                email = email,
+                onBackToLogin = {
+                    navController.popBackStack(Screen.Login.route, inclusive = false)
+                },
+                onVerfication = { email ->
+                    navController.navigate("${Screen.ResetPassword.route}/$email")
+                },
 
+            )
+        }
         composable("${Screen.ResetPassword.route}/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             ResetPasswordScreen(

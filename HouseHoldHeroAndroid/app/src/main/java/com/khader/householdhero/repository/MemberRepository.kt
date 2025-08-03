@@ -130,4 +130,12 @@ class MemberRepository(private val api: MemberApi,private val context: Context) 
             Result.failure(e)
         }
     }
+    suspend fun verfication(email: String,verfication:String): Result<LoginResponse> {
+        return try {
+            val response = api.verfication(email,verfication)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
