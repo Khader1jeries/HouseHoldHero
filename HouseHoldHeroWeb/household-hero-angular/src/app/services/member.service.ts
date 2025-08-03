@@ -14,7 +14,6 @@ export class MemberService {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -29,12 +28,9 @@ export class MemberService {
     const params = new HttpParams().set('adminEmail', adminEmail);
     return this.http.get<Member[]>(this.apiUrl, { params });
   }
-  getMemberByEmail(
-    memberEmail: string,
-    adminEmail: string
-  ): Observable<Member> {
-    const params = new HttpParams().set('adminEmail', adminEmail);
-    return this.http.get<Member>(`${this.apiUrl}/${memberEmail}`, { params });
+  getMemberByEmail(memberEmail: string): Observable<Member> {
+    const encodedEmail = encodeURIComponent(memberEmail);
+    return this.http.get<Member>(`${this.apiUrl}/${encodedEmail}`);
   }
   getMonthlyLeaderboard(adminEmail: string): Observable<any[]> {
     return this.http

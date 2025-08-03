@@ -2,14 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberService } from '../../../services/member.service';
-
-interface Task {
-  id: string;
-  title: string;
-  dueDate: Date;
-  status: 'pending' | 'completed' | 'overdue';
-  points: number;
-}
+import { Member } from '../../../services/interfaces/member.interface';
 
 @Component({
   selector: 'app-member-details',
@@ -20,10 +13,7 @@ interface Task {
 })
 export class MemberDetailsComponent implements OnInit {
   memberId: string = '';
-  member?: any;
-  activeTasksCount: number = 0;
-  completedTasksCount: number = 0;
-  overdueTasksCount: number = 0;
+  member?: Member;
 
   isLoading: boolean = true;
   error: string | null = null;
@@ -40,17 +30,19 @@ export class MemberDetailsComponent implements OnInit {
 
   loadMemberData(): void {
     const memberEmail = this.route.snapshot.paramMap.get('id');
-    const adminEmail = sessionStorage.getItem('adminEmail');
 
-    if (!memberEmail || !adminEmail) {
-      console.error('❌ Missing memberEmail or adminEmail');
-      this.error = 'Missing member or admin information.';
+    if (!memberEmail) {
+      console.error('❌ Missing memberEmail');
+      this.error = 'Missing member information.';
       this.isLoading = false;
       return;
     }
 
-    this.memberService.getMemberByEmail(memberEmail, adminEmail).subscribe({
+    console.log('Loading member data for:', memberEmail);
+
+    this.memberService.getMemberByEmail(memberEmail).subscribe({
       next: (memberData) => {
+        console.log('Received member data:', memberData);
         this.member = memberData;
         this.memberId = memberEmail;
         this.isLoading = false;
@@ -63,13 +55,35 @@ export class MemberDetailsComponent implements OnInit {
     });
   }
 
-  loadPerformanceData(): void {}
+  /**
+   * Format phone number for display
+   */
+  getFormattedPhone(): string {
+    if (!this.member) return '';
+    return `${this.member.countryCode} ${this.member.phoneNumber}`;
+  }
 
-  initializeWeeklyStats(): void {}
+  /**
+   * Get completion rate as a formatted percentage
+   */
+  getCompletionRateFormatted(): string {
+    if (!this.member || !this.member.completionRate) return '0%';
+    return `${this.member.completionRate.toFixed(1)}%`;
+  }
 
-  showWeekDetails(weekIndex: number): void {}
-
+  /**
+   * Navigate back to members list
+   */
   goBack(): void {
     this.router.navigate(['/user/members']);
+  }
+
+  /**
+   * Reload member data
+   */
+  refreshMemberData(): void {
+    this.isLoading = true;
+    this.error = null;
+    this.loadMemberData();
   }
 }
