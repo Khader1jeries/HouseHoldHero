@@ -69,6 +69,6 @@ async function activeTasks(memberId) {
 
 module.exports = {
   activeTasks,
-  createMember,
+
   addTaskToMember,
 };
