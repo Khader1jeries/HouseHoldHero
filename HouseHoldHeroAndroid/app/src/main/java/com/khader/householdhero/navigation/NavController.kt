@@ -80,7 +80,7 @@ fun AppNavHost(navController: NavHostController) {
                 }
             )
         }
-        composable(Screen.Verfication.route) {backStackEntry ->
+        composable("${Screen.Verfication.route}/{email}") {backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             VerficationScreen(
                 email = email,
