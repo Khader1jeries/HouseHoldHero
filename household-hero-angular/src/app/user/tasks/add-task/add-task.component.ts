@@ -183,7 +183,7 @@ export class AddTaskComponent implements OnInit {
         error: (error) => {
           console.error('❌ Failed to create vote:', error);
           this.errorMessage =
-            error.err || 'Failed to create vote. Please try again.';
+            error.error.message || 'Failed to create vote. Please try again.';
           this.isSubmitting = false;
         },
       });

@@ -17,9 +17,6 @@ export class VotesService {
     return this.http.post(`${this.apiUrl}/`, task);
   }
 
-  getVoteByAdmin(adminEmail: string): Observable<VoteTask[]> {
-    return this.http.get<VoteTask[]>(`${this.apiUrl}/${adminEmail}`);
-  }
   getVoteById(taskId: string): Observable<VoteTask> {
     return this.http.get<VoteTask>(`${this.apiUrl}/id/${taskId}`);
   }

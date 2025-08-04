@@ -1,4 +1,4 @@
-function validateCreateTask(data) {
+function validateCreateTaskUnderVote(data) {
   const {
     createdAt,
     description,
@@ -7,7 +7,6 @@ function validateCreateTask(data) {
     priority,
     title,
     adminEmail,
-    assignedTo,
   } = data;
 
   // ---------- simple field checks ----------
@@ -38,18 +37,6 @@ function validateCreateTask(data) {
     return { valid: false, message: "createdAt must be a valid ISO date" };
   }
 
-  // ---------- assignedTo: single email ----------
-  if (
-    !assignedTo ||
-    typeof assignedTo !== "string" ||
-    !assignedTo.includes("@")
-  ) {
-    return {
-      valid: false,
-      message: "assignedTo must be a valid email string",
-    };
-  }
-
   return { valid: true };
 }
-module.exports = { validateCreateTask };
+module.exports = { validateCreateTaskUnderVote };

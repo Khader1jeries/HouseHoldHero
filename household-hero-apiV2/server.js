@@ -30,10 +30,12 @@ app.use((req, res, next) => {
 const usersRoutes = require("./routes/users.routes");
 const membersRoutes = require("./routes/members.routes");
 const tasksRoutes = require("./routes/tasks.routes");
+const tasksUnderVoteRoutes = require("./routes/tasksUnderVote.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
 app.use("/api/users", usersRoutes);
 app.use("/api/members", membersRoutes);
 app.use("/api/tasks", tasksRoutes);
+app.use("/api/tasksUnderVote", tasksUnderVoteRoutes);
 app.use("/api/analytics", analyticsRoutes);
 // Basic route for testing
 app.get("/", (req, res) => {

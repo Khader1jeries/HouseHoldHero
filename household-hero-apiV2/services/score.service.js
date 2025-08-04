@@ -1,6 +1,25 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
-async function calculateScore(assignedTo, taskId) {
+async function calculateScore(memberEmail) {
+  const memberDoc = await db.collection("members").doc(memberEmail).get();
+
+  if (!memberDoc.exists) {
+    console.error(`Member not found for ID: ${memberEmail}`);
+    return 0;
+  }
+
+  const memberData = memberDoc.data();
+
+  // Extract member data with defaults
+  const userOverallScore = memberData.score || 0;
+  const userActiveTasks = memberData.activeTasks || 0;
+  if (userOverallScore === 0) {
+    return 10;
+  } else {
+    return Math.round(userOverallScore / userActiveTasks / 10);
+  }
+}
+async function calculateScoreForTasksUnderVote(assignedTo, taskId) {
   try {
     // Get the specific task under vote
     const taskDoc = await db.collection("tasksUnderVote").doc(taskId).get();
@@ -340,4 +359,8 @@ function hungarianOptimalAssignment(matrix, n) {
   return assignment;
 }
 
-module.exports = { calculateScore, calculateWithHungarianAlgorithm };
+module.exports = {
+  calculateScoreForTasksUnderVote,
+  calculateWithHungarianAlgorithm,
+  calculateScore,
+};

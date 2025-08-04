@@ -30,10 +30,6 @@ export class TaskService {
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
-  private convertFirestoreDate(firestoreDate: any): Date {
-    return new Date();
-  }
-
   getTasks(adminEmail: string): Observable<Task[]> {
     if (!adminEmail) {
       throw new Error('adminEmail is required to fetch tasks');
@@ -50,14 +46,6 @@ export class TaskService {
 
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<Task>(url);
-  }
-
-  private processTasks(tasks: Task[]): Task[] {
-    return [];
-  }
-
-  private processTask(task: Task): Task {
-    return {} as Task;
   }
 
   createTask(task: Task): Observable<any> {

@@ -49,8 +49,8 @@ router.get("/android/TwoVotes/:adminEmail/:assignedTo", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
-router.get("/android/AllVotes/:adminEmail/:assignedTo", async (req, res) => {
-  const { adminEmail, assignedTo } = req.params;
+router.get("/android/AllVotes/:adminEmail/", async (req, res) => {
+  const { adminEmail } = req.params;
 
   if (!adminEmail) {
     return res
