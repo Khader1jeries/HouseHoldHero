@@ -27,27 +27,18 @@ app.use((req, res, next) => {
   req.firestore = admin.firestore();
   next();
 });
-
-// Import routes AFTER Firebase is initialized
-// Import the members module
-const taskWebRoutes = require("./webApi/routes/tasks/tasks"); // Import the tasks module
-const tasksUnderVoteWebRoutes = require("./webApi/routes/tasks/tasksUnderVote");
-const messagesWebRoutes = require("./webApi/routes/messages");
-const analyticsWebRoutes = require("./webApi/routes/analytics");
-// Set up our API routes
-// Use the members routes
-app.use("/api/tasks", taskWebRoutes); // Use the tasks routes
-app.use("/api/tasksUnderVote", tasksUnderVoteWebRoutes);
-app.use("/api/messages", messagesWebRoutes);
-app.use("/api/analytics", analyticsWebRoutes);
-const memberAndroidRoutes = require("./androidAPI/routes/members");
-const tasksAndroidRoutes = require("./androidAPI/routes/tasks");
-const tasksUnderVoteAndroidRoutes = require("./androidAPI/routes/tasksUnderVote");
-const messagesAndroidRoutes = require("./androidAPI/routes/messages");
-app.use("/api/members/", memberAndroidRoutes);
-app.use("/api/tasks/", tasksAndroidRoutes);
-app.use("/api/tasksUnderVote/", tasksUnderVoteAndroidRoutes);
-app.use("/api/messages/", messagesAndroidRoutes);
+const usersRoutes = require("./routes/users.routes");
+const membersRoutes = require("./routes/members.routes");
+const tasksRoutes = require("./routes/tasks.routes");
+const tasksUnderVoteRoutes = require("./routes/tasksUnderVote.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
+const messagesRoutes = require("./routes/messages.routes");
+app.use("/api/users", usersRoutes);
+app.use("/api/members", membersRoutes);
+app.use("/api/tasks", tasksRoutes);
+app.use("/api/tasksUnderVote", tasksUnderVoteRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/messages", messagesRoutes);
 // Basic route for testing
 app.get("/", (req, res) => {
   res.send("Household Hero API is running");

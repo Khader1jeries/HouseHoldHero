@@ -1,0 +1,158 @@
+const admin = require("firebase-admin");
+const db = admin.firestore();
+const createMessage = async (req, res) => {
+  try {
+    const { to, from, subject, message, reply } = req.body;
+
+    // ✅ Basic validation
+    if (!to || !from || !subject || !message) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    const newMessage = {
+      to,
+      from,
+      subject,
+      message,
+      reply: reply || null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      read: false, // Add read status
+    };
+
+    const docRef = await db.collection("messages").add(newMessage);
+
+    res.status(201).json({
+      success: true,
+      id: docRef.id,
+      message: "Message created successfully",
+    });
+  } catch (error) {
+    console.error("Error creating message:", error);
+    res.status(500).json({ error: "Failed to create message" });
+  }
+};
+const getMessagesForUser = async (req, res) => {
+  try {
+    const { adminEmail } = req.params;
+
+    if (!adminEmail) {
+      return res.status(400).json({ error: "adminEmail is required" });
+    }
+
+    const snapshot = await db
+      .collection("messages")
+      .where("to", "==", adminEmail)
+      .get();
+
+    const messages = [];
+
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+
+      messages.push({
+        id: doc.id,
+        ...data,
+        // Convert Firestore timestamp to JS Date
+        createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+      });
+    }
+
+    // Sort messages by date in JavaScript (if not using orderBy in query)
+    messages.sort((a, b) => b.createdAt - a.createdAt);
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
+};
+const replyToMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { reply } = req.body;
+
+    if (!reply || reply.trim() === "") {
+      return res.status(400).json({ error: "Reply content is required" });
+    }
+
+    // Update the message with the reply
+    await db.collection("messages").doc(messageId).update({
+      reply: reply,
+      repliedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Reply sent successfully",
+    });
+  } catch (error) {
+    console.error("Error sending reply:", error);
+    res.status(500).json({ error: "Failed to send reply" });
+  }
+};
+const markRead = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    await db.collection("messages").doc(messageId).update({
+      read: true,
+      readAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({ success: true, message: "Message marked as read" });
+  } catch (error) {
+    console.error("Error updating message:", error);
+    res.status(500).json({ error: "Failed to update message" });
+  }
+};
+const deleteMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    await db.collection("messages").doc(messageId).delete();
+    console.log("deleting");
+    res.status(200).json({ success: true, message: "Message deleted" });
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    res.status(500).json({ error: "Failed to delete message" });
+  }
+};
+const getMessagesForMember = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const messagesSnapshot = await db
+      .collection("messages")
+      .where("to", "==", email)
+      .get();
+
+    const messages = messagesSnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate().toISOString(),
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: messages,
+    });
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+module.exports = {
+  createMessage,
+  getMessagesForUser,
+  replyToMessage,
+  markRead,
+  deleteMessage,
+  getMessagesForMember,
+};
