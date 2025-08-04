@@ -30,12 +30,7 @@ export class AddMemberComponent {
   errorMessage = '';
   successMessage = '';
 
-  constructor(
-    private router: Router,
-    private memberService: MemberService,
-    private userService: UserService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private router: Router, private memberService: MemberService) {}
 
   onSubmit(): void {
     this.errorMessage = '';

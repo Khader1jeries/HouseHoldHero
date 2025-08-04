@@ -31,10 +31,7 @@ export class LeaderboardComponent implements OnInit {
   error: string | null = null;
   familyId: string | null = null;
 
-  constructor(
-    private memberService: MemberService,
-    private userService: UserService
-  ) {}
+  constructor(private memberService: MemberService) {}
 
   ngOnInit(): void {
     this.loadLeaderboardData();

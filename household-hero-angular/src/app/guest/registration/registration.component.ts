@@ -27,11 +27,7 @@ export class RegistrationComponent implements OnInit {
   successMessage: string = '';
   isSubmitting: boolean = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService
-  ) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {}
 

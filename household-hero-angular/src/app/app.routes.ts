@@ -17,7 +17,7 @@ import { MoveTaskComponent } from './user/tasks/move-task/move-task.component';
 import { SettingsComponent } from './user/settings/settings.component';
 import { PrivacyPolicyComponent } from './guest/privacy-policy/privacy-policy.component';
 import { TermsServiceComponent } from './guest/terms-of-service/terms-of-service.component';
-import { ContactComponent } from './guest/contact/contact.component';
+
 import { AuthGuard } from './guards/auth.guard';
 
 // Import new components
@@ -40,7 +40,6 @@ export const routes: Routes = [
 
       { path: 'guest/privacy-policy', component: PrivacyPolicyComponent },
       { path: 'guest/terms-of-service', component: TermsServiceComponent },
-      { path: 'guest/contact', component: ContactComponent },
     ],
   },
   {

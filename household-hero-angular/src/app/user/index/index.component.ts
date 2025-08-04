@@ -23,7 +23,6 @@ export class IndexComponent implements OnInit {
   currentDateTime: string = '';
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
 
     private memberService: MemberService,
     private votesService: VotesService,
