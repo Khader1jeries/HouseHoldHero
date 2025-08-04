@@ -1,5 +1,5 @@
 const express = require("express");
+const { createTask } = require("../controllers/tasks.controller");
 const router = express.Router();
-const { addTaskToMember, activeTasks } = require("../services/tasks.service");
-
+router.post("/", createTask);
 module.exports = router;

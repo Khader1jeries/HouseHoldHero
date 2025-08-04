@@ -1,0 +1,61 @@
+function validateCreateTask(data) {
+  const {
+    createdAt,
+    description,
+    dueDate,
+    startDate,
+    priority,
+    title,
+    adminEmail,
+    assignedTo,
+    score,
+  } = data;
+
+  // ---------- simple field checks ----------
+  if (!adminEmail.includes("@")) {
+    return { valid: false, message: "adminEmail must be a valid email" };
+  }
+
+  if (typeof description !== "string" || description.trim() === "") {
+    return { valid: false, message: "description must be a non-empty string" };
+  }
+
+  if (typeof title !== "string" || title.trim() === "") {
+    return { valid: false, message: "title must be a non-empty string" };
+  }
+
+  if (priority === "" || priority === null) {
+    return { valid: false, message: "priority is required" };
+  }
+
+  // ---------- date checks ----------
+  if (isNaN(Date.parse(startDate))) {
+    return { valid: false, message: "startDate must be a valid ISO date" };
+  }
+  if (isNaN(Date.parse(dueDate))) {
+    return { valid: false, message: "dueDate must be a valid ISO date" };
+  }
+  if (isNaN(Date.parse(createdAt))) {
+    return { valid: false, message: "createdAt must be a valid ISO date" };
+  }
+
+  // ---------- score ----------
+  if (typeof score !== "number") {
+    return { valid: false, message: "score must be a number" };
+  }
+
+  // ---------- assignedTo: single email ----------
+  if (
+    !assignedTo ||
+    typeof assignedTo !== "string" ||
+    !assignedTo.includes("@")
+  ) {
+    return {
+      valid: false,
+      message: "assignedTo must be a valid email string",
+    };
+  }
+
+  return { valid: true };
+}
+module.exports = { validateCreateTask };

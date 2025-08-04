@@ -182,7 +182,8 @@ export class AddTaskComponent implements OnInit {
         },
         error: (error) => {
           console.error('❌ Failed to create vote:', error);
-          this.errorMessage = 'Failed to create vote. Please try again.';
+          this.errorMessage =
+            error.err || 'Failed to create vote. Please try again.';
           this.isSubmitting = false;
         },
       });
@@ -196,7 +197,8 @@ export class AddTaskComponent implements OnInit {
         },
         error: (error) => {
           console.error('❌ Failed to create task:', error);
-          this.errorMessage = 'Failed to create task. Please try again.';
+          this.errorMessage =
+            error.error.message || 'Failed to create task. Please try again.';
           this.isSubmitting = false;
         },
       });
