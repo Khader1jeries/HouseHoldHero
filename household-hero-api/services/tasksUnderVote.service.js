@@ -39,7 +39,6 @@ async function addToAdmin(taskUnderVote, taskId) {
       tasksUnderVote: admin.firestore.FieldValue.arrayUnion(taskId),
     });
 
-    console.log(`Task ID ${taskId} added to tasksUnderVote for ${adminEmail}`);
     return { success: true, message: "Task added to admin's tasksUnderVote" };
   } catch (error) {
     console.error("Error adding task to admin:", error);

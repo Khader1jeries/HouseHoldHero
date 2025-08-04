@@ -62,7 +62,6 @@
       <div class="table-header">
         <div class="header-member">Member</div>
         <div class="header-vote">Vote</div>
-        <div class="header-comment">Comment</div>
       </div>
 
       <div *ngFor="let member of members" class="vote-row">
@@ -84,10 +83,6 @@
           ></i>
           <span>{{ checkVote(member.email) | titlecase }}</span>
         </div>
-
-        <!-- Comment Column (optional improvement) -->
-        <div class="cell-comment">No Comment</div>
-        <!-- update later if per-member -->
       </div>
     </div>
   </div>

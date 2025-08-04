@@ -7,14 +7,14 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './contact.component.html',
-  styleUrl: './contact.component.css'
+  styleUrl: './contact.component.css',
 })
 export class ContactComponent {
   contactForm = {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
   };
 
   isSubmitting: boolean = false;
@@ -27,16 +27,15 @@ export class ContactComponent {
 
     // Simulate form submission
     setTimeout(() => {
-      console.log('Contact form submitted:', this.contactForm);
       this.isSubmitting = false;
       this.isSubmitted = true;
-      
+
       // Reset form
       this.contactForm = {
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
       };
     }, 1500);
   }

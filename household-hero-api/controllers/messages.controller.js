@@ -110,7 +110,7 @@ const deleteMessage = async (req, res) => {
     const { messageId } = req.params;
 
     await db.collection("messages").doc(messageId).delete();
-    console.log("deleting");
+
     res.status(200).json({ success: true, message: "Message deleted" });
   } catch (error) {
     console.error("Error deleting message:", error);

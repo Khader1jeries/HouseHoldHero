@@ -21,7 +21,6 @@ interface LineChartData {
   styleUrl: './analytics.component.css',
 })
 export class AnalyticsComponent implements OnInit {
-  onTimeCompletionRate: number = 0;
   taskDistributionBalance: number = 0;
   tasksByStatus: ChartData[] = [];
   taskCreationOverTime: LineChartData[] = [];
@@ -56,12 +55,6 @@ export class AnalyticsComponent implements OnInit {
       console.error('Admin email not found');
       return;
     }
-
-    // 1. On-time completion %
-    this.analyticsService.getOnTimeCompletion(adminEmail).subscribe({
-      next: (rate) => (this.onTimeCompletionRate = rate),
-      error: (err) => console.error('❌ On-time completion error:', err),
-    });
 
     // 2. Task distribution balance %
     this.analyticsService.getTaskDistribution(adminEmail).subscribe({
@@ -131,7 +124,6 @@ export class AnalyticsComponent implements OnInit {
       console.error('Admin email not found in local storage');
       return;
     }
-    console.log('Generating report for:', adminEmail);
 
     this.analyticsService.downloadPdfReport(adminEmail).subscribe({
       next: (blob) => {

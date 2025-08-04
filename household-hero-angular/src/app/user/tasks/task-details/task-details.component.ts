@@ -48,6 +48,7 @@ export class TaskDetailsComponent implements OnInit {
     this.taskService.getTaskById(this.taskId).subscribe({
       next: (taskData) => {
         this.task = taskData;
+
         this.isLoading = false;
 
         // Calculate sub-task completion percentage
@@ -75,14 +76,6 @@ export class TaskDetailsComponent implements OnInit {
         this.isLoading = false;
       },
     });
-  }
-
-  getPriorityClass(priority: string): string {
-    return '';
-  }
-
-  getStatusClass(status: string): string {
-    return '';
   }
 
   // Helper methods for subtasks

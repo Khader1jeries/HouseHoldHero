@@ -37,7 +37,7 @@ const createNewMember = async (req, res) => {
 const getAllMembersByAdminEmail = async (req, res) => {
   try {
     const { adminEmail } = req.query;
-    console.log(adminEmail);
+
     if (!adminEmail) {
       return res.status(400).json({
         error: "adminEmail is required to retrieve members",
@@ -66,7 +66,7 @@ const getAllMembersByAdminEmail = async (req, res) => {
 const getMember = async (req, res) => {
   try {
     const memberEmail = req.params.email;
-    console.log(memberEmail);
+
     // Query the members collection using email as document ID
     const memberDoc = await db.collection("members").doc(memberEmail).get();
 
@@ -90,7 +90,6 @@ const getMember = async (req, res) => {
       ...memberData,
     };
 
-    console.log("member data fetched:", formattedMember);
     res.status(200).json(formattedMember);
   } catch (error) {
     console.error("Error fetching member for Android:", error);
@@ -230,7 +229,6 @@ const yearlyLeaderboard = async (req, res) => {
 };
 const login = async (req, res) => {
   try {
-    console.log("login android activated");
     const { email, password } = req.body;
     if (email && password) {
       const userRef = req.firestore.collection("members").doc(email);
@@ -325,7 +323,6 @@ const verifyCode = async (req, res) => {
 };
 const resetPassword = async (req, res) => {
   try {
-    console.log("aaa");
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({

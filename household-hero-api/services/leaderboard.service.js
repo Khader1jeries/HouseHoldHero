@@ -46,8 +46,6 @@ async function getMonthlyLeaderboard(adminEmail) {
         taskDate.getFullYear() === currentYear &&
         taskDate < currentDate
       ) {
-        console.log(taskDate); // ✅ This will now work
-
         leaderboard[member].score += task.scoreGained || 0;
         leaderboard[member].totalTasks += 1;
 
@@ -59,7 +57,6 @@ async function getMonthlyLeaderboard(adminEmail) {
       }
     }
 
-    console.log("Filtered leaderboard data:", leaderboard);
     for (const memberId in leaderboard) {
       if (!memberId || memberId.trim() === "") continue; // ✅ Skip invalid keys
 
@@ -139,8 +136,6 @@ async function getYearlyLeaderboard(adminEmail) {
       if (!leaderboard[member]) continue;
 
       if (taskDate.getFullYear() === currentYear && taskDate < currentDate) {
-        console.log(taskDate); // ✅ This will now work
-
         leaderboard[member].score += task.scoreGained || 0;
         leaderboard[member].totalTasks += 1;
 
@@ -152,7 +147,6 @@ async function getYearlyLeaderboard(adminEmail) {
       }
     }
 
-    console.log("Filtered leaderboard data:", leaderboard);
     for (const memberId in leaderboard) {
       if (!memberId || memberId.trim() === "") continue; // ✅ Skip invalid keys
 

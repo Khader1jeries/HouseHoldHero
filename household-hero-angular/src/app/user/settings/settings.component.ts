@@ -59,7 +59,6 @@ export class SettingsComponent implements OnInit {
 
     this.userService.updateUserProfile(this.userData).subscribe({
       next: (res) => {
-        console.log('Profile updated successfully', res);
         // Optionally show a success message
       },
       error: (err) => {

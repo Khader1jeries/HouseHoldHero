@@ -92,7 +92,6 @@ export class MembersComponent implements OnInit {
     if (confirm('Are you sure you want to delete this member?')) {
       this.memberService.deleteMember(email).subscribe({
         next: (response) => {
-          console.log('Member deleted successfully', response);
           // Refresh the members list
           this.loadMembers();
         },

@@ -57,7 +57,7 @@ fun EditProfileScreen(
     // Observe member data and populate form fields
     LaunchedEffect(viewModel.member) {
         viewModel.member?.getOrNull()?.let { member ->
-            email =  member.id
+            email =  member.email
             phone = member.phoneNumber
             firstName =  member.firstName
             lastName = member.lastName

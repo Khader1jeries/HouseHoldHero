@@ -38,7 +38,7 @@ export class AddTaskComponent implements OnInit {
     title: '',
     adminEmail: '',
     assignedTo: '',
-    score: 50,
+    score: 0,
     status: 'pending',
     subtasks: {},
   };
@@ -217,7 +217,7 @@ export class AddTaskComponent implements OnInit {
       title: '',
       adminEmail: '',
       assignedTo: '',
-      score: 50,
+      score: 0,
       status: 'pending',
       subtasks: {},
     };

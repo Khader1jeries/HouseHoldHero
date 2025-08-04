@@ -51,7 +51,7 @@ fun VoteDetailsScreen(
 
     // Fetch task and subtasks when screen loads
     LaunchedEffect(taskId) {
-        println("🔄 Fetching task and subtasks for taskId: $taskId")
+
         viewModel.fetchTask(taskId)
         viewModel.fetchSubTasks(taskId)
     }

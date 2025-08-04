@@ -42,7 +42,7 @@ fun ActiveTaskDetailsScreen(
 
     // Fetch task and subtasks when screen loads
     LaunchedEffect(taskId) {
-        println("🔄 Fetching task and subtasks for taskId: $taskId")
+
         viewModel.fetchTask(taskId)
         viewModel.fetchSubTasks(taskId)
     }
@@ -224,7 +224,7 @@ fun ActiveTaskDetailsScreen(
                                 SubtaskChecklist(
                                     subtasks = subtasks,
                                     onSubtaskToggle = { subtaskId ->
-                                        println("🔄 Toggling subtask: $subtaskId")
+
                                         viewModel.toggleSubtaskStatus(subtaskId)
                                     },
                                     isUpdating = viewModel.isUpdatingSubtasks
@@ -318,7 +318,7 @@ fun ActiveTaskDetailsScreen(
                                         Spacer(modifier = Modifier.height(8.dp))
                                         TextButton(
                                             onClick = {
-                                                println("🔄 Retrying subtask fetch for taskId: $taskId")
+
                                                 viewModel.fetchSubTasks(taskId)
                                             }
                                         ) {

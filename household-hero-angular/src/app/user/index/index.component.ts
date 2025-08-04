@@ -7,16 +7,7 @@ import { TaskService } from '../../services/task.service';
 import { Member } from '../../services/interfaces/member.interface';
 import { Task } from '../../services/interfaces/task.interface';
 import { CommonModule } from '@angular/common';
-interface LeaderboardMember {
-  id: string;
-  name: string;
-  position: number;
-  score: number;
-  profileImage: string;
-  tasks: number;
-  completedTasks: number;
-  totalTasks: number;
-}
+
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
@@ -33,7 +24,7 @@ export class IndexComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService,
+
     private memberService: MemberService,
     private votesService: VotesService,
     private taskService: TaskService
@@ -119,9 +110,6 @@ export class IndexComponent implements OnInit {
     this.router.navigate(['/user/tasks/active']);
   }
 
-  goToAnalytics(): void {
-    this.router.navigate(['/user/analytics']);
-  }
   updateDateTime(): void {
     const now = new Date();
 

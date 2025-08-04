@@ -118,8 +118,6 @@ export class TasksComponent implements OnInit, OnDestroy {
         this.activeTasks.push(task); // Task is ongoing now
       }
     }
-    for (const voteTask of this.voteTasks) {
-    }
   }
   navigateToExpiredTask() {
     throw new Error('Method not implemented.');

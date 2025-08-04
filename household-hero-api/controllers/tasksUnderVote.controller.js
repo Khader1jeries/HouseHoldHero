@@ -434,7 +434,6 @@ const updateVote = async (req, res) => {
       // Remove from no array if present
       if (noArray.includes(email)) {
         updatedNo = noArray.filter((e) => e !== email);
-        console.log(`User ${email} changed vote from NO to YES`);
       }
 
       // Add to yes array
@@ -449,7 +448,6 @@ const updateVote = async (req, res) => {
       // Remove from yes array if present
       if (yesArray.includes(email)) {
         updatedYes = yesArray.filter((e) => e !== email);
-        console.log(`User ${email} changed vote from YES to NO`);
       }
 
       // Add to no array

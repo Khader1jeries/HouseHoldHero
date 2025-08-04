@@ -8,7 +8,7 @@
     <div class="task-title-section">
       <h2>{{ task.title }}</h2>
       <div class="task-meta">
-        <div class="task-status" [ngClass]="getStatusClass(task.status)">
+        <div class="task-status">
           <i
             class="bi"
             [ngClass]="{
@@ -19,7 +19,7 @@
           ></i>
           <span>{{ task.status | titlecase }}</span>
         </div>
-        <div class="task-priority" [ngClass]="getPriorityClass(task.priority)">
+        <div class="task-priority">
           <i class="bi bi-flag-fill"></i>
           <span>{{ task.priority | titlecase }}</span>
         </div>

@@ -31,18 +31,16 @@ class PrivacyViewModel (
             val result = memberRepo.deleteMember()
             if (result.isSuccess) {
                 // Handle success (e.g., clear local data, navigate away)
-                println("Account deleted successfully")
+
 
                 // Navigate to login screen
                 onNavigateToLogin?.invoke()
             } else {
                 // Handle failure
-                println("Failed to delete account: ${result.exceptionOrNull()?.message}")
+
             }
         }
     }
 
-    fun confirmDeleteAccount() {
-        // TODO: Implement confirm delete account functionality
-    }
+
 }

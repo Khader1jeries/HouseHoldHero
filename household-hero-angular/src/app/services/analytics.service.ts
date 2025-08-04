@@ -11,12 +11,6 @@ export class AnalyticsService {
 
   constructor(private http: HttpClient) {}
 
-  getOnTimeCompletion(adminEmail: string): Observable<number> {
-    return this.http.get<number>(
-      `${this.baseUrl}/on-time-completion/${adminEmail}`
-    );
-  }
-
   getTaskDistribution(adminEmail: string): Observable<number> {
     return this.http.get<number>(
       `${this.baseUrl}/task-distribution/${adminEmail}`

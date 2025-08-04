@@ -54,7 +54,6 @@ async function getOnTimeCompletion(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail); // get all tasks for this admin
     if (!tasks.length) {
-      console.log("No tasks found");
       return 0;
     }
     const totalTasks = tasks.length;
@@ -76,7 +75,6 @@ async function getTaskDistribution(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail); // get all tasks for this admin
     if (!tasks.length) {
-      console.log("No tasks found");
       return 0;
     }
     const total = tasks.length;
@@ -115,7 +113,6 @@ async function getPointsByMember(adminEmail) {
   try {
     const members = await getMembers(adminEmail); // get all members for this admin
     if (!members.length) {
-      console.log("No members found");
       return {};
     }
 
@@ -135,7 +132,6 @@ async function getTasksByStatus(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail);
     if (!tasks.length) {
-      console.log("No tasks found");
       return {
         completed: 0,
         inProgress: 0,
@@ -180,7 +176,6 @@ async function getPointsEarnedOverTime(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail);
     if (!tasks.length) {
-      console.log("No tasks found");
       return {};
     }
 
@@ -218,7 +213,6 @@ async function getCreatedOverTime(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail);
     if (!tasks.length) {
-      console.log("No tasks found");
       return {};
     }
 
@@ -259,7 +253,6 @@ async function getMemberPerformance(adminEmail) {
   try {
     const members = await getMembers(adminEmail);
     if (!members.length) {
-      console.log("No members found");
       return [];
     }
 

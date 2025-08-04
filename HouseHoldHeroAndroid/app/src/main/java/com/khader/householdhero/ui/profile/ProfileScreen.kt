@@ -58,23 +58,23 @@ fun ProfileScreen(
     val errorMessage = viewModel.errorMessage
 
     DisposableEffect(Unit) {
-        println("🎬 DEBUG Screen: ProfileScreen composed, calling fetchMember()")
+
         viewModel.fetchMember()
         onDispose { }
     }
 
     // Add debug UI
     LaunchedEffect(viewModel.member) {
-        println("🔄 DEBUG Screen: Member state changed")
+
         when {
             member != null -> {
-                println("✅ DEBUG Screen: Member is available: ${member.fullName}")
+
             }
             viewModel.member?.isFailure == true -> {
-                println("❌ DEBUG Screen: Member fetch failed: ${viewModel.member?.exceptionOrNull()?.message}")
+
             }
             else -> {
-                println("⏳ DEBUG Screen: Member is null (still loading?)")
+
             }
         }
     }
@@ -282,7 +282,7 @@ fun ProfileHeaderCard(
                 )
 
                 Text(
-                    text = member?.id ?: "",
+                    text = member?.email ?: "",
                     fontSize = 14.sp,
                     color = Color(0xFF666666)
                 )

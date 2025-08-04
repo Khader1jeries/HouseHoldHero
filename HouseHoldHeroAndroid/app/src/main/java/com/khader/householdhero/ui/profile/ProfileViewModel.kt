@@ -21,7 +21,7 @@ class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
             errorMessage = null
 
             try {
-                println("🔍 DEBUG: Starting fetchMember()")
+
 
                 val result = repository.getMember()
 
@@ -29,34 +29,26 @@ class ProfileViewModel (private val repository: MemberRepository): ViewModel() {
                 when {
                     result.isSuccess -> {
                         val memberData = result.getOrNull()
-                        println("✅ DEBUG: API Success - Member data received:")
-                        println("   📧 ID: ${memberData?.id}")
-                        println("   👤 Full Name: ${memberData?.fullName}")
-                        println("   📅 Created At: ${memberData?.createdAt}")
-                        println("   🏆 Score: ${memberData?.score}")
-                        println("   ✅ Completed Tasks: ${memberData?.completedTasks}")
-                        println("   🔄 Active Tasks: ${memberData?.activeTasks}")
-                        println("   📊 Completion Rate: ${memberData?.completionRate}")
+
 
                         if (memberData != null) {
-                            println("✅ DEBUG: Member is NOT null - setting state")
+
                         } else {
-                            println("❌ DEBUG: Member data is null despite success")
+
                         }
                     }
                     result.isFailure -> {
                         val exception = result.exceptionOrNull()
-                        println("❌ DEBUG: API Failed - Error: ${exception?.message}")
-                        println("❌ DEBUG: Exception type: ${exception?.javaClass?.simpleName}")
+
                         errorMessage = exception?.message
                     }
                 }
 
                 member = result
-                println("🔧 DEBUG: State updated - member is now: ${member != null}")
+
 
             } catch (e: Exception) {
-                println("💥 DEBUG: Unexpected error in fetchMember(): ${e.message}")
+
                 errorMessage = e.message
                 member = Result.failure(e)
             } finally {

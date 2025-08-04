@@ -42,9 +42,9 @@ const createTask = async (req, res) => {
     const status = false;
     task.status = status;
     task.scoreGained = 0;
-    console.log("📤 Adding task to Firestore...");
+
     const docRef = await db.collection("tasks").add(task);
-    console.log("✅ Task added with ID:", docRef.id);
+
     await addTaskToMember(task.assignedTo, docRef.id);
     await activeTasks(task.assignedTo);
     res.status(201).json({
@@ -90,7 +90,7 @@ const getTaskByID = async (req, res) => {
 
     const taskRef = db.collection("tasks").doc(id); //
     const taskDoc = await taskRef.get();
-    console.log(taskDoc);
+
     if (!taskDoc.exists) {
       return res.status(404).json({ error: "Task not found" });
     }
@@ -216,7 +216,6 @@ const getRandom2ActiveTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db
@@ -256,7 +255,6 @@ const getRandom2FutureTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db
@@ -291,7 +289,6 @@ const getRandom2FinishedTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db
@@ -327,7 +324,6 @@ const allActiveTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db
@@ -367,7 +363,6 @@ const allFinishedTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db
@@ -402,7 +397,6 @@ const allFutureTasksForMember = async (req, res) => {
   }
 
   try {
-    console.log(assignedTo);
     const now = new Date().toISOString();
 
     const snapshot = await db

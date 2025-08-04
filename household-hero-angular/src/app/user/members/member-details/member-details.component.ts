@@ -38,11 +38,8 @@ export class MemberDetailsComponent implements OnInit {
       return;
     }
 
-    console.log('Loading member data for:', memberEmail);
-
     this.memberService.getMemberByEmail(memberEmail).subscribe({
       next: (memberData) => {
-        console.log('Received member data:', memberData);
         this.member = memberData;
         this.memberId = memberEmail;
         this.isLoading = false;

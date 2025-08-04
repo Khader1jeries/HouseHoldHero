@@ -26,7 +26,6 @@ class VerficationViewModel(private val repository: MemberRepository) : ViewModel
             result = Result.success(LoginResponse(success = false, message = "Please enter an email address"))
             return
         }
-
         viewModelScope.launch {
             isLoading = true
             result = null

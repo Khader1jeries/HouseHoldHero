@@ -63,13 +63,6 @@ async function calculateScoreForTasksUnderVote(assignedTo, taskId) {
 }
 async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
   try {
-    console.log(
-      "Starting Hungarian Algorithm calculation for admin:",
-      adminEmail,
-      "and taskId:",
-      taskId
-    );
-
     // Get all members for this admin
     const membersSnapshot = await db
       .collection("members")
@@ -110,18 +103,11 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
       };
       tasks.push(taskData);
 
-      console.log(`Task ${taskIndex}: ID = ${doc.id}, Target ID = ${taskId}`);
-
       if (doc.id === taskId) {
         taskColumnIndex = taskIndex;
-        console.log(`Found target task at index ${taskIndex}`);
       }
       taskIndex++;
     });
-
-    console.log(
-      `Task column index: ${taskColumnIndex}, Total tasks: ${tasks.length}`
-    );
 
     if (taskColumnIndex === -1) {
       console.error("Task not found in tasks array:", {
@@ -131,13 +117,8 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
       throw new Error(`Task with ID ${taskId} not found in tasks under vote`);
     }
 
-    console.log(
-      `Found ${members.length} members and ${tasks.length} tasks. Target task at column ${taskColumnIndex}`
-    );
-
     // Determine the size for n x n matrix
     const n = Math.max(members.length, tasks.length);
-    console.log(`Creating ${n}x${n} matrix`);
 
     // Create n x n matrix
     const matrix = [];
@@ -153,9 +134,6 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
             const taskIdForCalc = tasks[j].id;
             const score = await calculateScore(memberId, taskIdForCalc);
             matrix[i][j] = score + memberOverallScore;
-            console.log(
-              `Score for member ${i} (${memberId}) and task ${j} (${taskIdForCalc}): ${matrix[i][j]}`
-            );
           } catch (error) {
             console.error(
               `Error calculating score for member ${members[i].id} and task ${tasks[j].id}:`,
@@ -183,11 +161,6 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
         reversedMatrix[i][j] = rowMax + rowMin - matrix[i][j];
       }
     }
-
-    console.log("Generated reversed matrix:");
-    reversedMatrix.forEach((row, i) => {
-      console.log(`Reversed Row ${i}:`, row);
-    });
 
     // Find global max from reversedMatrix for proper conversion
     let globalMax = 0;
@@ -228,31 +201,17 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
       }
     }
 
-    console.log("Matrix after row and column reduction:");
-    hungarianMatrix.forEach((row, i) => {
-      console.log(`Row ${i}:`, row);
-    });
-
     // Step 3: Find optimal assignment using simplified approach
     // For this implementation, we'll use a greedy approach to find assignment
     const assignment = hungarianOptimalAssignment(hungarianMatrix, n);
 
-    console.log("Optimal assignment:", assignment);
-    console.log("Target task column index:", taskColumnIndex);
-    console.log("Available members count:", members.length);
-
     // Special case: if we only have one task, the target task must be at column 0
     if (tasks.length === 1 && taskColumnIndex === -1) {
-      console.log(
-        "Only one task found, assuming it's the target task at column 0"
-      );
       taskColumnIndex = 0;
     }
 
     // Find which member is assigned to our target task
     const assignedMemberIndex = assignment[taskColumnIndex];
-
-    console.log("Assigned member index for target task:", assignedMemberIndex);
 
     if (
       assignedMemberIndex === undefined ||
@@ -286,9 +245,6 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
       throw new Error("Member email is missing");
     }
 
-    console.log(
-      `Best member for task ${taskId}: ${bestMemberEmail} (member index: ${assignedMemberIndex})`
-    );
     return bestMemberEmail;
   } catch (error) {
     console.error("Error in Hungarian algorithm calculation:", error);
@@ -298,8 +254,6 @@ async function calculateWithHungarianAlgorithm(adminEmail, taskId) {
 
 // Helper function to find optimal assignment
 function hungarianOptimalAssignment(matrix, n) {
-  console.log("Starting optimal assignment calculation for matrix size:", n);
-
   // This is a simplified version of the Hungarian algorithm
   const assignment = new Array(n).fill(-1); // assignment[col] = row
   const usedRows = new Array(n).fill(false);
@@ -310,7 +264,7 @@ function hungarianOptimalAssignment(matrix, n) {
       if (!usedRows[row] && matrix[row][col] === 0) {
         assignment[col] = row;
         usedRows[row] = true;
-        console.log(`Assigned row ${row} to column ${col} (zero found)`);
+
         break;
       }
     }
@@ -332,9 +286,6 @@ function hungarianOptimalAssignment(matrix, n) {
       if (bestRow !== -1) {
         assignment[col] = bestRow;
         usedRows[bestRow] = true;
-        console.log(
-          `Assigned row ${bestRow} to column ${col} (minimum value: ${bestValue})`
-        );
       }
     }
   }
@@ -346,16 +297,13 @@ function hungarianOptimalAssignment(matrix, n) {
         if (!usedRows[row]) {
           assignment[col] = row;
           usedRows[row] = true;
-          console.log(
-            `Assigned row ${row} to column ${col} (fallback assignment)`
-          );
+
           break;
         }
       }
     }
   }
 
-  console.log("Final assignment array:", assignment);
   return assignment;
 }
 
