@@ -1,10 +1,19 @@
+// -----------------------------------------------------------------------------
+// Messages Controller
+// -----------------------------------------------------------------------------
+//  Only explanatory comments (//) have been added. The executable code
+//  remains exactly as you provided—no logic, variables, or formatting changed.
+// -----------------------------------------------------------------------------
+
 const admin = require("firebase-admin");
 const db = admin.firestore();
+
+// Create a new message document
 const createMessage = async (req, res) => {
   try {
     const { to, from, subject, message, reply } = req.body;
 
-    // ✅ Basic validation
+    // Basic field-presence validation
     if (!to || !from || !subject || !message) {
       return res.status(400).json({ error: "Missing required fields." });
     }
@@ -14,9 +23,9 @@ const createMessage = async (req, res) => {
       from,
       subject,
       message,
-      reply: reply || null,
+      reply: reply || null, // optional initial reply
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      read: false, // Add read status
+      read: false, // unread by default
     };
 
     const docRef = await db.collection("messages").add(newMessage);
@@ -31,6 +40,8 @@ const createMessage = async (req, res) => {
     res.status(500).json({ error: "Failed to create message" });
   }
 };
+
+// Retrieve every message addressed to a given admin/user
 const getMessagesForUser = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -52,12 +63,12 @@ const getMessagesForUser = async (req, res) => {
       messages.push({
         id: doc.id,
         ...data,
-        // Convert Firestore timestamp to JS Date
+        // Convert Firestore timestamp to native Date
         createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
       });
     }
 
-    // Sort messages by date in JavaScript (if not using orderBy in query)
+    // Sort newest-first in JS (alternatively could use orderBy in query)
     messages.sort((a, b) => b.createdAt - a.createdAt);
 
     res.status(200).json(messages);
@@ -66,6 +77,8 @@ const getMessagesForUser = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 };
+
+// Append a reply to an existing message
 const replyToMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -75,7 +88,6 @@ const replyToMessage = async (req, res) => {
       return res.status(400).json({ error: "Reply content is required" });
     }
 
-    // Update the message with the reply
     await db.collection("messages").doc(messageId).update({
       reply: reply,
       repliedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -90,6 +102,8 @@ const replyToMessage = async (req, res) => {
     res.status(500).json({ error: "Failed to send reply" });
   }
 };
+
+// Mark a message as read
 const markRead = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -105,6 +119,8 @@ const markRead = async (req, res) => {
     res.status(500).json({ error: "Failed to update message" });
   }
 };
+
+// Remove a message document entirely
 const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -117,6 +133,8 @@ const deleteMessage = async (req, res) => {
     res.status(500).json({ error: "Failed to delete message" });
   }
 };
+
+// Fetch messages addressed to an individual member (ISO timestamps)
 const getMessagesForMember = async (req, res) => {
   const { email } = req.params;
 
@@ -148,6 +166,8 @@ const getMessagesForMember = async (req, res) => {
     });
   }
 };
+
+// Export controller helpers
 module.exports = {
   createMessage,
   getMessagesForUser,

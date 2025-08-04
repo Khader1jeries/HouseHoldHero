@@ -19,7 +19,5 @@ export class UserComponent implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit(): void {
-    // intentionally left empty
-  }
+  ngOnInit(): void {}
 }

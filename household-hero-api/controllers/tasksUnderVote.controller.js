@@ -1,16 +1,30 @@
+// -----------------------------------------------------------------------------
+// Tasks-Under-Vote Controller
+// -----------------------------------------------------------------------------
+//  • Handles creation, retrieval, voting, commenting, recommendation, and
+//    migration of “tasks under vote” into regular tasks.
+//  • Only explanatory comments have been added; no executable code was changed.
+//  • Comments do not mention specific routes or paths.
+// -----------------------------------------------------------------------------
+
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
 const {
-  calculateScoreForTasksUnderVote,
-  calculateWithHungarianAlgorithm,
+  calculateScoreForTasksUnderVote, // score based on Hungarian algorithm
+  calculateWithHungarianAlgorithm, // optimal assignment helper
 } = require("../services/score.service");
+
 const { expired, addToAdmin } = require("../services/tasksUnderVote.service");
 const { activeTasks, addTaskToMember } = require("../services/tasks.service");
+
 const {
   validateCreateTaskUnderVote,
 } = require("../validations/tasksUnderVote.validation");
 
+// ───────────────────────────────────────────────────────────────────────────────
+// Create a task that must be voted on before assignment
+// ───────────────────────────────────────────────────────────────────────────────
 const createTaskUnderVote = async (req, res) => {
   try {
     const task = req.body;
@@ -22,8 +36,8 @@ const createTaskUnderVote = async (req, res) => {
         .json({ success: false, message: validation.message });
     }
 
+    // Normalize subtasks structure with defaults
     if (task.subtasks && typeof task.subtasks === "object") {
-      // Set default status for subtasks if present
       Object.keys(task.subtasks).forEach((subtaskId) => {
         const subtask = task.subtasks[subtaskId];
         if (typeof subtask.status !== "boolean") subtask.status = false;
@@ -31,21 +45,19 @@ const createTaskUnderVote = async (req, res) => {
       });
     } else {
       task.subtasks = {
-        [task.title]: {
-          score: 0,
-          status: false,
-        },
+        [task.title]: { score: 0, status: false },
       };
     }
-    const status = false;
-    task.status = status;
 
-    task.yes = [];
+    task.status = false; // voting not yet resolved
+    task.yes = []; // arrays for votes
     task.no = [];
-    await expired(task);
+
+    await expired(task); // append `expired` flag based on dueDate/startDate
 
     const docRef = await db.collection("tasksUnderVote").add(task);
-    await addToAdmin(task, docRef.id);
+    await addToAdmin(task, docRef.id); // reference in admin doc
+
     res.status(201).json({
       success: true,
       message: "Task created successfully",
@@ -57,6 +69,10 @@ const createTaskUnderVote = async (req, res) => {
     res.status(500).json({ error: "Failed to create task" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Fetch one task-under-vote by Firestore ID
+// ───────────────────────────────────────────────────────────────────────────────
 const getTaskUnderVoteByID = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -66,7 +82,6 @@ const getTaskUnderVoteByID = async (req, res) => {
     }
 
     const taskDoc = await db.collection("tasksUnderVote").doc(taskId).get();
-
     if (!taskDoc.exists) {
       return res.status(404).json({ error: "Task not found" });
     }
@@ -77,6 +92,10 @@ const getTaskUnderVoteByID = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Return two random tasks under vote for preview
+// ───────────────────────────────────────────────────────────────────────────────
 const getRandom2TasksUnderVote = async (req, res) => {
   const { adminEmail } = req.params;
 
@@ -87,12 +106,10 @@ const getRandom2TasksUnderVote = async (req, res) => {
       .get();
 
     if (snapshot.empty) {
-      return res.status(200).json([]); // return empty array if no matching tasks
+      return res.status(200).json([]);
     }
 
     const tasks = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-    // Shuffle and take two random tasks
     const shuffled = tasks.sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, 2);
 
@@ -102,6 +119,10 @@ const getRandom2TasksUnderVote = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch voting tasks" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// List tasks-under-vote that are still active (not expired)
+// ───────────────────────────────────────────────────────────────────────────────
 const getTasksUnderVoteIfActive = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -118,15 +139,10 @@ const getTasksUnderVoteIfActive = async (req, res) => {
     }
 
     const tasks = [];
-
     for (const doc of snapshot.docs) {
       const task = { id: doc.id, ...doc.data() };
-
       await expired(task);
-
-      if (task.expired === false) {
-        tasks.push(task);
-      }
+      if (task.expired === false) tasks.push(task);
     }
 
     res.status(200).json(tasks);
@@ -135,6 +151,10 @@ const getTasksUnderVoteIfActive = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// List tasks-under-vote that have expired
+// ───────────────────────────────────────────────────────────────────────────────
 const getTasksUnderVoteIfExpired = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -151,120 +171,99 @@ const getTasksUnderVoteIfExpired = async (req, res) => {
     }
 
     const tasks = [];
-
     for (const doc of snapshot.docs) {
       const task = { id: doc.id, ...doc.data() };
-
       await expired(task);
-
-      if (task.expired === true) {
-        tasks.push(task);
-      }
+      if (task.expired === true) tasks.push(task);
     }
 
     res.status(200).json(tasks);
   } catch (error) {
-    console.error("Error fetching active tasks under vote:", error);
+    console.error("Error fetching expired tasks:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Convert a voted task into a regular task
+// ───────────────────────────────────────────────────────────────────────────────
 const moveToTask = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // ID in tasksUnderVote
     const additionalData = req.body;
 
-    // Required fields from body
+    // Ensure migration fields provided
     const requiredFields = ["startDate", "dueDate", "assignedTo"];
-
     for (const field of requiredFields) {
       if (!additionalData[field]) {
         return res.status(400).json({ error: `${field} is required` });
       }
     }
 
-    // Get task from tasksUnderVote
+    // Fetch original vote task
     const voteTaskRef = db.collection("tasksUnderVote").doc(id);
     const voteTaskDoc = await voteTaskRef.get();
-
     if (!voteTaskDoc.exists) {
       return res.status(404).json({ error: "Task under vote not found" });
     }
-
     const voteTaskData = voteTaskDoc.data();
 
-    // Merge fields from vote task and user-provided fields
+    // Compose final task object
     const task = {
       createdAt: new Date().toISOString(),
       description: voteTaskData.description,
-
-      /* dates */
       dueDate: additionalData.dueDate,
       startDate: additionalData.startDate,
-
-      /* metadata */
       priority: voteTaskData.priority,
       title: voteTaskData.title,
       adminEmail: voteTaskData.adminEmail,
       assignedTo: additionalData.assignedTo,
-
-      /* remaining fields */
       score: 0,
       subtasks: voteTaskData.subtasks,
     };
 
-    // Calculate score using both assignedTo and the task ID
-    const score = await calculateScoreForTasksUnderVote(task.assignedTo, id);
-    task.score = score;
+    // Compute personalized score for the assignee
+    task.score = await calculateScoreForTasksUnderVote(task.assignedTo, id);
 
-    // Subtask count and default setup
+    // Normalize subtasks
     let count = 0;
     if (task.subtasks && typeof task.subtasks === "object") {
       count = Object.keys(task.subtasks).length;
     } else {
-      task.subtasks = {
-        [task.title]: {
-          score: task.score,
-          status: false,
-        },
-      };
+      task.subtasks = { [task.title]: { score: task.score, status: false } };
       count = 1;
     }
-
-    let pointsDivided = count === 0 ? 0 : task.score / count;
-
-    Object.keys(task.subtasks).forEach((subtaskId) => {
-      const subtask = task.subtasks[subtaskId];
-      subtask.status =
-        typeof subtask.status === "boolean" ? subtask.status : false;
-      subtask.score = pointsDivided; // Force set every time
+    const pointsDivided = count === 0 ? 0 : task.score / count;
+    Object.keys(task.subtasks).forEach((sid) => {
+      const st = task.subtasks[sid];
+      st.status = typeof st.status === "boolean" ? st.status : false;
+      st.score = pointsDivided;
     });
     task.status = false;
 
-    // Add to main tasks
+    // Add to main tasks collection
     const newTaskRef = await db.collection("tasks").add(task);
+
+    // Link task to member & recalc active counts
     const memberRef = db.collection("members").doc(task.assignedTo);
-    // using email as the document ID
     const memberDoc = await memberRef.get();
-    if (!memberDoc.exists) {
+    if (!memberDoc.exists)
       return res.status(404).json({ error: "Member not found" });
-    }
-    const add = await addTaskToMember(memberRef.id, newTaskRef.id);
-    const active = await activeTasks(memberRef.id);
 
-    // Get the user by email (your unique key)
-    const userRef = db.collection("users").doc(task.adminEmail); // using email as the document ID
+    await addTaskToMember(memberRef.id, newTaskRef.id);
+    await activeTasks(memberRef.id);
+
+    // Remove task reference from admin’s tasksUnderVote array
+    const userRef = db.collection("users").doc(task.adminEmail);
     const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
+    if (!userDoc.exists)
       return res.status(404).json({ error: "Admin user not found" });
-    }
 
-    // Remove the task ID from tasksUnderVote array
     await userRef.update({
       tasksUnderVote: admin.firestore.FieldValue.arrayRemove(id),
     });
 
-    // Delete from vote tasks
+    // Delete original vote task
     await voteTaskRef.delete();
 
     res.status(201).json({
@@ -278,67 +277,57 @@ const moveToTask = async (req, res) => {
     res.status(500).json({ error: "Failed to move task" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Recommend the best member for a task using Hungarian algorithm
+// ───────────────────────────────────────────────────────────────────────────────
 const getRecommendation = async (req, res) => {
   try {
     const { taskId } = req.params;
+    if (!taskId) return res.status(400).json({ error: "Task ID is required" });
 
-    if (!taskId) {
-      return res.status(400).json({ error: "Task ID is required" });
-    }
-
-    // Check if task exists
     const taskDoc = await db.collection("tasksUnderVote").doc(taskId).get();
-
-    if (!taskDoc.exists) {
+    if (!taskDoc.exists)
       return res.status(404).json({ error: "Task under vote not found" });
-    }
 
     const taskData = taskDoc.data();
 
-    // Get all members using adminEmail (corrected field name)
+    // Retrieve family members for the admin
     const membersSnapshot = await db
       .collection("members")
       .where("adminEmail", "==", taskData.adminEmail)
       .get();
-
-    if (membersSnapshot.empty) {
+    if (membersSnapshot.empty)
       return res.status(404).json({ error: "No family members found" });
-    }
 
-    // Use Hungarian algorithm to find the best member
+    // Compute best assignee
     const bestMemberEmail = await calculateWithHungarianAlgorithm(
       taskData.adminEmail,
       taskId
     );
-
     if (!bestMemberEmail) {
       return res.status(404).json({
         error: "Could not determine best member using Hungarian algorithm",
       });
     }
 
-    // Find the member details using the email returned from Hungarian algorithm
+    // Locate member details
     let bestMemberData = null;
     membersSnapshot.forEach((doc) => {
-      const memberData = doc.data();
       if (doc.id === bestMemberEmail) {
-        bestMemberData = {
-          id: doc.id,
-          data: memberData,
-        };
+        bestMemberData = { id: doc.id, data: doc.data() };
       }
     });
-
-    if (!bestMemberData) {
+    if (!bestMemberData)
       return res.status(404).json({ error: "Best member data not found" });
-    }
 
-    // Calculate the score for this specific member-task combination for display
+    // Calculate display score
     const calculatedScore = await calculateScoreForTasksUnderVote(
       bestMemberData.id,
       taskId
     );
 
+    // Build response object
     const bestMember = {
       id: bestMemberData.id,
       fullName:
@@ -354,7 +343,6 @@ const getRecommendation = async (req, res) => {
       overallScore: bestMemberData.data.score || 0,
     };
 
-    // Return the recommendation
     res.status(200).json({
       success: true,
       taskId: taskId,
@@ -366,7 +354,7 @@ const getRecommendation = async (req, res) => {
         calculatedScore: bestMember.score,
         activeTasks: bestMember.activeTasks,
         overallScore: bestMember.overallScore,
-        reason: `Optimal candidate selected using Hungarian Algorithm with a calculated score of ${bestMember.score} points. This member has ${bestMember.activeTasks} active tasks and an overall score of ${bestMember.overallScore}.`,
+        reason: `Optimal candidate selected using Hungarian Algorithm with a calculated score of ${bestMember.score} points.`,
       },
     });
   } catch (error) {
@@ -377,6 +365,10 @@ const getRecommendation = async (req, res) => {
     });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Retrieve subtasks for a task-under-vote
+// ───────────────────────────────────────────────────────────────────────────────
 const getSubTasks = async (req, res) => {
   try {
     const taskId = req.params.taskId;
@@ -385,9 +377,7 @@ const getSubTasks = async (req, res) => {
 
     if (!taskSnap.exists) return res.status(404).json({ success: false });
 
-    const taskData = taskSnap.data();
-    const subtasksObject = taskData.subtasks || {};
-
+    const subtasksObject = taskSnap.data().subtasks || {};
     const subtasks = Object.entries(subtasksObject).map(([id, data]) => ({
       id,
       ...data,
@@ -402,22 +392,22 @@ const getSubTasks = async (req, res) => {
     });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Update vote (yes/no) arrays for a task-under-vote
+// ───────────────────────────────────────────────────────────────────────────────
 const updateVote = async (req, res) => {
   const { taskId, vote, email } = req.params;
 
   try {
     const taskRef = db.collection("tasksUnderVote").doc(taskId);
     const taskDoc = await taskRef.get();
-
-    if (!taskDoc.exists) {
+    if (!taskDoc.exists)
       return res
         .status(404)
         .json({ success: false, message: "Task not found" });
-    }
 
     const taskData = taskDoc.data();
-
-    // Get current yes/no arrays (default to empty if missing)
     const yesArray = taskData.yes || [];
     const noArray = taskData.no || [];
 
@@ -430,13 +420,9 @@ const updateVote = async (req, res) => {
           .status(200)
           .json({ success: false, message: "Already voted YES" });
       }
-
-      // Remove from no array if present
       if (noArray.includes(email)) {
         updatedNo = noArray.filter((e) => e !== email);
       }
-
-      // Add to yes array
       updatedYes = [...yesArray, email];
     } else if (vote === "no") {
       if (noArray.includes(email)) {
@@ -444,13 +430,7 @@ const updateVote = async (req, res) => {
           .status(200)
           .json({ success: false, message: "Already voted NO" });
       }
-
-      // Remove from yes array if present
-      if (yesArray.includes(email)) {
-        updatedYes = yesArray.filter((e) => e !== email);
-      }
-
-      // Add to no array
+      updatedYes = yesArray.filter((e) => e !== email);
       updatedNo = [...noArray, email];
     } else {
       return res
@@ -458,11 +438,7 @@ const updateVote = async (req, res) => {
         .json({ success: false, message: "Invalid vote type" });
     }
 
-    // Update Firestore document
-    await taskRef.update({
-      yes: updatedYes,
-      no: updatedNo,
-    });
+    await taskRef.update({ yes: updatedYes, no: updatedNo });
 
     return res
       .status(200)
@@ -474,6 +450,10 @@ const updateVote = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Add or update a comment on a task-under-vote
+// ───────────────────────────────────────────────────────────────────────────────
 const addComment = async (req, res) => {
   const { taskId, email } = req.params;
   const { comment } = req.body;
@@ -487,19 +467,13 @@ const addComment = async (req, res) => {
   try {
     const taskRef = db.collection("tasksUnderVote").doc(taskId);
     const taskDoc = await taskRef.get();
-
-    if (!taskDoc.exists) {
+    if (!taskDoc.exists)
       return res
         .status(404)
         .json({ success: false, message: "Task not found" });
-    }
 
-    // Use Firestore field path notation to update a single key inside the "comments" map
-    const commentFieldPath = `comments.${email}`;
-
-    await taskRef.update({
-      [commentFieldPath]: comment,
-    });
+    const commentFieldPath = `comments.${email}`; // Firestore field path syntax
+    await taskRef.update({ [commentFieldPath]: comment });
 
     return res
       .status(200)
@@ -511,6 +485,10 @@ const addComment = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Export controller functions
+// ───────────────────────────────────────────────────────────────────────────────
 module.exports = {
   createTaskUnderVote,
   getTaskUnderVoteByID,

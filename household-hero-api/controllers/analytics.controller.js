@@ -1,26 +1,51 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
+// -----------------------------------------------------------------------------
+// Analytics Controller
+// -----------------------------------------------------------------------------
+//  ‣ Provides Express route handlers for analytics endpoints.
+//  ‣ Each handler pulls the admin’s email from `req.params`, calls a corresponding
+//    service-layer helper, and returns JSON (or a PDF for `reports`).
+//  ‣ **Important:** This file only handles HTTP transport-level concerns;
+//    the heavy lifting (data aggregation / Firestore queries / PDF generation)
+//    lives in the service and util layers.
+// -----------------------------------------------------------------------------
+
+const admin = require("firebase-admin"); // Firebase Admin SDK
+const db = admin.firestore(); // Firestore instance (unused here but
+// handy if you need direct access)
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Service-layer helpers (pure data logic, no HTTP concerns)
+// ───────────────────────────────────────────────────────────────────────────────
 const {
-  getOnTimeCompletion,
-  getTaskDistribution,
-  getPointsByMember,
-  getTasksByStatus,
-  getPointsEarnedOverTime,
-  getCreatedOverTime,
-  getMemberPerformance,
-  getTasks,
-  getMembers,
+  getOnTimeCompletion, // % of tasks finished on/before due date
+  getTaskDistribution, // tasks grouped by category / priority, etc.
+  getPointsByMember, // total points per team member
+  getTasksByStatus, // count of tasks by status (todo / done / …)
+  getPointsEarnedOverTime, // points trend (e.g., per week)
+  getCreatedOverTime, // tasks created over time
+  getMemberPerformance, // composite KPI per member
+  getTasks, // raw tasks list
+  getMembers, // raw members list
 } = require("../services/analytics.service");
-const { generatePDFReport } = require("../utils/pdfGenerator.util");
+
+const { generatePDFReport } = require("../utils/pdfGenerator.util"); // PDF helper
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Basic JSON endpoints
+// ───────────────────────────────────────────────────────────────────────────────
+
+// % of tasks completed on time
 const onTimeCompletion = async (req, res) => {
   try {
-    const { adminEmail } = req.params;
+    const { adminEmail } = req.params; // path param :adminEmail
     const result = await getOnTimeCompletion(adminEmail);
-    res.json(result);
+    res.json(result); // 200 OK with JSON payload
   } catch (error) {
     res.status(500).json({ error: "Failed to get on-time completion" });
   }
 };
+
+// Distribution of tasks across categories / priorities
 const taskDistribution = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -30,6 +55,8 @@ const taskDistribution = async (req, res) => {
     res.status(500).json({ error: "Failed to get task distribution" });
   }
 };
+
+// Points leaderboard
 const pointsByMember = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -39,6 +66,8 @@ const pointsByMember = async (req, res) => {
     res.status(500).json({ error: "Failed to get points by member" });
   }
 };
+
+// Task counts by status (Todo / In-Progress / Done / …)
 const TasksByStatus = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -48,6 +77,8 @@ const TasksByStatus = async (req, res) => {
     res.status(500).json({ error: "Failed to get tasks by status" });
   }
 };
+
+// Points trend over time (e.g., line chart data)
 const pointsEarnedOverTime = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -57,6 +88,8 @@ const pointsEarnedOverTime = async (req, res) => {
     res.status(500).json({ error: "Failed to get points earned over time" });
   }
 };
+
+// Tasks created trend over time
 const createdOverTime = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -66,6 +99,8 @@ const createdOverTime = async (req, res) => {
     res.status(500).json({ error: "Failed to get created over time" });
   }
 };
+
+// Composite KPI per member (accuracy, timeliness, etc.)
 const memberPreformance = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -76,11 +111,21 @@ const memberPreformance = async (req, res) => {
   }
 };
 
+// ───────────────────────────────────────────────────────────────────────────────
+// PDF Report endpoint
+// ───────────────────────────────────────────────────────────────────────────────
+//  Generates a consolidated PDF with all analytics in one document.
+//  Steps:
+//   1. Fetch all datasets in parallel via Promise.all.
+//   2. Shape them into a `reportData` object.
+//   3. Pass that to `generatePDFReport`, which returns a Buffer.
+//   4. Stream the Buffer back with proper PDF headers.
+// ───────────────────────────────────────────────────────────────────────────────
 const reports = async (req, res) => {
   const { adminEmail } = req.params;
 
   try {
-    // Fetch all data in parallel (your existing code)
+    // Fetch all analytics; Promise.all maximizes concurrency
     const [
       members,
       tasks,
@@ -103,7 +148,7 @@ const reports = async (req, res) => {
       getMemberPerformance(adminEmail),
     ]);
 
-    // Prepare data for PDF generation
+    // Aggregate everything for the PDF generator
     const reportData = {
       adminEmail,
       onTimeCompletion,
@@ -117,10 +162,9 @@ const reports = async (req, res) => {
       tasksCount: tasks.length,
     };
 
-    // Generate PDF
-    const pdfBuffer = await generatePDFReport(reportData);
+    const pdfBuffer = await generatePDFReport(reportData); // Returns Buffer
 
-    // Set response headers for PDF
+    // Static headers so browsers treat it as a downloadable PDF
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
@@ -128,13 +172,17 @@ const reports = async (req, res) => {
     );
     res.setHeader("Content-Length", pdfBuffer.length);
 
-    // Send PDF
+    // Stream the PDF to the client
     res.send(pdfBuffer);
   } catch (err) {
     console.error("Error generating report:", err.stack || err);
     res.status(500).json({ error: err.message || "Failed to generate report" });
   }
 };
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Exports (CommonJS)
+// ───────────────────────────────────────────────────────────────────────────────
 module.exports = {
   onTimeCompletion,
   taskDistribution,
