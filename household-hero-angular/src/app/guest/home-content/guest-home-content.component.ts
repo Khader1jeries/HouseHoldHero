@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { SliderComponent } from './slider/slider.component';
 import { FormsModule } from '@angular/forms';
@@ -17,14 +16,6 @@ export class GuestHomeContentComponent {
   constructor(private router: Router) {}
 
   navigateToRegistration() {
-    if (this.email && this.email.trim() !== '') {
-      // Navigate to registration page with email as query parameter
-      this.router.navigate(['/guest/registration'], { 
-        queryParams: { email: this.email } 
-      });
-    } else {
-      // If no email provided, navigate to registration without query params
-      this.router.navigate(['/guest/registration']);
-    }
+    this.router.navigate(['/guest/registration']);
   }
 }

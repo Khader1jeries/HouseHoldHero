@@ -300,7 +300,8 @@ const ifExist = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const result = sendVerificationEmail(email);
+    const result = await sendVerificationEmail(email);
+    console.log(result);
     await userRef.update({ verfication: result });
 
     res.status(200).json({ success: true, message: "User exists" });
