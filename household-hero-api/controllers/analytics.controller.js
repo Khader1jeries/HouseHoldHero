@@ -45,7 +45,7 @@ const onTimeCompletion = async (req, res) => {
   }
 };
 
-// Distribution of tasks across categories / priorities
+// Distribution of tasks
 const taskDistribution = async (req, res) => {
   try {
     const { adminEmail } = req.params;
@@ -56,7 +56,7 @@ const taskDistribution = async (req, res) => {
   }
 };
 
-// Points leaderboard
+// Points
 const pointsByMember = async (req, res) => {
   try {
     const { adminEmail } = req.params;

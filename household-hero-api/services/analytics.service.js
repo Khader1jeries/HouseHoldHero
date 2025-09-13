@@ -74,20 +74,21 @@ async function getOnTimeCompletion(adminEmail) {
 async function getTaskDistribution(adminEmail) {
   try {
     const tasks = await getTasks(adminEmail); // get all tasks for this admin
-    if (!tasks.length) {
-      return 0;
-    }
+    if (!tasks || tasks.length === 0) return 0;
+
     const total = tasks.length;
-    if (total === 0) return 0;
 
+    // Build distribution
     const distribution = {};
-
     for (const task of tasks) {
+      if (!task.assignedTo) continue; // skip tasks without assigned user
       const key = task.assignedTo;
       distribution[key] = (distribution[key] || 0) + 1;
     }
 
     const categories = Object.keys(distribution);
+    if (categories.length === 0) return 0; // avoid divide by 0
+    if (categories.length === 1) return 100;
     const percentages = categories.map(
       (key) => (distribution[key] / total) * 100
     );
@@ -96,11 +97,13 @@ async function getTaskDistribution(adminEmail) {
     const variance =
       percentages.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) /
       categories.length;
+
     const stdDev = Math.sqrt(variance);
 
     const maxPossibleStdDev = Math.sqrt(
       (100 ** 2 * (categories.length - 1)) / categories.length
     );
+
     const balanceScore = 100 - (stdDev / maxPossibleStdDev) * 100;
 
     return +balanceScore.toFixed(2); // Rounded to 2 decimal places
