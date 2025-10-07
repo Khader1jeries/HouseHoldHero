@@ -1,0 +1,222 @@
+<!-- Updated add-task.component.html to display member names in dropdown -->
+<div class="add-task-container">
+  <div class="add-task-box">
+    <h2>Create New Task</h2>
+    <p class="subtitle">Add a new task for your family members</p>
+
+    <!-- Error message -->
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Success message -->
+    <div class="message success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Task Title -->
+      <div class="form-group">
+        <label for="title">Task Title</label>
+        <input
+          type="text"
+          id="title"
+          placeholder="Enter task title"
+          [(ngModel)]="newTask.title"
+          name="title"
+          required
+        />
+      </div>
+
+      <!-- Task Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          placeholder="Enter task description"
+          [(ngModel)]="newTask.description"
+          name="description"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <!-- Due Date -->
+      <div class="form-group">
+        <label for="dueDate">Due Date & Time</label>
+        <input
+          type="datetime-local"
+          id="dueDate"
+          [(ngModel)]="newTask.dueDate"
+          name="dueDate"
+          required
+        />
+      </div>
+
+      <!-- Assignment Type -->
+      <div class="form-group">
+        <label>Assignment Type</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="startNow"
+              name="assignmentType"
+              value="direct"
+              [(ngModel)]="assignmentType"
+              checked
+            />
+            <label for="startNow">Start Now</label>
+          </div>
+
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="future"
+              name="assignmentType"
+              value="future"
+              [(ngModel)]="assignmentType"
+            />
+            <label for="future">Schedule for Future</label>
+          </div>
+          <div class="radio-option">
+            <input
+              type="radio"
+              id="createVoting"
+              name="assignmentType"
+              value="voting"
+              [(ngModel)]="assignmentType"
+            />
+            <label for="createVoting">Create Voting</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assigned To (shown only if "Start Now" is selected) -->
+      <div class="form-group" *ngIf="assignmentType === 'direct'">
+        <label for="assignedTo">Assign To</label>
+        <select
+          id="assignedTo"
+          [(ngModel)]="newTask.assignedTo"
+          name="assignedTo"
+          required
+        >
+          <option value="">Select Family Member</option>
+          <option *ngFor="let member of familyMembers" [value]="member.email">
+            {{
+              member.fullName ||
+                (member.firstName && member.lastName
+                  ? member.firstName + " " + member.lastName
+                  : "") ||
+                member.firstName ||
+                member.lastName ||
+                "Unknown Member"
+            }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Starting Date (shown only if "Schedule for Future" is selected) -->
+      <div class="form-group" *ngIf="assignmentType === 'future'">
+        <label for="assignedTo">Assign To</label>
+        <select
+          id="assignedTo"
+          [(ngModel)]="newTask.assignedTo"
+          name="assignedTo"
+          required
+        >
+          <option value="">Select Family Member</option>
+          <option *ngFor="let member of familyMembers" [value]="member.email">
+            {{
+              member.fullName ||
+                (member.firstName && member.lastName
+                  ? member.firstName + " " + member.lastName
+                  : "") ||
+                member.firstName ||
+                member.lastName ||
+                "Unknown Member"
+            }}
+          </option>
+        </select>
+        <label for="startDate">Starting Date & Time</label>
+        <input
+          type="datetime-local"
+          id="startDate"
+          [(ngModel)]="newTask.startDate"
+          name="startDate"
+          required
+        />
+      </div>
+
+      <!-- Priority -->
+      <div class="form-group">
+        <label for="priority">Priority Level</label>
+        <select
+          id="priority"
+          [(ngModel)]="newTask.priority"
+          name="priority"
+          class="form-control"
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <!-- Sub-Tasks Section -->
+      <div class="form-section">
+        <h3>Sub-Tasks</h3>
+        <div *ngIf="getSubTaskKeys().length > 0" class="subtasks-list">
+          <div
+            *ngFor="let entry of subTasks | keyvalue; let i = index"
+            class="subtask-item"
+          >
+            <div class="subtask-info">
+              <span>{{ entry.key }}</span>
+            </div>
+            <button
+              type="button"
+              class="remove-subtask-btn"
+              (click)="removeSubTask(entry.key)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="getSubTaskKeys().length === 0" class="empty-subtasks">
+          <p>No sub-tasks added yet. Add some below to break down this task.</p>
+        </div>
+
+        <div class="add-subtask">
+          <div class="subtask-input-group">
+            <input
+              type="text"
+              placeholder="Add a sub-task..."
+              [(ngModel)]="newSubTaskTitle"
+              name="newSubTaskTitle"
+              class="form-control"
+              (keyup.enter)="addSubTask()"
+            />
+            <button
+              type="button"
+              class="add-subtask-btn"
+              (click)="addSubTask()"
+            >
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">
+          Cancel
+        </button>
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+          {{ isSubmitting ? "Creating..." : "Create Task" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<!-- Signup Container -->
+<div class="signup-container">
+  <div class="signup-box">
+    <!-- Logo -->
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="Household Hero Logo" class="logo" />
+    </div>
+    <div style="height: 5vh">
+      <img
+        src="assets/logo_name.png"
+        alt="Household Hero Name"
+        class="logo-name"
+      />
+    </div>
+
+    <p class="subtitle">Sign up to continue</p>
+
+    <!-- Success message -->
+    <div class="message success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <!-- Error message -->
+    <div class="message error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" *ngIf="!successMessage">
+      <!-- First Name Input -->
+      <input
+        type="text"
+        placeholder="Enter your first name"
+        [(ngModel)]="user.firstName"
+        name="firstName"
+        required
+      />
+
+      <!-- Last Name Input -->
+      <input
+        type="text"
+        placeholder="Enter your last name"
+        [(ngModel)]="user.lastName"
+        name="lastName"
+        required
+      />
+
+      <!-- Phone Number Input -->
+      <div class="phone-input">
+        <!-- Country Code Dropdown -->
+        <select
+          class="country-code"
+          name="countryCode"
+          [(ngModel)]="user.countryCode"
+          required
+        >
+          <option value="+1">🇺🇸 +1 (USA)</option>
+          <option value="+44">🇬🇧 +44 (UK)</option>
+          <option value="+91">🇮🇳 +91 (India)</option>
+          <option value="+33">🇫🇷 +33 (France)</option>
+          <option value="+49">🇩🇪 +49 (Germany)</option>
+          <option value="+972">🇮🇱 +972 (Israel)</option>
+        </select>
+
+        <!-- Phone Number Input -->
+        <input
+          type="tel"
+          name="phoneNumber"
+          class="phone-number"
+          placeholder="Enter phone number"
+          [(ngModel)]="user.phoneNumber"
+          required
+        />
+      </div>
+      <!--Date of birth input-->
+      <label for="dob">Date of Birth</label>
+      <input
+        type="date"
+        id="dob"
+        [(ngModel)]="user.DOB"
+        name="DOB"
+        required
+        max="2020-12-31"
+      />
+      <!-- Email Input -->
+      <input
+        type="email"
+        placeholder="Enter your email"
+        [(ngModel)]="user.email"
+        name="email"
+        required
+      />
+
+      <!-- Password Input -->
+      <input
+        type="password"
+        placeholder="Enter your password"
+        [(ngModel)]="user.password"
+        name="password"
+        required
+      />
+
+      <!-- Confirm Password Input -->
+      <input
+        type="password"
+        placeholder="Re-enter your password"
+        [(ngModel)]="user.confirmPassword"
+        name="confirmPassword"
+        required
+      />
+
+      <!-- Sign-Up Button -->
+      <button type="submit" class="signup-btn" [disabled]="isSubmitting">
+        {{ isSubmitting ? "Submitting..." : "Sign up" }}
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <p class="login-text">
+      Already have an account?
+      <a routerLink="/guest/login" (click)="navigateToLogin()">Log-in</a>
+    </p>
+  </div>
+</div>

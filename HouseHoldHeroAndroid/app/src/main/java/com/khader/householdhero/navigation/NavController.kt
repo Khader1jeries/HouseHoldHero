@@ -43,7 +43,7 @@ fun AppNavHost(navController: NavHostController) {
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onSettingsClick = {
-                    println("Settings clicked - navigating to settings")
+
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToActiveTasks = {

@@ -1,0 +1,98 @@
+<app-loading [isLoading]="loading" message="Fetching data..."></app-loading>
+<div *ngIf="!loading">
+  <div class="votes-container" *ngIf="task">
+    <div class="task-header-buttons">
+      <div class="back-button" (click)="goBack()">
+        <i class="bi bi-arrow-left-circle"></i>
+        <span>Back to Tasks</span>
+      </div>
+
+      <button class="move-task-button" (click)="navigateToMoveTask()">
+        <i class="bi bi-arrows-move"></i>
+        Move Task
+      </button>
+    </div>
+
+    <div class="votes-header">
+      <div class="task-info">
+        <h2>{{ task.title }}</h2>
+        <div class="task-meta">
+          <div class="task-meta-item">
+            <i class="bi bi-calendar-date"></i>
+            <span>{{ task.dueDate | date : "mediumDate" }}</span>
+          </div>
+        </div>
+        <p class="task-description">{{ task.description }}</p>
+      </div>
+    </div>
+
+    <div class="results-chart" *ngIf="task">
+      <div class="chart-bar">
+        <div
+          class="yes-bar"
+          [style.width.%]="
+            ((task.yes?.length || 0) /
+              ((task.yes?.length || 0) + (task.no?.length || 0) || 1)) *
+            100
+          "
+        >
+          <div class="vote-count">{{ task.yes?.length || 0 }}</div>
+        </div>
+        <div
+          class="no-bar"
+          [style.width.%]="
+            ((task.no?.length || 0) /
+              ((task.yes?.length || 0) + (task.no?.length || 0) || 1)) *
+            100
+          "
+        >
+          <div class="vote-count">{{ task.no?.length || 0 }}</div>
+        </div>
+      </div>
+      <div class="chart-labels">
+        <div class="yes-label">Yes</div>
+        <div class="no-label">No</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="votes-list">
+    <h3>Individual Votes</h3>
+    <div class="votes-table">
+      <div class="table-header">
+        <div class="header-member">Member</div>
+        <div class="header-vote">Vote</div>
+      </div>
+
+      <div *ngFor="let member of members" class="vote-row">
+        <!-- Member Info -->
+        <div class="cell-member">
+          <img src="assets/profile_pic.png" [alt]="member.fullName" />
+          <span>{{ member.fullName }}</span>
+        </div>
+
+        <!-- Vote Column -->
+        <div class="cell-vote" [ngClass]="checkVote(member.email)">
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-hand-thumbs-up-fill': checkVote(member.email) === 'yes',
+              'bi-hand-thumbs-down-fill': checkVote(member.email) === 'no',
+              'bi-dash-circle': checkVote(member.email) === 'not voted'
+            }"
+          ></i>
+          <span>{{ checkVote(member.email) | titlecase }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-task-message" *ngIf="!task">
+    <div class="message-icon">
+      <i class="bi bi-exclamation-circle"></i>
+    </div>
+    <h2>Task not found</h2>
+    <p>The task you're looking for doesn't exist or has been deleted.</p>
+    <button class="back-button" (click)="goBack()">Back to Tasks List</button>
+  </div>
+</div>

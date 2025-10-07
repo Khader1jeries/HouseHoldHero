@@ -54,14 +54,11 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
     suspend fun getTwoVotes(): Result<List<TaskUnderVote>> {
         return try {
 
-            if (email.isNullOrBlank()) {
-                return Result.failure(Exception("User email not found in SharedPreferences"))
-            }
             if (adminEmail.isNullOrBlank()) {
                 return Result.failure(Exception("User email not found in SharedPreferences"))
             }
 
-            val response = api.getTwoVotes(adminEmail,email)
+            val response = api.getTwoVotes(adminEmail)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
@@ -70,14 +67,12 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
     suspend fun getAllVotes(): Result<List<TaskUnderVote>> {
         return try {
 
-            if (email.isNullOrBlank()) {
-                return Result.failure(Exception("User email not found in SharedPreferences"))
-            }
+
             if (adminEmail.isNullOrBlank()) {
                 return Result.failure(Exception("User email not found in SharedPreferences"))
             }
 
-            val response = api.getAllVotes(adminEmail,email)
+            val response = api.getAllVotes(adminEmail)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
@@ -165,29 +160,25 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
         return try {
             val request = SubtaskRequest(subtasks)
 
-            // Add debugging
-            println("🔄 Updating subtasks for task: $taskId")
-            println("📦 Subtasks to send: $subtasks")
-            println("📦 Request object: $request")
+
 
             val response = api.updateSubtasks(taskId, request)
 
-            println("📡 Response code: ${response.code()}")
-            println("📡 Response message: ${response.message()}")
+
 
             if (!response.isSuccessful) {
                 val errorBody = response.errorBody()?.string()
-                println("❌ Error body: $errorBody")
+
             }
 
             if (response.isSuccessful) {
-                println("✅ Subtasks updated successfully")
+
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
             }
         } catch (e: Exception) {
-            println("❌ Exception in updateSubtasks: ${e.message}")
+
             e.printStackTrace()
             Result.failure(e)
         }
@@ -207,24 +198,22 @@ class TasksRepository(private val api: TasksApi,    private val context: Context
 
     suspend fun addComment(taskId: String, userEmail: String, comment: String): Result<VoteApiResponse> {
         return try {
-            println("🔄 Repository: Adding comment for task $taskId, email: $userEmail")
+
             val commentRequest = CommentRequest(comment)
             val response = api.addComment(taskId, userEmail, commentRequest)
 
-            println("📡 Repository: Response code: ${response.code()}")
-            println("📡 Repository: Response message: ${response.message()}")
 
             if (response.isSuccessful && response.body() != null) {
                 val body = response.body()!!
-                println("✅ Repository: Comment added successfully - ${body.message}")
+
                 Result.success(body)
             } else {
                 val errorMsg = "Failed to add comment: ${response.code()} ${response.message()}"
-                println("❌ Repository: $errorMsg")
+
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            println("❌ Repository: Exception in addComment: ${e.message}")
+
             e.printStackTrace()
             Result.failure(e)
         }

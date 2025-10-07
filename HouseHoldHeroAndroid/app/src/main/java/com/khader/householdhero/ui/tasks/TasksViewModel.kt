@@ -28,33 +28,33 @@ class TasksViewModel(    private val tasksRepository: TasksRepository
         private set
 
     fun fetchTwoActiveTasks() {
-        println("📥 ViewModel: fetchTwoActiveTasks called")
+
         viewModelScope.launch {
             val result = tasksRepository.getTwoActiveTasks()
-            println("📦 ViewModel: tasks fetched, result = $result")
+
             twoActiveTasksResult = result
         }
     }
     fun fetchTwoFutureTasks() {
-        println("📥 ViewModel: fetchTwoFutureTasks called")
+
         viewModelScope.launch {
             val result = tasksRepository.getTwoFutureTasks()
-            println("📦 ViewModel: tasks fetched, result = $result")
+
             twoFutureTasksResult = result
         }
     }
     fun fetchTwoFinishedTasks() {
-        println("📥 ViewModel: fetchTwoFinishedTasks called")
+
         viewModelScope.launch {
             val result = tasksRepository.getTwoFinishedTasks()
-            println("📦 ViewModel: tasks fetched, result = $result")
+
             twoFinishedTasksResult = result
         }
     }
     fun fetchTwoVotes() {
         viewModelScope.launch {
             val result = tasksRepository.getTwoVotes()
-            println("📦 ViewModel: tasks fetched, result = $result")
+
             twoVotes = result
         }
     }

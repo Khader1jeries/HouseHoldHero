@@ -1,0 +1,151 @@
+<div class="task-details-container" *ngIf="task">
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left-circle"></i>
+    <span>Back to Tasks</span>
+  </div>
+
+  <div class="task-details-header">
+    <div class="task-title-section">
+      <h2>{{ task.title }}</h2>
+      <div class="task-meta">
+        <div class="task-status">
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-hourglass-split': task.status === 'pending',
+              'bi-check-circle-fill': task.status === 'completed',
+              'bi-calendar-date': task.status === 'upcoming',
+            }"
+          ></i>
+          <span>{{ task.status | titlecase }}</span>
+        </div>
+        <div class="task-priority">
+          <i class="bi bi-flag-fill"></i>
+          <span>{{ task.priority | titlecase }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Updated task-actions section with duplicate button -->
+    <div class="task-actions">
+      <button
+        class="duplicate-button"
+        (click)="duplicateTask()"
+        title="Create a copy of this task"
+      >
+        <i class="bi bi-copy"></i>
+        <span>Duplicate Task</span>
+      </button>
+
+      <!-- Keep existing action buttons if you have any -->
+      <!-- Add other action buttons here as needed -->
+    </div>
+  </div>
+
+  <div class="task-details-grid">
+    <!-- Task Information -->
+    <div class="details-card task-info">
+      <h3>Task Information</h3>
+      <div class="task-description">
+        <p>{{ task.description }}</p>
+      </div>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">Assigned To</div>
+          <div class="info-value assigned-to">
+            <span>{{
+              task["assignedToFullName"] ||
+                task.assignedToName ||
+                task["assigneeName"] ||
+                "Unassigned"
+            }}</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Due Date</div>
+          <div class="info-value">{{ task.dueDate | date : "medium" }}</div>
+        </div>
+        <div class="info-row" *ngIf="task.status === 'pending'">
+          <div class="info-label">Remaining Time</div>
+          <div class="info-value remaining-time">{{ task.remainingTime }}</div>
+        </div>
+        <div
+          class="info-row"
+          *ngIf="task.status === 'completed' && task.completionDate"
+        >
+          <div class="info-label">Completed On</div>
+          <div class="info-value">
+            {{ task.completionDate | date : "medium" }}
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Priority</div>
+          <div class="info-value">{{ task.priority | titlecase }}</div>
+        </div>
+        <div class="info-row" *ngIf="task.score">
+          <div class="info-label">Points</div>
+          <div class="info-value">{{ task.score }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtasks Section (if any) -->
+    <div
+      class="details-card subtasks-info"
+      *ngIf="task['subtasks'] && getSubtaskKeys().length > 0"
+    >
+      <h3>Sub-tasks ({{ subTaskCompletionPercentage }}% Complete)</h3>
+      <div class="subtasks-list">
+        <div class="subtask-item" *ngFor="let subtaskKey of getSubtaskKeys()">
+          <div class="subtask-status">
+            <i
+              class="bi"
+              [ngClass]="
+                isSubtaskCompleted(subtaskKey)
+                  ? 'bi-check-circle-fill'
+                  : 'bi-circle'
+              "
+            ></i>
+          </div>
+          <div class="subtask-details">
+            <span class="subtask-title">{{ subtaskKey }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Actions or Additional Info Section (if needed) -->
+    <div class="details-card additional-info" *ngIf="task.createdAt">
+      <h3>Task Details</h3>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">Created Date</div>
+          <div class="info-value">{{ task.createdAt | date : "medium" }}</div>
+        </div>
+        <div class="info-row" *ngIf="task.startDate">
+          <div class="info-label">Start Date</div>
+          <div class="info-value">{{ task.startDate | date : "medium" }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading state -->
+<div class="task-details-container" *ngIf="isLoading">
+  <div class="loading-message">
+    <i class="bi bi-hourglass-split"></i>
+    <p>Loading task details...</p>
+  </div>
+</div>
+
+<!-- No task message -->
+<div class="no-task-message" *ngIf="!task && !isLoading">
+  <i class="bi bi-exclamation-triangle message-icon"></i>
+  <h2>Task Not Found</h2>
+  <p>{{ errorMessage || "The requested task could not be found." }}</p>
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Back to Tasks</span>
+  </div>
+</div>

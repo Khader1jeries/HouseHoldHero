@@ -45,7 +45,7 @@ class EditProfileViewModel(private val repository: MemberRepository) : ViewModel
                 // Update local member data to reflect changes
                 member?.getOrNull()?.let { currentMember ->
                     val updatedMember = currentMember.copy(
-                        id=email,
+                        email=email,
                         firstName = firstName,
                         lastName = lastName,
                         phoneNumber = phone,

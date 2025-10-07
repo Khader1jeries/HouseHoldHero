@@ -42,7 +42,7 @@ class SettingsViewModel(private val context: Context) : ViewModel() {
         with(sharedPrefs.edit()) {
             remove("email")
             remove("adminEmail")
-            // Add any other keys you want to remove specifically
+
             apply()
         }
     }

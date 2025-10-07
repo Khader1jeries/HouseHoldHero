@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 class ActiveTasksViewModel(private val repository: TasksRepository): ViewModel() {
 var tasks by mutableStateOf<Result<List<Task>>?>(null)
     fun fetchAllActiveTasks() {
-        println("📥 ViewModel: fetchAllActiveTasks called")
+
         viewModelScope.launch {
             val result = repository.getAllActiveTasks()
             tasks = result

@@ -32,11 +32,11 @@ class VoteDetailsViewModel (private val repository: TasksRepository): ViewModel(
         }
     }
     suspend fun submitVote(taskId: String, vote: String, userEmail: String): Result<VoteApiResponse> {
-        println("🔄 ViewModel: Submitting vote - Task: $taskId, Vote: $vote, Email: $userEmail")
+
         return repository.updateVote(taskId, vote, userEmail)
     }
     suspend fun addComment(taskId: String, userEmail: String, comment: String): Result<VoteApiResponse> {
-        println("🔄 ViewModel: Adding comment - Task: $taskId, Email: $userEmail, Comment: $comment")
+
         return repository.addComment(taskId, userEmail, comment)
     }
 }

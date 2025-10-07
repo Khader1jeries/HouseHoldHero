@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 class FinishedTasksViewModel(private val repository: TasksRepository): ViewModel() {
     var tasks by mutableStateOf<Result<List<Task>>?>(null)
     fun fetchAllFinishedTasks() {
-        println("📥 ViewModel: fetchAllActiveTasks called")
+
         viewModelScope.launch {
             val result = repository.getAllFinishedTasks()
             tasks = result

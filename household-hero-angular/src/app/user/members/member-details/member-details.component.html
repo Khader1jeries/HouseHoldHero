@@ -1,0 +1,174 @@
+<div class="member-details-container" *ngIf="member && !isLoading">
+  <div class="back-button" (click)="goBack()">
+    <i class="bi bi-arrow-left-circle"></i>
+    <span>Back to Members</span>
+  </div>
+
+  <div class="member-details-header">
+    <div class="member-profile">
+      <img
+        src="assets/profile_pic.png"
+        [alt]="member.fullName"
+        class="profile-pic"
+      />
+      <div class="member-basic-info">
+        <h2>
+          {{ member.fullName || member.firstName + " " + member.lastName }}
+        </h2>
+        <div class="member-role">Family Member</div>
+        <div class="member-score">
+          <i class="bi bi-award"></i>
+          <span>{{ member.score || 0 }} points</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="member-stats-grid">
+    <!-- Contact Info Card -->
+    <div class="stats-card contact-info">
+      <h3>Contact Information</h3>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-envelope"></i>
+            <span>Email</span>
+          </div>
+          <div class="info-value">{{ member.email }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-telephone"></i>
+            <span>Phone</span>
+          </div>
+          <div class="info-value">
+            {{ member.countryCode }} {{ member.phoneNumber }}
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-person"></i>
+            <span>First Name</span>
+          </div>
+          <div class="info-value">{{ member.firstName }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-person"></i>
+            <span>Last Name</span>
+          </div>
+          <div class="info-value">{{ member.lastName }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-calendar-date"></i>
+            <span>Date of Birth</span>
+          </div>
+          <div class="info-value">{{ member.DOB | date : "mediumDate" }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-calendar-check"></i>
+            <span>Joined</span>
+          </div>
+          <div class="info-value">
+            {{ member.createdAt | date : "mediumDate" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Statistics Card -->
+    <div class="stats-card task-stats">
+      <h3>Task Performance</h3>
+      <div class="task-donut-chart">
+        <div class="donut-chart">
+          <!-- You can add a chart library here later -->
+          <div class="chart-center">
+            <div class="total-tasks">{{ member.totalTasks || 0 }}</div>
+            <div class="chart-label">Total Tasks</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color active"></div>
+            <span>Active: {{ member.activeTasks || 0 }}</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color completed"></div>
+            <span>Completed: {{ member.completedTasks || 0 }}</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color completion-rate"></div>
+            <span>Completion Rate: {{ member.completionRate || 0 }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Metrics Card -->
+    <div class="stats-card performance-metrics">
+      <h3>Performance Metrics</h3>
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-trophy"></i>
+            <span>Current Score</span>
+          </div>
+          <div class="info-value score-highlight">{{ member.score || 0 }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-check-circle"></i>
+            <span>Completed Tasks</span>
+          </div>
+          <div class="info-value">{{ member.completedTasks || 0 }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-clock"></i>
+            <span>Active Tasks</span>
+          </div>
+          <div class="info-value">{{ member.activeTasks || 0 }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-list-task"></i>
+            <span>Total Tasks</span>
+          </div>
+          <div class="info-value">{{ member.totalTasks || 0 }}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">
+            <i class="bi bi-percent"></i>
+            <span>Completion Rate</span>
+          </div>
+          <div class="info-value">{{ member.completionRate || 0 }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="member-details-container" *ngIf="isLoading">
+      <div class="loading-state">
+        <i class="bi bi-arrow-clockwise rotating"></i>
+        <p>Loading member details...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="member-details-container" *ngIf="error && !isLoading">
+      <div class="no-member-message">
+        <div class="message-icon">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h2>Unable to Load Member</h2>
+        <p>{{ error }}</p>
+        <div class="back-button" (click)="goBack()">
+          <i class="bi bi-arrow-left-circle"></i>
+          <span>Back to Members</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -40,7 +40,7 @@ fun FinishedTaskDetailsScreen(
 
     // Fetch task and subtasks when screen loads
     LaunchedEffect(taskId) {
-        println("🔄 Fetching task and subtasks for taskId: $taskId")
+
         viewModel.fetchTask(taskId)
         viewModel.fetchSubTasks(taskId)
     }
@@ -286,7 +286,7 @@ fun FinishedTaskDetailsScreen(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     TextButton(
                                         onClick = {
-                                            println("🔄 Retrying subtask fetch for taskId: $taskId")
+
                                             viewModel.fetchSubTasks(taskId)
                                         }
                                     ) {

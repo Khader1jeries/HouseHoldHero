@@ -50,7 +50,7 @@ fun HomeScreen(
             onNavigateToProfile: () -> Unit = {},
     onNotifications: () -> Unit = {},
 ) {
-    println("HomeScreen loaded with onSettingsClick: ${onSettingsClick != {}}")
+
     var selectedTab by remember { mutableStateOf(0) }
 
     // Define all navigation items
