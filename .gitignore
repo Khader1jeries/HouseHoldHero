@@ -1,0 +1,6 @@
+# Node dependencies
+household-hero-api/node_modules/
+household-hero-angular/node_modules/
+
+# Secrets
+household-hero-api/serviceAccountKey.json
