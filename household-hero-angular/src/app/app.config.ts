@@ -13,7 +13,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
     provideAnimations(),
     // HTTP Client for our services - this is all you need for middleware approach
     provideHttpClient(withFetch()),
