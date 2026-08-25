@@ -6,8 +6,7 @@
 //  • No paths, variable names, or code statements were modified.
 // -----------------------------------------------------------------------------
 
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 
 const { createMember } = require("../services/members.service");
 const { hashPassword } = require("../utils/hash.util");
@@ -134,7 +133,7 @@ const deleteMember = async (req, res) => {
     const userDoc = await userRef.get();
     if (userDoc.exists) {
       await userRef.update({
-        members: admin.firestore.FieldValue.arrayRemove(email),
+        members: FieldValue.arrayRemove(email),
       });
     }
 
@@ -329,7 +328,7 @@ const verifyCode = async (req, res) => {
 
     if (userData.verfication === verfication) {
       await userRef.update({
-        verfication: admin.firestore.FieldValue.delete(),
+        verfication: FieldValue.delete(),
       });
       return res
         .status(200)

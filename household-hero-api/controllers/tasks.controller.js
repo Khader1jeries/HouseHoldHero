@@ -6,8 +6,7 @@
 //  • No route-path hints are present in comments.
 // -----------------------------------------------------------------------------
 
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 
 const { addTaskToMember, activeTasks } = require("../services/tasks.service");
 const { validateCreateTask } = require("../validations/tasks.valdation");
@@ -196,7 +195,7 @@ const deleteTask = async (req, res) => {
 
     if (memberDoc.exists) {
       await memberRef.update({
-        tasks: admin.firestore.FieldValue.arrayRemove(id),
+        tasks: FieldValue.arrayRemove(id),
       });
     }
 

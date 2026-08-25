@@ -1,5 +1,4 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 const { createMember } = require("../services/members.service");
 const { hashPassword } = require("../utils/hash.util");
 const { sendVerificationEmail } = require("../services/email.service");
@@ -206,7 +205,7 @@ const checkVerificationCode = async (req, res) => {
 
     if (userData.verfication === verfication) {
       await userRef.update({
-        verfication: admin.firestore.FieldValue.delete(),
+        verfication: FieldValue.delete(),
       });
       return res
         .status(200)

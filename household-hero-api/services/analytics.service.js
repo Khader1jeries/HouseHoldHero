@@ -1,5 +1,4 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 async function getMembers(adminEmail) {
   try {
     const membersRef = db.collection("members");

@@ -1,5 +1,4 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 const { hashPassword } = require("../utils/hash.util");
 const { validateCreateMember } = require("../validations/members.validation");
 async function createMember(memberData, adminEmail) {
@@ -34,7 +33,7 @@ async function createMember(memberData, adminEmail) {
     .collection("users")
     .doc(adminEmail)
     .update({
-      members: admin.firestore.FieldValue.arrayUnion(docRef.id),
+      members: FieldValue.arrayUnion(docRef.id),
     });
 
   return {

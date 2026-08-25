@@ -2,16 +2,9 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const { db } = require("./config/firebase");
 
-// Initialize Firebase Admin BEFORE requiring routes
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
-// Make Firebase accessible globally
-const db = admin.firestore();
 
 // Initialize the app
 const app = express();
@@ -24,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Setup error handling for Firebase operations
 app.use((req, res, next) => {
-  req.firestore = admin.firestore();
+  req.firestore = db;
   next();
 });
 const usersRoutes = require("./routes/users.routes");

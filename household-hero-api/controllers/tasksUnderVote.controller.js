@@ -7,8 +7,7 @@
 //  • Comments do not mention specific routes or paths.
 // -----------------------------------------------------------------------------
 
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 
 const {
   calculateScoreForTasksUnderVote, // score based on Hungarian algorithm
@@ -260,7 +259,7 @@ const moveToTask = async (req, res) => {
       return res.status(404).json({ error: "Admin user not found" });
 
     await userRef.update({
-      tasksUnderVote: admin.firestore.FieldValue.arrayRemove(id),
+      tasksUnderVote: FieldValue.arrayRemove(id),
     });
 
     // Delete original vote task
