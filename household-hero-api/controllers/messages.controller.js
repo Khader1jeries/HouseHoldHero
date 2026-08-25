@@ -5,8 +5,7 @@
 //  remains exactly as you provided—no logic, variables, or formatting changed.
 // -----------------------------------------------------------------------------
 
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 
 // Create a new message document
 const createMessage = async (req, res) => {
@@ -24,7 +23,7 @@ const createMessage = async (req, res) => {
       subject,
       message,
       reply: reply || null, // optional initial reply
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       read: false, // unread by default
     };
 
@@ -90,7 +89,7 @@ const replyToMessage = async (req, res) => {
 
     await db.collection("messages").doc(messageId).update({
       reply: reply,
-      repliedAt: admin.firestore.FieldValue.serverTimestamp(),
+      repliedAt: FieldValue.serverTimestamp(),
     });
 
     res.status(200).json({
@@ -110,7 +109,7 @@ const markRead = async (req, res) => {
 
     await db.collection("messages").doc(messageId).update({
       read: true,
-      readAt: admin.firestore.FieldValue.serverTimestamp(),
+      readAt: FieldValue.serverTimestamp(),
     });
 
     res.status(200).json({ success: true, message: "Message marked as read" });

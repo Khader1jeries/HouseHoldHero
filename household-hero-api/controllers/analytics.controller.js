@@ -9,8 +9,6 @@
 //    lives in the service and util layers.
 // -----------------------------------------------------------------------------
 
-const admin = require("firebase-admin"); // Firebase Admin SDK
-const db = admin.firestore(); // Firestore instance (unused here but
 // handy if you need direct access)
 
 // ───────────────────────────────────────────────────────────────────────────────

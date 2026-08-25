@@ -1,5 +1,4 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const { db, FieldValue } = require("../config/firebase");
 async function expired(taskUnderVote) {
   try {
     const now = new Date();
@@ -36,7 +35,7 @@ async function addToAdmin(taskUnderVote, taskId) {
     }
 
     await userRef.update({
-      tasksUnderVote: admin.firestore.FieldValue.arrayUnion(taskId),
+      tasksUnderVote: FieldValue.arrayUnion(taskId),
     });
 
     return { success: true, message: "Task added to admin's tasksUnderVote" };

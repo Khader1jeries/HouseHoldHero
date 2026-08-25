@@ -1,6 +1,4 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
-
+const { db, FieldValue } = require("../config/firebase");
 async function addTaskToMember(memberEmail, taskId) {
   if (!memberEmail || !taskId) {
     throw new Error("Both memberEmail and taskId are required.");
@@ -14,7 +12,7 @@ async function addTaskToMember(memberEmail, taskId) {
   }
 
   await memberRef.update({
-    tasks: admin.firestore.FieldValue.arrayUnion(taskId),
+    tasks: FieldValue.arrayUnion(taskId),
   });
 
   return true;
