@@ -4,3 +4,6 @@ household-hero-angular/node_modules/
 
 # Secrets
 household-hero-api/serviceAccountKey.json
+household-hero-api/.env
+household-hero-api/.env.*
+!household-hero-api/.env.example
