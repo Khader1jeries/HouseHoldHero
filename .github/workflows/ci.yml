@@ -1,0 +1,76 @@
+name: HouseHoldHero CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install backend dependencies
+        working-directory: household-hero-api
+        run: npm ci
+
+      - name: Check backend JavaScript syntax
+        working-directory: household-hero-api
+        run: find . -name "*.js" -not -path "./node_modules/*" -print0 | xargs -0 -n1 node --check
+
+  angular:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Angular dependencies
+        working-directory: household-hero-angular
+        run: npm ci
+
+      - name: Build Angular application
+        working-directory: household-hero-angular
+        run: npm run build
+
+  android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Make Gradle executable
+        working-directory: HouseHoldHeroAndroid
+        run: chmod +x gradlew
+
+      - name: Run Android unit tests
+        working-directory: HouseHoldHeroAndroid
+        run: ./gradlew test
+
+      - name: Build Android application
+        working-directory: HouseHoldHeroAndroid
+        run: ./gradlew assembleDebug
