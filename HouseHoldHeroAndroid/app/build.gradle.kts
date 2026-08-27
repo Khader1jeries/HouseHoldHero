@@ -1,3 +1,8 @@
+val productionApiBaseUrl = providers
+    .gradleProperty("API_BASE_URL")
+    .orElse(providers.environmentVariable("API_BASE_URL"))
+    .orElse("https://example.invalid/api/")
+    .get()
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,8 +26,23 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"http://10.0.2.2:3000/api/\""
+            )
+        }
+
         release {
             isMinifyEnabled = false
+
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"$productionApiBaseUrl\""
+            )
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
