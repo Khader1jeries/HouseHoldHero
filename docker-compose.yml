@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./household-hero-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./household-hero-api/.env
+    volumes:
+      - ./household-hero-api/serviceAccountKey.json:/app/serviceAccountKey.json:ro
+
+  frontend:
+    build:
+      context: ./household-hero-angular
+    ports:
+      - "4200:4200"
